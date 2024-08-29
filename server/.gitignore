@@ -17,3 +17,5 @@ Thumbs.db
 # Optional
 *.tgz
 .vscode/
+
+config/config.json
