@@ -12,7 +12,7 @@ module.exports = {
     fontFamily: {
       inter: ['Inter', 'sans-serif'],
       openSans: ['Open Sans', 'sans-serif'],
-      nunito: ['Nunito', 'sans-serif'],
+      poppins: ['Poppins', 'sans-serif'],
     },
     container: {
       center: true,

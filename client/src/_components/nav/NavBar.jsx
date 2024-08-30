@@ -102,13 +102,13 @@ function NavBar() {
           </NavigationMenuList>
         </NavigationMenu>
       </div>
-      <div className="hidden md:flex items-center gap-10 justify-between">
+      <div className="hidden md:flex items-center gap-5 justify-between">
         <Link href="/">
           <Button variant="ghost" size="icon">
             <LucideMessageCircle className="h-[1.2rem] w-[1.2rem]" />
           </Button>
         </Link>
-        <ThemeSwitcher />
+          <ThemeSwitcher />
       </div>
     </div>
   );
