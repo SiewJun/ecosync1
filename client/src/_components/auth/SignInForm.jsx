@@ -32,7 +32,7 @@ const SignInForm = () => {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
-                <Link href="/forgot-password" className="text-sm underline">
+                <Link to="/forgot-password" className="text-sm underline">
                   Forgot your password?
                 </Link>
               </div>
@@ -49,7 +49,11 @@ const SignInForm = () => {
                   className="absolute inset-y-0 right-0 flex items-center px-2"
                   onClick={() => setShowPassword(!showPassword)}
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
                 </button>
               </div>
             </div>
@@ -61,7 +65,7 @@ const SignInForm = () => {
           </form>
           <div className="text-center text-sm mt-4">
             Don&apos;t have an account?{" "}
-            <Link href="/auth/signup" className="underline">
+            <Link to="/signup" className="underline">
               Sign up
             </Link>
           </div>
