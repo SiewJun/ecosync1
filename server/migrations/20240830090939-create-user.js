@@ -32,6 +32,14 @@ module.exports = {
         allowNull: false,
         defaultValue: 'CONSUMER'
       },
+      resetToken: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
+      resetTokenExpiry: {
+        type: Sequelize.DATE,
+        allowNull: true
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
