@@ -1,12 +1,28 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff } from "lucide-react";
+import { AlertCircle, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import axios from 'axios';
 
 const SignInForm = () => {
-  const [showPassword, setShowPassword] = useState(false); // Add state to toggle password visibility
+  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
+      localStorage.setItem('token', response.data.token);
+      navigate('/profile'); 
+    } catch (error) {
+      setError(error.response.data.message || 'An error occurred');
+    }
+  };
 
   return (
     <div className="flex w-full flex-col lg:flex-row min-h-[700px]">
@@ -18,7 +34,7 @@ const SignInForm = () => {
               Enter your credentials below to login to your account.
             </p>
           </div>
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleLogin}>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -27,6 +43,8 @@ const SignInForm = () => {
                 type="email"
                 placeholder="ecosync@example.com"
                 required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className="space-y-2">
@@ -40,9 +58,11 @@ const SignInForm = () => {
                 <Input
                   id="password"
                   name="password"
-                  type={showPassword ? "text" : "password"} // Toggle type between text and password
+                  type={showPassword ? "text" : "password"}
                   placeholder="Your password"
                   required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
                 <button
                   type="button"
@@ -57,6 +77,12 @@ const SignInForm = () => {
                 </button>
               </div>
             </div>
+            {error && (
+            <div className="flex items-center space-x-2 border border-red-500 bg-red-100 text-red-700 p-2 rounded-md">
+              <AlertCircle className="h-5 w-5" />
+              <p className="text-sm">{error}</p>
+            </div>
+          )}
             <div className="flex flex-col space-y-4">
               <Button type="submit" className="w-full">
                 Login

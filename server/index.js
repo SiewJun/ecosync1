@@ -3,6 +3,7 @@ const cors = require('cors');
 const app = express();
 const authRoutes = require('./routes/auth');
 const dotenv = require('dotenv');
+const protectedRoutes = require('./routes/protectedRoute');
 
 dotenv.config();
 
@@ -11,6 +12,7 @@ app.use(express.json());
 
 // Use the auth routes
 app.use('/api/auth', authRoutes);
+app.use('/api', protectedRoutes);
 
 // Other middlewares and route setups
 
