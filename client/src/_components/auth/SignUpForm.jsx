@@ -263,7 +263,9 @@ const SignUpForm = () => {
           <div className="text-center text-sm mt-4">
             Already have an account?{" "}
             <Link to="/signin" className="underline">
-              Sign in
+              <Button variant="link" className="p-0">
+                Sign in
+              </Button>
             </Link>
           </div>
         </CardContent>

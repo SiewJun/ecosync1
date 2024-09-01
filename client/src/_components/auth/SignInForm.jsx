@@ -4,23 +4,26 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AlertCircle, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import axios from 'axios';
+import axios from "axios";
 
 const SignInForm = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
-      localStorage.setItem('token', response.data.token);
-      navigate('/profile'); 
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        { email, password }
+      );
+      localStorage.setItem("token", response.data.token);
+      navigate("/profile");
     } catch (error) {
-      setError(error.response.data.message || 'An error occurred');
+      setError(error.response.data.message || "An error occurred");
     }
   };
 
@@ -78,11 +81,11 @@ const SignInForm = () => {
               </div>
             </div>
             {error && (
-            <div className="flex items-center space-x-2 border border-red-500 bg-red-100 text-red-700 p-2 rounded-md">
-              <AlertCircle className="h-5 w-5" />
-              <p className="text-sm">{error}</p>
-            </div>
-          )}
+              <div className="flex items-center space-x-2 border border-red-500 bg-red-100 text-red-700 p-2 rounded-md">
+                <AlertCircle className="h-5 w-5" />
+                <p className="text-sm">{error}</p>
+              </div>
+            )}
             <div className="flex flex-col space-y-4">
               <Button type="submit" className="w-full">
                 Login
@@ -92,7 +95,9 @@ const SignInForm = () => {
           <div className="text-center text-sm mt-4">
             Don&apos;t have an account?{" "}
             <Link to="/signup" className="underline">
-              Sign up
+              <Button variant="link" className="p-0">
+                Sign up
+              </Button>
             </Link>
           </div>
         </div>
