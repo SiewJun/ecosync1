@@ -50,7 +50,7 @@ const ProfileDropdown = ({ user }) => {
       case 'ADMIN':
         return (
           <>
-            <DropdownMenuItem onClick={() => navigate('/dashboard')}>Dashboard</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate('/admindashboard')}>Dashboard</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
           </>

@@ -8,6 +8,9 @@ import SignUpPage from './pages/SignUpPage';
 import ProfilePage from './pages/ProfilePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+import CompanyRegistrationPage from './pages/CompanySignUpPage';
+import AdminDashboardPage from './pages/AdminDashboardPage';
+import CompletedCompanySignUpPage from './pages/CompletedCompanySignUpPage';
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -26,6 +29,9 @@ const App = () => {
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+          <Route path="/company-signup" element={<CompanyRegistrationPage />} />
+          <Route path="/admindashboard" element={<AdminDashboardPage />} />
+          <Route path="/complete-registration" element={<CompletedCompanySignUpPage />} />
           <Route path="/profile" element={isAuthenticated ? <ProfilePage /> : <Navigate to="/signin" />} />
         </Routes>
       </Router>
