@@ -21,7 +21,7 @@ const SignInForm = () => {
         { email, password }
       );
       localStorage.setItem("token", response.data.token);
-      navigate("/profile");
+      navigate("/");
     } catch (error) {
       setError(error.response.data.message || "An error occurred");
     }

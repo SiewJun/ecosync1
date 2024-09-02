@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import {
@@ -11,9 +11,10 @@ import {
 } from "@/components/ui/navigation-menu";
 import { LucideMessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import ThemeSwitcher from "@/_components/theme/ThemeSwitcher";
 import EcoSyncLogo from "./EcoSyncLogo";
 import MobileMenu from "@/_components/nav/MobileMenu";
+import ProfileDropdown from "./ProfileDropdown";
+import axios from "axios";
 
 const components = [
   {
@@ -37,13 +38,36 @@ const components = [
 ];
 
 function NavBar() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (token) {
+          const response = await axios.get(
+            "http://localhost:5000/api/auth/me",
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          setUser(response.data.user);
+        }
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
   return (
     <div className="flex w-full items-center justify-between px-5 py-3 md:px-4">
       <Link to="/">
-        <EcoSyncLogo/>
+        <EcoSyncLogo />
       </Link>
       <div className="md:hidden">
-          <MobileMenu/>
+        <MobileMenu />
       </div>
       <div className="hidden md:flex">
         <NavigationMenu>
@@ -108,7 +132,13 @@ function NavBar() {
             <LucideMessageCircle className="h-[1.2rem] w-[1.2rem]" />
           </Button>
         </Link>
-          <ThemeSwitcher />
+        {user ? (
+          <ProfileDropdown user={user} />
+        ) : (
+          <Link to="/signin">
+            <Button variant="outline">Sign in</Button>
+          </Link>
+        )}
       </div>
     </div>
   );

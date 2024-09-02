@@ -6,7 +6,9 @@ const cuid = require("cuid");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
-const { User } = require("../models"); // Import the User model
+const { User } = require("../models");
+const middleware = require("../middleware/auth");
+
 require("dotenv").config();
 
 const JWT_SECRET = process.env.JWT_SECRET; // Replace with your own secret key
@@ -135,6 +137,23 @@ router.post("/reset-password", async (req, res) => {
   } catch (error) {
     console.error("Error during password reset:", error);
     res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get('/me', middleware, async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.id, {
+      attributes: ['cuid', 'username', 'email', 'role'], // Add more fields as needed
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({ user });
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
