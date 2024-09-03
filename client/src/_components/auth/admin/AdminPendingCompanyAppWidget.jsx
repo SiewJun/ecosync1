@@ -1,4 +1,3 @@
-// AdminDashboard.jsx
 import { useEffect, useState } from "react";
 import {
   Card,
@@ -18,7 +17,12 @@ const PendingApplicationsWidget = () => {
   useEffect(() => {
     const fetchPendingApplications = async () => {
       try {
-        const response = await axios.get("/pending-applications");
+        const token = localStorage.getItem("token");
+        const response = await axios.get("http://localhost:5000/api/auth/pending-applications", {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the authorization header
+          },
+        });
         const applications = response.data.applications || [];
         setPendingCount(applications.length);
       } catch (error) {

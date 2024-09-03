@@ -11,6 +11,10 @@ dotenv.config();
 app.use(cors());
 app.use(express.json());
 
+app.get('/', (req, res) => {
+  res.send('Welcome to EcoSync API');
+});
+
 // Use the auth routes
 app.use('/api/auth', authRoutes);
 app.use('/api/auth', companyAuthRoutes);
