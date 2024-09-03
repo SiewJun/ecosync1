@@ -18,7 +18,7 @@ const Sidebar = () => {
       )}
     >
       <Link to="/">
-        <div className="flex gap-2 justify-center items-center p-4">
+        <div className="flex gap-2 justify-center items-center py-4">
           <img src="/ecosync.svg" alt="Ecosync Logo" width="30" height="30" />
         </div>
       </Link>
@@ -35,7 +35,7 @@ const Sidebar = () => {
         </ul>
       </nav>
       <div className="mt-auto mb-4 w-full">
-        <Button variant="destructive" onClick={handleLogout}>
+        <Button variant="destructive" onClick={handleLogout} className="rounded-none">
           <LogOut className="w-6 h-6" />
         </Button>
       </div>
