@@ -1,24 +1,31 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 import HomePage from './pages/HomePage';
 import ThemeProvider from './context/ThemeContext';
-import SignInPage from './pages/SignInPage';
-import SignUpPage from './pages/SignUpPage';
+import SignInPage from './pages/auth/SignInPage';
+import SignUpPage from './pages/auth/SignUpPage';
 import ProfilePage from './pages/ProfilePage';
-import ForgotPasswordPage from './pages/ForgotPasswordPage';
-import ResetPasswordPage from './pages/ResetPasswordPage';
-import CompanyRegistrationPage from './pages/CompanySignUpPage';
-import AdminDashboardPage from './pages/AdminDashboardPage';
-import CompletedCompanySignUpPage from './pages/CompletedCompanySignUpPage';
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
+import ResetPasswordPage from './pages/auth/ResetPasswordPage';
+import CompanyRegistrationPage from './pages/auth/CompanySignUpPage';
+import AdminDashboardPage from './pages/admin/AdminDashboardPage';
+import CompletedCompanySignUpPage from './pages/auth/CompletedCompanySignUpPage';
 
 const App = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const token = localStorage.getItem('token');
+  let userRole = null;
+  let isAuthenticated = false;
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsAuthenticated(!!token);
-  }, []);
+  if (token) {
+    try {
+      const decodedToken = jwtDecode(token);
+      userRole = decodedToken.role;
+      isAuthenticated = true;
+    } catch (error) {
+      console.error('Invalid token:', error);
+      localStorage.removeItem('token'); // remove invalid token
+    }
+  }
 
   return (
     <div>
@@ -30,7 +37,7 @@ const App = () => {
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
           <Route path="/company-signup" element={<CompanyRegistrationPage />} />
-          <Route path="/admindashboard" element={<AdminDashboardPage />} />
+          <Route path="/admindashboard" element={userRole === 'ADMIN' ? <AdminDashboardPage /> : <Navigate to="/signin" />} />
           <Route path="/complete-registration" element={<CompletedCompanySignUpPage />} />
           <Route path="/profile" element={isAuthenticated ? <ProfilePage /> : <Navigate to="/signin" />} />
         </Routes>

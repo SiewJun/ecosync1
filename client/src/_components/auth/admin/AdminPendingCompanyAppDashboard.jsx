@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const AdminDashboard = () => {
+const AdminPendingCompanyAppDashboard = () => {
   const [applications, setApplications] = useState([]);
   const [error, setError] = useState("");
 
@@ -69,4 +69,4 @@ const handleReview = async (id, status) => {
   }
 };
 
-export default AdminDashboard;
+export default AdminPendingCompanyAppDashboard;

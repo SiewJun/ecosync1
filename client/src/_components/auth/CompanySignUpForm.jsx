@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axios from "axios";
+import { AlertCircle } from "lucide-react";
 
 const CompanySignUpForm = () => {
   const [companyName, setCompanyName] = useState("");
@@ -30,11 +31,15 @@ const CompanySignUpForm = () => {
     }
 
     try {
-      await axios.post("http://localhost:5000/api/auth/register-company", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await axios.post(
+        "http://localhost:5000/api/auth/register-company",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       setSuccess("Application submitted successfully");
       setError("");
     } catch (error) {
@@ -44,70 +49,105 @@ const CompanySignUpForm = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 shadow-md rounded-md">
-      <h2 className="text-2xl font-semibold mb-4">Company Application</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <Label htmlFor="companyName">Company Name</Label>
-        <Input
-          id="companyName"
-          value={companyName}
-          onChange={(e) => setCompanyName(e.target.value)}
-          required
-        />
+    <div className="max-w-2xl mx-auto p-6 shadow-lg rounded-lg mt-10 border">
+      <h2 className="text-3xl font-bold mb-16 text-center">Company Application</h2>
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="col-span-1">
+          <Label htmlFor="companyName">Company Name</Label>
+          <Input
+            id="companyName"
+            value={companyName}
+            onChange={(e) => setCompanyName(e.target.value)}
+            required
+            className="mt-1"
+          />
+        </div>
 
-        <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        <div className="col-span-1">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="mt-1"
+          />
+        </div>
 
-        <Label htmlFor="phoneNumber">Phone Number</Label>
-        <Input
-          id="phoneNumber"
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
-          required
-        />
+        <div className="col-span-1">
+          <Label htmlFor="phoneNumber">Phone Number</Label>
+          <Input
+            id="phoneNumber"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            required
+            className="mt-1"
+          />
+        </div>
 
-        <Label htmlFor="address">Address</Label>
-        <Input
-          id="address"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          required
-        />
+        <div className="col-span-1">
+          <Label htmlFor="address">Address</Label>
+          <Input
+            id="address"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            required
+            className="mt-1"
+          />
+        </div>
 
-        <Label htmlFor="website">Website</Label>
-        <Input
-          id="website"
-          value={website}
-          onChange={(e) => setWebsite(e.target.value)}
-          required
-        />
+        <div className="col-span-1">
+          <Label htmlFor="website">Website</Label>
+          <Input
+            id="website"
+            value={website}
+            onChange={(e) => setWebsite(e.target.value)}
+            required
+            className="mt-1"
+          />
+        </div>
 
-        <Label htmlFor="registrationNumber">Registration Number</Label>
-        <Input
-          id="registrationNumber"
-          value={registrationNumber}
-          onChange={(e) => setRegistrationNumber(e.target.value)}
-          required
-        />
+        <div className="col-span-1">
+          <Label htmlFor="registrationNumber">Registration Number</Label>
+          <Input
+            id="registrationNumber"
+            value={registrationNumber}
+            onChange={(e) => setRegistrationNumber(e.target.value)}
+            required
+            className="mt-1"
+          />
+        </div>
 
-        <Label htmlFor="businessLicense">Business License</Label>
-        <Input
-          id="businessLicense"
-          type="file"
-          onChange={(e) => setBusinessLicense(e.target.files[0])}
-          required
-        />
+        <div className="col-span-1">
+          <Label htmlFor="businessLicense">Business License</Label>
+          <Input
+            id="businessLicense"
+            type="file"
+            onChange={(e) => setBusinessLicense(e.target.files[0])}
+            required
+            className="mt-1"
+          />
+        </div>
 
-        <Button type="submit" className="w-full mt-4">Submit Application</Button>
-        
-        {error && <p className="text-red-500 mt-2">{error}</p>}
-        {success && <p className="text-green-500 mt-2">{success}</p>}
+        <div className="col-span-1 md:col-span-2">
+          <Button type="submit" className="w-full mt-4">
+            Submit Application
+          </Button>
+        </div>
+
+        {error && (
+          <div className="col-span-1 md:col-span-2 flex items-center space-x-2 border border-red-500 bg-red-100 text-red-700 p-2 rounded-md">
+            <AlertCircle className="h-5 w-5" />
+            <p className="text-sm">{error}</p>
+          </div>
+        )}
+        {success && (
+          <div className="col-span-1 md:col-span-2 flex items-center space-x-2 border border-green-500 bg-green-100 text-green-700 p-2 rounded-md">
+            <AlertCircle className="h-5 w-5" />
+            <p className="text-sm">{success}</p>
+          </div>
+        )}
       </form>
     </div>
   );

@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const { User } = require("../models");
-const middleware = require("../middleware/auth");
+const authenticateToken = require("../middleware/auth");
 
 require("dotenv").config();
 
@@ -140,7 +140,7 @@ router.post("/reset-password", async (req, res) => {
   }
 });
 
-router.get('/me', middleware, async (req, res) => {
+router.get('/me', authenticateToken, async (req, res) => {
   try {
     const user = await User.findByPk(req.user.id, {
       attributes: ['cuid', 'username', 'email', 'role'], // Add more fields as needed
@@ -155,12 +155,6 @@ router.get('/me', middleware, async (req, res) => {
     console.error('Error fetching user data:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
-});
-
-// Logout endpoint
-router.post("/logout", (req, res) => {
-  // Invalidate the token on the client-side
-  res.json({ message: "Logout successful" });
 });
 
 module.exports = router;

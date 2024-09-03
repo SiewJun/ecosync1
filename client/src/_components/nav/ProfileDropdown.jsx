@@ -8,14 +8,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import axios from 'axios';
 
 const ProfileDropdown = ({ user }) => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      await axios.post('http://localhost:5000/api/auth/logout');
       localStorage.removeItem('token');
       navigate('/signin');
     } catch (error) {

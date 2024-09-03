@@ -6,7 +6,7 @@ const cuid = require("cuid");
 const multer = require('multer');
 const router = express.Router();
 const { User, CompanyDetail, CompanyApplication } = require('../models');
-const middleware = require('../middleware/auth');
+const authenticateToken = require('../middleware/auth');
 require('dotenv').config();
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -72,7 +72,7 @@ router.post('/register-company', upload.single('businessLicense'), async (req, r
   }
 });
 
-router.get('/pending-applications', middleware, async (req, res) => {
+router.get('/pending-applications', authenticateToken, async (req, res) => {
   if (req.user.role !== 'ADMIN') {
     return res.status(403).json({ message: 'Forbidden' });
   }
@@ -86,7 +86,7 @@ router.get('/pending-applications', middleware, async (req, res) => {
   }
 });
 
-router.post('/review-application/:id', middleware, async (req, res) => {
+router.post('/review-application/:id', authenticateToken, async (req, res) => {
   if (req.user.role !== 'ADMIN') {
     return res.status(403).json({ message: 'Forbidden' });
   }
@@ -109,7 +109,7 @@ router.post('/review-application/:id', middleware, async (req, res) => {
     await application.save();
 
     if (status === 'Approved') {
-      const token = jwt.sign({ id: application.id, role: 'COMPANY' }, JWT_SECRET, { expiresIn: '336h' }); // Updated expiration time to 336 hours (2 weeks)
+      const token = jwt.sign({ id: application.id, role: 'COMPANY' }, JWT_SECRET, { expiresIn: '336h' }); // expiration time 336 hours (2 weeks)
 
       // Send an email to the company with a link to complete registration
       sendApprovalEmail(application.email, token);
