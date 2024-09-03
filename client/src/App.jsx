@@ -9,6 +9,7 @@ import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import CompanyRegistrationPage from './pages/auth/CompanySignUpPage';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
+import AdminPendingCompanyAppDashboardPage from './pages/admin/AdminPendingCompanyAppDashboardPage';
 import CompletedCompanySignUpPage from './pages/auth/CompletedCompanySignUpPage';
 
 const App = () => {
@@ -38,6 +39,7 @@ const App = () => {
           <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
           <Route path="/company-signup" element={<CompanyRegistrationPage />} />
           <Route path="/admindashboard" element={userRole === 'ADMIN' ? <AdminDashboardPage /> : <Navigate to="/signin" />} />
+          <Route path="/admindashboard/pendingapp" element={userRole === 'ADMIN' ? <AdminPendingCompanyAppDashboardPage /> : <Navigate to="/signin" />} />
           <Route path="/complete-registration" element={<CompletedCompanySignUpPage />} />
           <Route path="/profile" element={isAuthenticated ? <ProfilePage /> : <Navigate to="/signin" />} />
         </Routes>

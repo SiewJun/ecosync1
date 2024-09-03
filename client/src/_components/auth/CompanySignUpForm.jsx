@@ -43,7 +43,11 @@ const CompanySignUpForm = () => {
       setSuccess("Application submitted successfully");
       setError("");
     } catch (error) {
-      setError(error.response.data.message || "An error occurred");
+      if (error.response && error.response.status === 400) {
+        setError(error.response.data.message);
+      } else {
+        setError("An error occurred");
+      }
       setSuccess("");
     }
   };

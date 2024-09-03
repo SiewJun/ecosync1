@@ -16,7 +16,6 @@ module.exports = {
       email: {
         type: Sequelize.STRING,
         allowNull: false,
-        unique: true
       },
       phoneNumber: {
         type: Sequelize.STRING,
@@ -33,7 +32,6 @@ module.exports = {
       registrationNumber: {
         type: Sequelize.STRING,
         allowNull: false,
-        unique: true
       },
       businessLicense: {
         type: Sequelize.STRING,

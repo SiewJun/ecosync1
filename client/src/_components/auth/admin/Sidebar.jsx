@@ -14,7 +14,7 @@ const Sidebar = () => {
   return (
     <div
       className={cn(
-        "fixed top-0 left-0 h-full border-r flex flex-col items-center shadow-lg"
+        "fixed top-0 left-0 h-full border-r flex flex-col items-center shadow-lg bg-background"
       )}
     >
       <Link to="/">
@@ -26,7 +26,7 @@ const Sidebar = () => {
         <ul className="flex flex-col items-center w-full">
           <li className="mb-4 w-full">
             <Link to="/admindashboard">
-              <Button variant="ghost" onClick={handleLogout}>
+              <Button variant="ghost">
                 <Home className="w-6 h-6" />
               </Button>
             </Link>
