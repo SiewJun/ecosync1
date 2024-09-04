@@ -15,6 +15,7 @@ const CompanySignUpForm = () => {
   const [businessLicense, setBusinessLicense] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,8 +41,11 @@ const CompanySignUpForm = () => {
           },
         }
       );
-      setSuccess("Application submitted successfully");
+      setSuccess(
+        "Application submitted successfully. Please allow 3-5 business days for approval."
+      );
       setError("");
+      setIsSubmitted(true);
     } catch (error) {
       if (error.response && error.response.status === 400) {
         setError(error.response.data.message);
@@ -53,9 +57,14 @@ const CompanySignUpForm = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 shadow-lg rounded-lg mt-10 border">
-      <h2 className="text-3xl font-bold mb-16 text-center">Company Application</h2>
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="max-w-2xl mx-auto p-6 shadow-lg rounded-lg mt-10 mb-10 border">
+      <h2 className="text-3xl font-bold mb-16 text-center">
+        Company Application
+      </h2>
+      <form
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 md:grid-cols-2 gap-6"
+      >
         <div className="col-span-1">
           <Label htmlFor="companyName">Company Name</Label>
           <Input
@@ -135,7 +144,7 @@ const CompanySignUpForm = () => {
         </div>
 
         <div className="col-span-1 md:col-span-2">
-          <Button type="submit" className="w-full mt-4">
+          <Button type="submit" className="w-full mt-4" disabled={isSubmitted}>
             Submit Application
           </Button>
         </div>

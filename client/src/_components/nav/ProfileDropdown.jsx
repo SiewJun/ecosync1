@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -10,12 +10,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 const ProfileDropdown = ({ user }) => {
-  const navigate = useNavigate();
-
   const handleLogout = async () => {
     try {
       localStorage.removeItem('token');
-      navigate('/signin');
+      // Use navigate to programmatically redirect after logout
+      window.location.href = '/signin';
     } catch (error) {
       console.error('Error during logout:', error);
     }
@@ -26,10 +25,18 @@ const ProfileDropdown = ({ user }) => {
       case 'CONSUMER':
         return (
           <>
-            <DropdownMenuItem onClick={() => navigate('/profile')}>Profile</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/quotation')}>Quotation</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/order')}>Order</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/invoice')}>Invoice</DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/profile">Profile</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/quotation">Quotation</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/order">Order</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/invoice">Invoice</Link>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
           </>
@@ -37,10 +44,18 @@ const ProfileDropdown = ({ user }) => {
       case 'COMPANY':
         return (
           <>
-            <DropdownMenuItem onClick={() => navigate('/company-details')}>Company Details</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/company-profile')}>Company Profile</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/quotation')}>Quotation</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/projects')}>Projects</DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/company-details">Company Details</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/company-profile">Company Profile</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/quotation">Quotation</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/projects">Projects</Link>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
           </>
@@ -48,7 +63,9 @@ const ProfileDropdown = ({ user }) => {
       case 'ADMIN':
         return (
           <>
-            <DropdownMenuItem onClick={() => navigate('/admindashboard')}>Dashboard</DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/admindashboard">Dashboard</Link>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
           </>
