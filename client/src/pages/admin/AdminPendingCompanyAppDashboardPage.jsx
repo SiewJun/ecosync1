@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Sidebar from "@/_components/auth/admin/Sidebar";
 import {
@@ -47,6 +48,7 @@ const AdminPendingCompanyAppDashboard = () => {
   const [error, setError] = useState("");
   const [columnFilters, setColumnFilters] = useState([]);
   const [selectedDocument, setSelectedDocument] = useState(null);
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     const fetchApplications = async () => {
@@ -61,7 +63,12 @@ const AdminPendingCompanyAppDashboard = () => {
         );
         setApplications(response.data.applications);
       } catch (error) {
-        setError(error.response.data.message || "An error occurred");
+        if (error.response && error.response.status === 403) {
+          // Token expired or invalid, redirect to sign-in page
+          navigate("/signin");
+        } else {
+          setError(error.response.data.message || "An error occurred");
+        }
       }
     };
 
