@@ -188,7 +188,7 @@ const AdminPendingCompanyAppDashboard = () => {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <h1 className="text-xl font-semibold mt-4 mb-6">
+        <h1 className="text-xl font-semibold mt-10 mb-6">
           Pending Applications
         </h1>
         {error && <p className="text-red-500 mb-4">{error}</p>}
