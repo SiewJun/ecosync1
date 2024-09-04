@@ -78,12 +78,12 @@ const ProfileDropdown = ({ user }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button>
+        <div>
           <Avatar>
             <AvatarImage src={user.avatarUrl || 'https://via.placeholder.com/150'} alt="User Avatar" />
             <AvatarFallback>{user.username[0]}</AvatarFallback>
           </Avatar>
-        </button>
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuLabel>Hi {user.username[0]}</DropdownMenuLabel>
