@@ -73,7 +73,7 @@ const AdminPendingCompanyAppDashboard = () => {
     };
 
     fetchApplications();
-  }, []);
+  }, [navigate]);
 
   const columns = [
     {
