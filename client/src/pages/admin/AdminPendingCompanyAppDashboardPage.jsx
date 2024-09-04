@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import Sidebar from "@/_components/auth/admin/Sidebar";
+import Sidebar from "@/_components/admin/Sidebar";
 import {
   useReactTable,
   getCoreRowModel,

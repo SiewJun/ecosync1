@@ -1,5 +1,5 @@
-import PendingApplicationsWidget from "@/_components/auth/admin/AdminPendingCompanyAppWidget";
-import Sidebar from "@/_components/auth/admin/Sidebar";
+import PendingApplicationsWidget from "@/_components/admin/AdminPendingCompanyAppWidget";
+import Sidebar from "@/_components/admin/Sidebar";
 
 const AdminDashboardPage = () => {
   return (
