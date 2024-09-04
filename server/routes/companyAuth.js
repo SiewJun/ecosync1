@@ -137,9 +137,11 @@ router.get("/pending-applications", authenticateToken, async (req, res) => {
     });
 
     // Add the full URL to the businessLicense field
-    const applicationsWithUrls = applications.map(app => ({
+    const applicationsWithUrls = applications.map((app) => ({
       ...app.dataValues,
-      businessLicense: `${req.protocol}://${req.get('host')}/${app.businessLicense}`
+      businessLicense: `${req.protocol}://${req.get("host")}/${
+        app.businessLicense
+      }`,
     }));
 
     res.json({ applications: applicationsWithUrls });
@@ -196,12 +198,10 @@ router.post("/complete-registration", async (req, res) => {
   const { token, password } = req.body;
 
   if (!token) {
-    return res
-      .status(400)
-      .json({
-        message:
-          "A valid token is required to complete company registration. Please ensure you have applied for a company account.",
-      });
+    return res.status(400).json({
+      message:
+        "A valid token is required to complete company registration. Please ensure you have applied for a company account.",
+    });
   }
 
   try {
@@ -213,38 +213,28 @@ router.post("/complete-registration", async (req, res) => {
 
     if (!application || application.status !== "Approved") {
       return res
-        .status(404)
-        .json({ message: "Application not found or not approved" });
+        .status(400)
+        .json({ message: "Invalid or unapproved application." });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
+    // Create the user
     const user = await User.create({
+      cuid: application.cuid,
       username: application.companyName,
-      cuid: cuid(),
       email: application.email,
-      password: hashedPassword,
+      password: await bcrypt.hash(password, 10),
       role: "COMPANY",
     });
 
-    await CompanyDetail.create({
-      userId: user.id,
-      companyName: application.companyName,
-      phoneNumber: application.phoneNumber,
-      address: application.address,
-      website: application.website,
-      registrationNumber: application.registrationNumber,
-      businessLicense: application.businessLicense,
-    });
-
-    res
-      .status(201)
-      .json({ message: "Registration completed successfully", user });
+    res.status(201).json({ message: "Registration completed successfully." });
   } catch (error) {
-    if (error instanceof jwt.JsonWebTokenError) {
-      return res
-        .status(401)
-        .json({ message: "Invalid token. Please contact admin." });
+    if (
+      error.name === "SequelizeUniqueConstraintError" &&
+      error.errors[0].path === "email"
+    ) {
+      return res.status(400).json({ message: "Email is already in use." });
+    } else if (error.name === "JsonWebTokenError") {
+      return res.status(400).json({ message: "Invalid token." });
     }
     console.error("Error completing registration:", error);
     res.status(500).json({ message: "Internal server error" });
