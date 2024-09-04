@@ -1,33 +1,47 @@
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
-import HomePage from './pages/HomePage';
-import ThemeProvider from './context/ThemeContext';
-import SignInPage from './pages/auth/SignInPage';
-import SignUpPage from './pages/auth/SignUpPage';
-import ProfilePage from './pages/ProfilePage';
-import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
-import ResetPasswordPage from './pages/auth/ResetPasswordPage';
-import CompanyRegistrationPage from './pages/auth/CompanySignUpPage';
-import AdminDashboardPage from './pages/admin/AdminDashboardPage';
-import AdminPendingCompanyAppDashboardPage from './pages/admin/AdminPendingCompanyAppDashboardPage';
-import CompletedCompanySignUpPage from './pages/auth/CompletedCompanySignUpPage';
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import PropTypes from "prop-types";
+import HomePage from "./pages/HomePage";
+import ThemeProvider from "./context/ThemeContext";
+import SignInPage from "./pages/auth/SignInPage";
+import SignUpPage from "./pages/auth/SignUpPage";
+import ProfilePage from "./pages/ProfilePage";
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
+import CompanyRegistrationPage from "./pages/auth/CompanySignUpPage";
+import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
+import AdminPendingCompanyAppDashboardPage from "./pages/admin/AdminPendingCompanyAppDashboardPage";
+import CompletedCompanySignUpPage from "./pages/auth/CompletedCompanySignUpPage";
 
-const App = () => {
-  const token = localStorage.getItem('token');
-  let userRole = null;
-  let isAuthenticated = false;
+// Custom ProtectedRoute component
+const ProtectedRoute = ({ element, role }) => {
+  const token = localStorage.getItem("token");
 
-  if (token) {
-    try {
-      const decodedToken = jwtDecode(token);
-      userRole = decodedToken.role;
-      isAuthenticated = true;
-    } catch (error) {
-      console.error('Invalid token:', error);
-      localStorage.removeItem('token'); // remove invalid token
-    }
+  if (!token) {
+    return <Navigate to="/signin" />;
   }
 
+  try {
+    const decodedToken = jwtDecode(token);
+    const currentTime = Date.now() / 1000; // current time in seconds
+
+    if (decodedToken.exp && decodedToken.exp > currentTime) {
+      if (!role || decodedToken.role === role) {
+        return element;
+      }
+      return <Navigate to="/signin" />;
+    } else {
+      localStorage.removeItem("token"); // remove expired token
+      return <Navigate to="/signin" />;
+    }
+  } catch (error) {
+    console.error("Invalid token:", error);
+    localStorage.removeItem("token"); // remove invalid token
+    return <Navigate to="/signin" />;
+  }
+};
+
+const App = () => {
   return (
     <div>
       <Router>
@@ -38,14 +52,25 @@ const App = () => {
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
           <Route path="/company-signup" element={<CompanyRegistrationPage />} />
-          <Route path="/admindashboard" element={userRole === 'ADMIN' ? <AdminDashboardPage /> : <Navigate to="/signin" />} />
-          <Route path="/admindashboard/pendingapp" element={userRole === 'ADMIN' ? <AdminPendingCompanyAppDashboardPage /> : <Navigate to="/signin" />} />
+          <Route
+            path="/admindashboard"
+            element={<ProtectedRoute element={<AdminDashboardPage />} role="ADMIN" />}
+          />
+          <Route
+            path="/admindashboard/pendingapp"
+            element={<ProtectedRoute element={<AdminPendingCompanyAppDashboardPage />} role="ADMIN" />}
+          />
           <Route path="/complete-registration" element={<CompletedCompanySignUpPage />} />
-          <Route path="/profile" element={isAuthenticated ? <ProfilePage /> : <Navigate to="/signin" />} />
+          <Route path="/profile" element={<ProtectedRoute element={<ProfilePage />} />} />
         </Routes>
       </Router>
     </div>
   );
+};
+
+ProtectedRoute.propTypes = {
+  element: PropTypes.element.isRequired,
+  role: PropTypes.string,
 };
 
 const AppWrapper = () => (

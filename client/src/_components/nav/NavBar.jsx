@@ -55,7 +55,12 @@ function NavBar() {
           setUser(response.data.user);
         }
       } catch (error) {
-        console.error("Error fetching user:", error);
+        if (error.response && error.response.status === 403) {
+          // Handle 403 Forbidden error
+          localStorage.removeItem("token"); // Optionally remove the token
+        } else {
+          console.error("Error fetching user:", error);
+        }
       }
     };
 
@@ -135,7 +140,9 @@ function NavBar() {
         </Link>
         <ThemeSwitcher />
         {user ? (
-          <Button variant="ghost" className="px-2"><ProfileDropdown user={user} /></Button>
+          <Button variant="ghost" className="px-2">
+            <ProfileDropdown user={user} />
+          </Button>
         ) : (
           <Link to="/signin">
             <Button variant="outline">Sign in</Button>
