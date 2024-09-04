@@ -34,11 +34,19 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 const AdminPendingCompanyAppDashboard = () => {
   const [applications, setApplications] = useState([]);
   const [error, setError] = useState("");
   const [columnFilters, setColumnFilters] = useState([]);
+  const [selectedDocument, setSelectedDocument] = useState(null);
 
   useEffect(() => {
     const fetchApplications = async () => {
@@ -113,7 +121,44 @@ const AdminPendingCompanyAppDashboard = () => {
     {
       accessorKey: "businessLicense",
       header: "Business License",
-      cell: ({ row }) => row.getValue("businessLicense"),
+      cell: ({ row }) => (
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button
+              variant="link"
+              onClick={() =>
+                setSelectedDocument(row.getValue("businessLicense"))
+              }
+            >
+              View Document
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogTitle>Business License</DialogTitle>
+            <DialogDescription>
+              <object
+                data={selectedDocument}
+                type="application/pdf"
+                width="100%"
+                height="500px"
+              >
+                <p>
+                  Your browser does not support this document.{" "}
+                  <a
+                    href={selectedDocument}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button variant="link" className="p-0">
+                      Download the PDF
+                    </Button>
+                  </a>{" "}
+                </p>
+              </object>
+            </DialogDescription>
+          </DialogContent>
+        </Dialog>
+      ),
     },
     {
       accessorKey: "status",

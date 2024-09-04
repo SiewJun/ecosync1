@@ -123,8 +123,26 @@ router.get("/pending-applications", authenticateToken, async (req, res) => {
   try {
     const applications = await CompanyApplication.findAll({
       where: { status: "Pending" },
+      attributes: [
+        "id",
+        "companyName",
+        "email",
+        "phoneNumber",
+        "address",
+        "website",
+        "registrationNumber",
+        "businessLicense", // Ensure this field contains the filename of the document
+        "status",
+      ],
     });
-    res.json({ applications });
+
+    // Add the full URL to the businessLicense field
+    const applicationsWithUrls = applications.map(app => ({
+      ...app.dataValues,
+      businessLicense: `${req.protocol}://${req.get('host')}/${app.businessLicense}`
+    }));
+
+    res.json({ applications: applicationsWithUrls });
   } catch (error) {
     console.error("Error fetching pending applications:", error);
     res.status(500).json({ message: "Internal server error" });

@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const app = express();
+const path = require('path');
 const protectedRoutes = require('./routes/protectedRoute');
 const authRoutes = require('./routes/auth');
 const companyAuthRoutes = require('./routes/companyAuth');
@@ -14,6 +15,9 @@ app.use(express.json());
 app.get('/', (req, res) => {
   res.send('Welcome to EcoSync API');
 });
+
+// Serve static files from the 'uploads' directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Use the auth routes
 app.use('/api/auth', authRoutes);
