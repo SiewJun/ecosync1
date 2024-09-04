@@ -8,32 +8,41 @@ import {
 } from "@/components/ui/card";
 import axios from "axios";
 import { Loader } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const PendingApplicationsWidget = () => {
   const [pendingCount, setPendingCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate(); // Hook to handle navigation
 
   useEffect(() => {
     const fetchPendingApplications = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:5000/api/auth/pending-applications", {
-          headers: {
-            Authorization: `Bearer ${token}`, // Include the authorization header
-          },
-        });
+        const response = await axios.get(
+          "http://localhost:5000/api/auth/pending-applications",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Include the authorization header
+            },
+          }
+        );
         const applications = response.data.applications || [];
         setPendingCount(applications.length);
       } catch (error) {
-        console.error("Error fetching pending applications:", error);
+        if (error.response && error.response.status === 403) {
+          // Token expired or invalid, redirect to sign-in page
+          navigate("/signin");
+        } else {
+          console.error("Error fetching pending applications:", error);
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchPendingApplications();
-  }, []);
+  }, [navigate]);
 
   return (
     <>

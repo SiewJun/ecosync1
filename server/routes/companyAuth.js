@@ -39,7 +39,17 @@ const sendApprovalEmail = (email, token) => {
     from: process.env.EMAIL,
     to: email,
     subject: "Complete Your Registration",
-    text: `Your application has been approved. Please complete your registration by following this link: ${process.env.FRONTEND_URL}/complete-registration?token=${token}`,
+    html: `
+      <p style="padding: 10px 0;">Your application has been approved. Please complete your registration within 2 weeks by clicking the button below:</p>
+      <a href="${process.env.FRONTEND_URL}/complete-registration?token=${token}" style="display: inline-block; padding: 12px 24px; font-size: 16px; color: #ffffff; background-color: #007bff; text-decoration: none; border-radius: 5px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: background-color 0.3s ease;">
+        Complete Registration
+      </a>
+      <style>
+        a:hover {
+          background-color: #0056b3;
+        }
+      </style>
+    `,
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
@@ -52,59 +62,57 @@ const sendApprovalEmail = (email, token) => {
 };
 
 router.post(
-"/register-company",
-upload.single("businessLicense"),
-async (req, res) => {
-  const {
-    companyName,
-    email,
-    phoneNumber,
-    address,
-    website,
-    registrationNumber,
-  } = req.body;
-  const businessLicense = req.file ? req.file.path : null; // File path
-
-  try {
-    // Check if company name, email, or registration number already exists
-    const existingCompany = await CompanyApplication.findOne({
-      where: {
-        [Op.or]: [{ companyName }, { email }, { registrationNumber }],
-      },
-    });
-
-    if (
-      existingCompany &&
-      (existingCompany.status == "Pending" || existingCompany.status == "Approved")
-    ) {
-      return res
-        .status(400)
-        .json({
-          message:
-            "Company name, email, or registration number already exists",
-        });
-    }
-
-    // Create a new application record
-    const application = await CompanyApplication.create({
+  "/register-company",
+  upload.single("businessLicense"),
+  async (req, res) => {
+    const {
       companyName,
       email,
       phoneNumber,
       address,
       website,
       registrationNumber,
-      businessLicense,
-      status: "Pending",
-    });
+    } = req.body;
+    const businessLicense = req.file ? req.file.path : null; // File path
 
-    res
-      .status(201)
-      .json({ message: "Application submitted successfully", application });
-  } catch (error) {
-    console.error("Error submitting company application:", error);
-    res.status(500).json({ message: "Internal server error" });
+    try {
+      // Check if company name, email, or registration number already exists
+      const existingCompany = await CompanyApplication.findOne({
+        where: {
+          [Op.or]: [{ companyName }, { email }, { registrationNumber }],
+        },
+      });
+
+      if (
+        existingCompany &&
+        (existingCompany.status == "Pending" ||
+          existingCompany.status == "Approved")
+      ) {
+        return res.status(400).json({
+          message: "Company name, email, or registration number already exists",
+        });
+      }
+
+      // Create a new application record
+      const application = await CompanyApplication.create({
+        companyName,
+        email,
+        phoneNumber,
+        address,
+        website,
+        registrationNumber,
+        businessLicense,
+        status: "Pending",
+      });
+
+      res
+        .status(201)
+        .json({ message: "Application submitted successfully", application });
+    } catch (error) {
+      console.error("Error submitting company application:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
   }
-}
 );
 
 router.get("/pending-applications", authenticateToken, async (req, res) => {
@@ -170,7 +178,12 @@ router.post("/complete-registration", async (req, res) => {
   const { token, password } = req.body;
 
   if (!token) {
-    return res.status(400).json({ message: "Token is required" });
+    return res
+      .status(400)
+      .json({
+        message:
+          "A valid token is required to complete company registration. Please ensure you have applied for a company account.",
+      });
   }
 
   try {
@@ -210,6 +223,11 @@ router.post("/complete-registration", async (req, res) => {
       .status(201)
       .json({ message: "Registration completed successfully", user });
   } catch (error) {
+    if (error instanceof jwt.JsonWebTokenError) {
+      return res
+        .status(401)
+        .json({ message: "Invalid token. Please contact admin." });
+    }
     console.error("Error completing registration:", error);
     res.status(500).json({ message: "Internal server error" });
   }
