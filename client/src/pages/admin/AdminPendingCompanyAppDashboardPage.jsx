@@ -176,6 +176,7 @@ const AdminPendingCompanyAppDashboard = () => {
     },
     {
       id: "actions",
+      header: "Actions",
       enableHiding: false,
       cell: ({ row }) => {
         const app = row.original;

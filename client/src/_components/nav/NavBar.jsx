@@ -15,6 +15,7 @@ import EcoSyncLogo from "./EcoSyncLogo";
 import MobileMenu from "@/_components/nav/MobileMenu";
 import ProfileDropdown from "./ProfileDropdown";
 import axios from "axios";
+import ThemeSwitcher from "@/_components/theme/ThemeSwitcher";
 
 const components = [
   {
@@ -126,14 +127,15 @@ function NavBar() {
           </NavigationMenuList>
         </NavigationMenu>
       </div>
-      <div className="hidden md:flex items-center gap-5 justify-between">
+      <div className="hidden md:flex items-center justify-between">
         <Link href="/">
           <Button variant="ghost" size="icon">
             <LucideMessageCircle className="h-[1.2rem] w-[1.2rem]" />
           </Button>
         </Link>
+        <ThemeSwitcher />
         {user ? (
-          <ProfileDropdown user={user} />
+          <Button variant="ghost" className="px-2"><ProfileDropdown user={user} /></Button>
         ) : (
           <Link to="/signin">
             <Button variant="outline">Sign in</Button>

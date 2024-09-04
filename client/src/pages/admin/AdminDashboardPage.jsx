@@ -3,9 +3,10 @@ import Sidebar from "@/_components/auth/admin/Sidebar";
 
 const AdminDashboardPage = () => {
   return (
-    <div className="flex">
+    <div className="flex min-h-screen">
       <Sidebar />
-      <div className="ml-20 p-4"> {/* Adjust the margin-left and padding as needed */}
+      <div className="ml-20 p-4">
+        <h1 className="text-2xl font-bold mb-4 font-inter">Admin Dashboard</h1>
         <PendingApplicationsWidget />
       </div>
     </div>

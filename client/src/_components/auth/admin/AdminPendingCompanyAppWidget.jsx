@@ -45,27 +45,25 @@ const PendingApplicationsWidget = () => {
   }, [navigate]);
 
   return (
-    <>
-      <Link to="/admindashboard/pendingapp">
-        <Card className="max-w-sm shadow-lg rounded-lg overflow-hidden border mt-10">
-          <CardHeader className="p-4">
-            <CardTitle className="text-lg font-semibold">
-              Pending Company Applications
-            </CardTitle>
-            <CardDescription className="text-sm font-light">
-              Review pending company applications
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="p-6 flex items-center justify-center">
-            {loading ? (
-              <Loader className="animate-spin w-6 h-6" />
-            ) : (
-              <p className="text-4xl font-bold">{pendingCount}</p>
-            )}
-          </CardContent>
-        </Card>
-      </Link>
-    </>
+    <Link to="/admindashboard/pendingapp">
+      <Card className="md:max-w-sm shadow-lg rounded-lg overflow-hidden border mt-10 bg-gradient-to-r from-[hsl(156,56%,73%)] via-[hsl(156,56%,63%)] to-[hsl(156,56%,53%)] transform transition-transform hover:scale-105">
+        <CardHeader className="p-6">
+          <CardTitle className="text-2xl font-bold font-openSans text-white">
+            Pending Company Applications
+          </CardTitle>
+          <CardDescription className="text-md font-light font-poppins text-white">
+            Review pending company applications
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-8 flex items-center justify-center">
+          {loading ? (
+            <Loader className="animate-spin w-8 h-8 text-white" />
+          ) : (
+            <p className="text-5xl font-extrabold text-white">{pendingCount}</p>
+          )}
+        </CardContent>
+      </Card>
+    </Link>
   );
 };
 
