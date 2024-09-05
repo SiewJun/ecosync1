@@ -73,7 +73,7 @@ function NavBar() {
         <EcoSyncLogo />
       </Link>
       <div className="md:hidden">
-        <MobileMenu />
+        <MobileMenu user={user} />
       </div>
       <div className="hidden md:flex">
         <NavigationMenu>

@@ -1,13 +1,8 @@
 import { useState } from "react";
+import PropTypes from "prop-types";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import {
-  Menu,
-  Server,
-  Calculator,
-  Settings,
-  CircleGauge,
-} from "lucide-react";
+import { Menu, Server, Calculator, Settings, CircleGauge } from "lucide-react";
 import { Link } from "react-router-dom";
 import ThemeSwitcher from "@/_components/theme/ThemeSwitcher";
 import {
@@ -18,28 +13,94 @@ import {
 } from "@/components/ui/accordion";
 import { DialogTitle, DialogDescription } from "@radix-ui/react-dialog";
 
-const components = [
-  {
-    title: "Alert Dialog",
-    href: "/docs/primitives/alert-dialog",
-    description:
-      "A modal dialog that interrupts the user with important content and expects a response.",
-  },
-  {
-    title: "Hover Card",
-    href: "/docs/primitives/hover-card",
-    description:
-      "For sighted users to preview content available behind a link.",
-  },
-  {
-    title: "Progress",
-    href: "/docs/primitives/progress",
-    description:
-      "Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.",
-  },
-];
+const renderDashboardLinks = (user) => {
+  const handleLogout = async () => {
+    try {
+      localStorage.removeItem("token");
+      window.location.href = "/signin";
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
 
-const MobileMenu = () => {
+  const linkClasses = "py-2 px-4 rounded-md text-muted-foreground hover:text-foreground hover:bg-gray-100 transition-colors";
+
+  switch (user?.role) {
+    case "CONSUMER":
+      return (
+        <>
+          <li className={linkClasses}>
+            <Link to="/profile">Profile</Link>
+          </li>
+          <li className={linkClasses}>
+            <Link to="/quotation">Quotation</Link>
+          </li>
+          <li className={linkClasses}>
+            <Link to="/order">Order</Link>
+          </li>
+          <li className={linkClasses}>
+            <Link to="/invoice">Invoice</Link>
+          </li>
+          <li className={linkClasses}>
+            <Link to="/chat">Chat</Link>
+          </li>
+          <li
+            className="py-2 px-4 rounded-md text-red-600 hover:text-red-800 hover:bg-red-100 font-semibold cursor-pointer transition-colors"
+            onClick={handleLogout}
+          >
+            Logout
+          </li>
+        </>
+      );
+    case "COMPANY":
+      return (
+        <>
+          <li className={linkClasses}>
+            <Link to="/company-details">Company Details</Link>
+          </li>
+          <li className={linkClasses}>
+            <Link to="/company-profile">Company Profile</Link>
+          </li>
+          <li className={linkClasses}>
+            <Link to="/quotation">Quotation</Link>
+          </li>
+          <li className={linkClasses}>
+            <Link to="/projects">Projects</Link>
+          </li>
+          <li className={linkClasses}>
+            <Link to="/chat">Chat</Link>
+          </li>
+          <li
+            className="py-2 px-4 rounded-md text-red-600 hover:text-red-800 hover:bg-red-100 font-semibold cursor-pointer transition-colors"
+            onClick={handleLogout}
+          >
+            Logout
+          </li>
+        </>
+      );
+    case "ADMIN":
+      return (
+        <>
+          <li className={linkClasses}>
+            <Link to="/admindashboard">Dashboard</Link>
+          </li>
+          <li className={linkClasses}>
+            <Link to="/chat">Chat</Link>
+          </li>
+          <li
+            className="py-2 px-4 rounded-md text-red-600 hover:text-red-800 hover:bg-red-100 font-semibold cursor-pointer transition-colors"
+            onClick={handleLogout}
+          >
+            Logout
+          </li>
+        </>
+      );
+    default:
+      return null;
+  }
+};
+
+const MobileMenu = ({ user }) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -51,109 +112,72 @@ const MobileMenu = () => {
             <span className="sr-only">Toggle navigation menu</span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="right" className="flex flex-col">
+        <SheetContent side="right" className="flex flex-col p-4">
           <DialogTitle className="sr-only">Navigation Menu</DialogTitle>
           <DialogDescription className="sr-only">
-            This is the navigation menu for the Ecosync website.
+            This is the mobile navigation menu for the Ecosync website.
           </DialogDescription>
-          <h1 className="text-xl mb-3 font-semibold">Ecosync</h1>
-          <nav className="space-y-2 text-lg font-medium">
+          <nav className="space-y-4 mt-10 text-lg font-medium">
             <Accordion type="single" collapsible>
-              {/* Services Accordion */}
               <AccordionItem value="services">
                 <AccordionTrigger className="flex items-center gap-2">
                   <Server className="h-5 w-5" />
                   Services
                 </AccordionTrigger>
                 <AccordionContent>
-                  <ul className="pl-4 mt-2 space-y-1">
-                    <li>
-                      <Link
-                        to="/about"
-                        className="text-muted-foreground hover:text-foreground"
-                      >
-                        About Ecosync
-                      </Link>
+                  <ul className="pl-4 mt-2 space-y-2">
+                    <li className="py-2 px-4 rounded-md text-muted-foreground hover:text-foreground hover:bg-gray-100 transition-colors">
+                      <Link to="/about">About Ecosync</Link>
                     </li>
-                    <li>
-                      <Link
-                        to="/solar-installers"
-                        className="text-muted-foreground hover:text-foreground"
-                      >
-                        Search Solar Installers
-                      </Link>
+                    <li className="py-2 px-4 rounded-md text-muted-foreground hover:text-foreground hover:bg-gray-100 transition-colors">
+                      <Link to="/solar-installers">Search Solar Installers</Link>
                     </li>
-                    <li>
-                      <Link
-                        to="/solar-solutions"
-                        className="text-muted-foreground hover:text-foreground"
-                      >
-                        Search/Compare Solar Solutions
-                      </Link>
+                    <li className="py-2 px-4 rounded-md text-muted-foreground hover:text-foreground hover:bg-gray-100 transition-colors">
+                      <Link to="/solar-solutions">Search/Compare Solar Solutions</Link>
                     </li>
-                    <li>
-                      <Link
-                        to="/solar-incentives"
-                        className="text-muted-foreground hover:text-foreground"
-                      >
-                        Solar Incentives for Residential
-                      </Link>
+                    <li className="py-2 px-4 rounded-md text-muted-foreground hover:text-foreground hover:bg-gray-100 transition-colors">
+                      <Link to="/solar-incentives">Solar Incentives for Residential</Link>
                     </li>
                   </ul>
                 </AccordionContent>
               </AccordionItem>
 
-              {/* Calculator Accordion */}
               <AccordionItem value="calculator">
                 <AccordionTrigger className="flex items-center gap-2">
                   <Calculator className="h-5 w-5" />
                   Calculator
                 </AccordionTrigger>
                 <AccordionContent>
-                  <ul className="pl-4 mt-2 space-y-1">
-                    {components.map((component) => (
-                      <li key={component.title}>
-                        <Link
-                          to={component.href}
-                          className="text-muted-foreground hover:text-foreground"
-                        >
-                          {component.title}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
+                  <ul className="pl-4 mt-2 space-y-2"></ul>
                 </AccordionContent>
               </AccordionItem>
 
-              {/* Dashboard Accordion */}
               <AccordionItem value="dashboard">
                 <AccordionTrigger className="flex items-center gap-2">
                   <CircleGauge className="h-5 w-5" />
                   Dashboard
                 </AccordionTrigger>
                 <AccordionContent>
-                  <ul className="pl-4 mt-2 space-y-1">
-                    <li>
-                      <Link
-                        to="/chat"
-                        className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
-                      >
-                        Chat
-                      </Link>
-                    </li>
+                  <ul className="pl-4 mt-2 space-y-2">
+                    {user ? (
+                      renderDashboardLinks(user)
+                    ) : (
+                      <li className="py-2 px-4 rounded-md text-muted-foreground hover:text-foreground hover:bg-gray-100 transition-colors">
+                        <Button>Sign In</Button>
+                      </li>
+                    )}
                   </ul>
                 </AccordionContent>
               </AccordionItem>
 
-              {/* Settings Accordion */}
               <AccordionItem value="settings">
                 <AccordionTrigger className="flex items-center gap-2">
                   <Settings className="h-5 w-5" />
                   Settings
                 </AccordionTrigger>
                 <AccordionContent>
-                  <ul className="pl-4 mt-2 space-y-1">
-                    <li className="flex items-center space-x-2">
+                  <ul className="pl-4 mt-2 space-y-2">
+                    <li className="py-2 flex items-center space-x-2">
                       <ThemeSwitcher />
                       <p>Switch Theme</p>
                     </li>
@@ -166,6 +190,12 @@ const MobileMenu = () => {
       </Sheet>
     </div>
   );
+};
+
+MobileMenu.propTypes = {
+  user: PropTypes.shape({
+    role: PropTypes.string,
+  }),
 };
 
 export default MobileMenu;
