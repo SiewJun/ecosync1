@@ -3,20 +3,21 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class CompanyDetail extends Model {
     static associate(models) {
-      // define association here if needed
+      // CompanyDetail belongs to a User
       this.belongsTo(models.User, { foreignKey: 'userId' });
     }
   }
+  
   CompanyDetail.init({
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: 'Users',
-        key: 'id'
+        key: 'id',
       },
       onUpdate: 'CASCADE',
-      onDelete: 'CASCADE'
+      onDelete: 'CASCADE',
     },
     companyName: {
       type: DataTypes.STRING,
@@ -48,5 +49,6 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'CompanyDetail',
     timestamps: true,
   });
+  
   return CompanyDetail;
 };

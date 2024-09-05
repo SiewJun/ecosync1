@@ -62,7 +62,7 @@ const App = () => {
             element={<ProtectedRoute element={<AdminPendingCompanyAppDashboardPage />} role="ADMIN" />}
           />
           <Route path="/complete-registration" element={<CompletedCompanySignUpPage />} />
-          <Route path="/company-dashboard" element={<ProtectedRoute element={< CompanyDashboard />} role="COMPANY" />} />
+          <Route path="/company-dashboard/*" element={<ProtectedRoute element={<CompanyDashboard />} role="COMPANY" />} />
           <Route path="/profile" element={<ProtectedRoute element={<ProfilePage />} />} />
         </Routes>
       </Router>

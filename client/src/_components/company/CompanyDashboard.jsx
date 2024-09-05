@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, Routes, Route, useLocation } from "react-router-dom";
 import {
   Home,
   User,
@@ -19,8 +19,12 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { Description } from "@radix-ui/react-dialog";
+import CompanyDetail from "./CompanyDetails";
+
 const CompanyDashboard = () => {
   const [user, setUser] = useState(null);
+  const location = useLocation();
+
   const handleLogout = async () => {
     try {
       localStorage.removeItem("token");
@@ -45,8 +49,7 @@ const CompanyDashboard = () => {
         }
       } catch (error) {
         if (error.response && error.response.status === 403) {
-          // Handle 403 Forbidden error
-          localStorage.removeItem("token"); // Optionally remove the token
+          localStorage.removeItem("token");
         } else {
           console.error("Error fetching user:", error);
         }
@@ -55,10 +58,16 @@ const CompanyDashboard = () => {
 
     fetchUser();
   }, []);
+
+  const getLinkClasses = (path) =>
+    location.pathname === path
+      ? "bg-primary text-primary-foreground"
+      : "text-muted-foreground hover:text-foreground hover:bg-accent";
+
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
       <div className="hidden bg-muted/40 md:block">
-        <div className="flex h-full max-h-screen flex-col gap-2">
+        <div className="flex h-full flex-col gap-2">
           <div className="flex h-14 items-center px-4 lg:h-[60px] lg:px-6">
             <EcoSyncLogo className="h-6 w-6" />
           </div>
@@ -66,14 +75,18 @@ const CompanyDashboard = () => {
             <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
               <Link
                 to="/company-dashboard"
-                className="flex items-center gap-3 rounded-lg px-4 py-3 my-1 text-muted-foreground transition-all hover:text-foreground hover:bg-accent"
+                className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
+                  "/company-dashboard"
+                )}`}
               >
                 <LayoutDashboard className="h-4 w-4" />
                 Dashboard
               </Link>
               <Link
                 to="/company-dashboard/company-details"
-                className="flex items-center gap-3 rounded-lg px-4 py-3 my-1 text-muted-foreground transition-all hover:text-foreground hover:bg-accent"
+                className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
+                  "/company-dashboard/company-details"
+                )}`}
               >
                 <Building className="h-4 w-4" />
                 Company Details
@@ -82,27 +95,37 @@ const CompanyDashboard = () => {
                 </Badge>
               </Link>
               <Link
-                to="#"
-                className="flex items-center gap-3 rounded-lg bg-primary px-4 py-3 my-1 text-primary-foreground transition-all hover:text-foreground"
+                to="/company-dashboard/company-profile"
+                className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
+                  "/company-dashboard/company-profile"
+                )}`}
               >
                 <User className="h-4 w-4" />
                 Company Profile
               </Link>
               <Link
-                to="#"
-                className="flex items-center gap-3 rounded-lg px-4 py-3 my-1 text-muted-foreground transition-all hover:text-foreground hover:bg-accent"
+                to="/company-dashboard/company-chat"
+                className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
+                  "/company-dashboard/company-chat"
+                )}`}
               >
-                <MessageCircle className="h-4 w-4" /> Chat
+                <MessageCircle className="h-4 w-4" />
+                Chat
               </Link>
               <Link
-                to="#"
-                className="flex items-center gap-3 rounded-lg px-4 py-3 my-1 text-muted-foreground transition-all hover:text-foreground hover:bg-accent"
+                to="/company-dashboard/company-quotation"
+                className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
+                  "/company-dashboard/company-quotation"
+                )}`}
               >
-                <FileCheck className="h-4 w-4" /> Quotation
+                <FileCheck className="h-4 w-4" />
+                Quotation
               </Link>
               <Link
-                to="#"
-                className="flex items-center gap-3 rounded-lg px-4 py-3 my-1 text-muted-foreground transition-all hover:text-foreground hover:bg-accent"
+                to="/company-dashboard/company-projects"
+                className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
+                  "/company-dashboard/company-projects"
+                )}`}
               >
                 <ClipboardList className="h-4 w-4" />
                 Projects
@@ -146,51 +169,59 @@ const CompanyDashboard = () => {
                 </div>
                 <Link
                   to="/company-dashboard"
-                  className="mx-[-0.65rem] flex items-center gap-4 mt-5 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+                  className={`mx-[-0.65rem] flex items-center gap-4 mt-5 rounded-xl px-3 py-2 ${getLinkClasses(
+                    "/company-dashboard"
+                  )}`}
                 >
                   <Home className="h-5 w-5" />
                   Dashboard
                 </Link>
                 <Link
-                  to="#"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-foreground hover:text-foreground"
+                  to="/company-dashboard/company-details"
+                  className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
+                    "/company-dashboard/company-details"
+                  )}`}
                 >
                   <Building className="h-5 w-5" />
                   Company Details
                 </Link>
                 <Link
-                  to="#"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+                  to="/company-dashboard/company-profile"
+                  className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
+                    "/company-dashboard/company-profile"
+                  )}`}
                 >
-                  <User className="h-5 w-5" />
+                  <User className="h-4 w-4" />
                   Company Profile
                 </Link>
                 <Link
-                  to="#"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+                  to="/company-dashboard/company-chat"
+                  className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
+                    "/company-dashboard/company-chat"
+                  )}`}
                 >
-                  <MessageCircle className="h-5 w-5" />
+                  <MessageCircle className="h-4 w-4" />
                   Chat
-                  <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
-                    6
-                  </Badge>
                 </Link>
                 <Link
-                  to="#"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+                  to="/company-dashboard/company-quotation"
+                  className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
+                    "/company-dashboard/company-quotation"
+                  )}`}
                 >
-                  <FileCheck className="h-5 w-5" />
+                  <FileCheck className="h-4 w-4" />
                   Quotation
                 </Link>
                 <Link
-                  to="#"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+                  to="/company-dashboard/company-projects"
+                  className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
+                    "/company-dashboard/company-projects"
+                  )}`}
                 >
-                  <ClipboardList className="h-5 w-5" />
+                  <ClipboardList className="h-4 w-4" />
                   Projects
                 </Link>
               </nav>
-              <div className="mt-auto"></div>
             </SheetContent>
           </Sheet>
           <div className="block md:hidden md:ml-auto">
@@ -198,21 +229,10 @@ const CompanyDashboard = () => {
           </div>
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-          <div className="flex items-center">
-            <h1 className="text-lg font-semibold md:text-2xl">
-
-            </h1>
-          </div>
-          <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm">
-            <div className="flex flex-col items-center gap-1 text-center">
-              <h3 className="text-2xl font-bold tracking-tight">
-
-              </h3>
-              <p className="text-sm text-muted-foreground">
-
-              </p>
-            </div>
-          </div>
+          <Routes>
+            <Route path="company-details" element={<CompanyDetail />} />
+            {/* Add other routes here */}
+          </Routes>
         </main>
       </div>
     </div>
