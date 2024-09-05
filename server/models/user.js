@@ -26,7 +26,11 @@ module.exports = (sequelize, DataTypes) => {
     resetTokenExpiry: {
       type: DataTypes.DATE,
       allowNull: true
-    }
+    },
+    avatarUrl: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
   }, {
     sequelize,
     modelName: 'User',

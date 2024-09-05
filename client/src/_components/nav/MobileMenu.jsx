@@ -2,7 +2,24 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, Server, Calculator, Settings, CircleGauge } from "lucide-react";
+import {
+  Menu,
+  Server,
+  Calculator,
+  Settings,
+  CircleGauge,
+  User,
+  MessageSquare,
+  FileText,
+  ShoppingCart,
+  LogOut,
+  LayoutDashboard,
+  Building,
+  ReceiptText,
+  MessageCircle,
+  FileCheck,
+  ClipboardList,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import ThemeSwitcher from "@/_components/theme/ThemeSwitcher";
 import {
@@ -23,31 +40,48 @@ const renderDashboardLinks = (user) => {
     }
   };
 
-  const linkClasses = "py-2 px-4 rounded-md text-muted-foreground hover:text-foreground hover:bg-gray-100 transition-colors";
+  const linkClasses =
+    "py-2 px-4 rounded-md text-muted-foreground hover:text-primary-foreground hover:bg-primary transition-colors cursor-pointer";
 
   switch (user?.role) {
     case "CONSUMER":
       return (
         <>
           <li className={linkClasses}>
-            <Link to="/profile">Profile</Link>
+            <Link to="/profile">
+              <User className="inline-block mr-2" />
+              Profile
+            </Link>
           </li>
           <li className={linkClasses}>
-            <Link to="/quotation">Quotation</Link>
+            <Link to="/chat">
+              <MessageSquare className="inline-block mr-2" />
+              Chat
+            </Link>
           </li>
           <li className={linkClasses}>
-            <Link to="/order">Order</Link>
+            <Link to="/quotation">
+              <FileText className="inline-block mr-2" />
+              Quotation
+            </Link>
           </li>
           <li className={linkClasses}>
-            <Link to="/invoice">Invoice</Link>
+            <Link to="/order">
+              <ShoppingCart className="inline-block mr-2" />
+              Order
+            </Link>
           </li>
           <li className={linkClasses}>
-            <Link to="/chat">Chat</Link>
+            <Link to="/invoice">
+              <ReceiptText className="inline-block mr-2" />
+              Invoice
+            </Link>
           </li>
           <li
             className="py-2 px-4 rounded-md text-red-600 hover:text-red-800 hover:bg-red-100 font-semibold cursor-pointer transition-colors"
             onClick={handleLogout}
           >
+            <LogOut className="inline-block mr-2" />
             Logout
           </li>
         </>
@@ -56,24 +90,46 @@ const renderDashboardLinks = (user) => {
       return (
         <>
           <li className={linkClasses}>
-            <Link to="/company-details">Company Details</Link>
+            <Link to="/company-dashboard">
+              <LayoutDashboard className="inline-block mr-2" />
+              Dashboard
+            </Link>
           </li>
           <li className={linkClasses}>
-            <Link to="/company-profile">Company Profile</Link>
+            <Link to="/company-dashboard/company-details">
+              <Building className="inline-block mr-2" />
+              Company Details
+            </Link>
           </li>
           <li className={linkClasses}>
-            <Link to="/quotation">Quotation</Link>
+            <Link to="/company-dashboard/company-profile">
+              <User className="inline-block mr-2" />
+              Company Profile
+            </Link>
           </li>
           <li className={linkClasses}>
-            <Link to="/projects">Projects</Link>
+            <Link to="/company-dashboard/chat">
+              <MessageCircle className="inline-block mr-2" />
+              Chat
+            </Link>
           </li>
           <li className={linkClasses}>
-            <Link to="/chat">Chat</Link>
+            <Link to="/company-dashboard/quotation">
+              <FileCheck className="inline-block mr-2" />
+              Quotation
+            </Link>
+          </li>
+          <li className={linkClasses}>
+            <Link to="/company-dashboard/projects">
+              <ClipboardList className="inline-block mr-2" />
+              Projects
+            </Link>
           </li>
           <li
             className="py-2 px-4 rounded-md text-red-600 hover:text-red-800 hover:bg-red-100 font-semibold cursor-pointer transition-colors"
             onClick={handleLogout}
           >
+            <LogOut className="inline-block mr-2" />
             Logout
           </li>
         </>
@@ -82,15 +138,22 @@ const renderDashboardLinks = (user) => {
       return (
         <>
           <li className={linkClasses}>
-            <Link to="/admindashboard">Dashboard</Link>
+            <Link to="/admindashboard">
+              <LayoutDashboard className="inline-block mr-2" />
+              Dashboard
+            </Link>
           </li>
           <li className={linkClasses}>
-            <Link to="/chat">Chat</Link>
+            <Link to="/chat">
+              <MessageSquare className="inline-block mr-2" />
+              Chat
+            </Link>
           </li>
           <li
             className="py-2 px-4 rounded-md text-red-600 hover:text-red-800 hover:bg-red-100 font-semibold cursor-pointer transition-colors"
             onClick={handleLogout}
           >
+            <LogOut className="inline-block mr-2" />
             Logout
           </li>
         </>
@@ -104,7 +167,7 @@ const MobileMenu = ({ user }) => {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="flex h-14 items-center gap-4 px-4">
+    <div className="flex h-14 items-center gap-4">
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
           <Button variant="link" size="icon" className="shrink-0 md:hidden">
@@ -126,17 +189,23 @@ const MobileMenu = ({ user }) => {
                 </AccordionTrigger>
                 <AccordionContent>
                   <ul className="pl-4 mt-2 space-y-2">
-                    <li className="py-2 px-4 rounded-md text-muted-foreground hover:text-foreground hover:bg-gray-100 transition-colors">
+                    <li className="py-2 px-4 rounded-md text-muted-foreground hover:text-primary-foreground hover:bg-primary transition-colors">
                       <Link to="/about">About Ecosync</Link>
                     </li>
-                    <li className="py-2 px-4 rounded-md text-muted-foreground hover:text-foreground hover:bg-gray-100 transition-colors">
-                      <Link to="/solar-installers">Search Solar Installers</Link>
+                    <li className="py-2 px-4 rounded-md text-muted-foreground hover:text-primary-foreground hover:bg-primary transition-colors">
+                      <Link to="/solar-installers">
+                        Search Solar Installers
+                      </Link>
                     </li>
-                    <li className="py-2 px-4 rounded-md text-muted-foreground hover:text-foreground hover:bg-gray-100 transition-colors">
-                      <Link to="/solar-solutions">Search/Compare Solar Solutions</Link>
+                    <li className="py-2 px-4 rounded-md text-muted-foreground hover:text-primary-foreground hover:bg-primary transition-colors">
+                      <Link to="/solar-solutions">
+                        Search/Compare Solar Solutions
+                      </Link>
                     </li>
-                    <li className="py-2 px-4 rounded-md text-muted-foreground hover:text-foreground hover:bg-gray-100 transition-colors">
-                      <Link to="/solar-incentives">Solar Incentives for Residential</Link>
+                    <li className="py-2 px-4 rounded-md text-muted-foreground hover:text-primary-foreground hover:bg-primary transition-colors">
+                      <Link to="/solar-incentives">
+                        Solar Incentives for Residential
+                      </Link>
                     </li>
                   </ul>
                 </AccordionContent>
@@ -162,9 +231,11 @@ const MobileMenu = ({ user }) => {
                     {user ? (
                       renderDashboardLinks(user)
                     ) : (
-                      <li className="py-2 px-4 rounded-md text-muted-foreground hover:text-foreground hover:bg-gray-100 transition-colors">
-                        <Button>Sign In</Button>
-                      </li>
+                      <Link to="/signin">
+                        <li className="py-2 px-4 rounded-md text-muted-foreground transition-colors">
+                          <Button>Sign In</Button>
+                        </li>
+                      </Link>
                     )}
                   </ul>
                 </AccordionContent>

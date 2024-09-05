@@ -43,10 +43,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    profilePic: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    }
   }, {
     sequelize,
     modelName: 'CompanyDetail',

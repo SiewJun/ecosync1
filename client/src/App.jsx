@@ -12,6 +12,7 @@ import CompanyRegistrationPage from "./pages/auth/CompanySignUpPage";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 import AdminPendingCompanyAppDashboardPage from "./pages/admin/AdminPendingCompanyAppDashboardPage";
 import CompletedCompanySignUpPage from "./pages/auth/CompletedCompanySignUpPage";
+import CompanyDashboard from "./_components/company/CompanyDashboard";
 
 // Custom ProtectedRoute component
 const ProtectedRoute = ({ element, role }) => {
@@ -61,6 +62,7 @@ const App = () => {
             element={<ProtectedRoute element={<AdminPendingCompanyAppDashboardPage />} role="ADMIN" />}
           />
           <Route path="/complete-registration" element={<CompletedCompanySignUpPage />} />
+          <Route path="/company-dashboard" element={<ProtectedRoute element={< CompanyDashboard />} role="COMPANY" />} />
           <Route path="/profile" element={<ProtectedRoute element={<ProfilePage />} />} />
         </Routes>
       </Router>

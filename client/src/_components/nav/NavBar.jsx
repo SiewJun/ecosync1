@@ -9,7 +9,6 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { LucideMessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import EcoSyncLogo from "./EcoSyncLogo";
 import MobileMenu from "@/_components/nav/MobileMenu";
@@ -69,9 +68,7 @@ function NavBar() {
 
   return (
     <div className="flex w-full items-center justify-between px-5 py-3 md:px-4">
-      <Link to="/">
         <EcoSyncLogo />
-      </Link>
       <div className="md:hidden">
         <MobileMenu user={user} />
       </div>
@@ -133,11 +130,6 @@ function NavBar() {
         </NavigationMenu>
       </div>
       <div className="hidden md:flex items-center justify-between">
-        <Link href="/">
-          <Button variant="ghost" size="icon">
-            <LucideMessageCircle className="h-[1.2rem] w-[1.2rem]" />
-          </Button>
-        </Link>
         <ThemeSwitcher />
         {user ? (
           <Button variant="ghost" className="px-2">
