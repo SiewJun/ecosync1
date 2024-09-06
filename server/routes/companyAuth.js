@@ -3,26 +3,13 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const cuid = require("cuid");
-const multer = require("multer");
 const router = express.Router();
 const { User, CompanyDetail, CompanyApplication } = require("../models");
 const authenticateToken = require("../middleware/auth");
 require("dotenv").config();
 const { Op } = require("sequelize");
 const JWT_SECRET = process.env.JWT_SECRET;
-
-// Multer setup for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    const dateNow = new Date().toLocaleString().replace(/[/,:\s]/g, "-"); // Format the date and replace invalid characters
-    cb(null, `${dateNow}-${file.originalname}`);
-  },
-});
-
-const upload = multer({ storage });
+const upload = require('../middleware/multer'); 
 
 // Set up Nodemailer transporter
 const transporter = nodemailer.createTransport({

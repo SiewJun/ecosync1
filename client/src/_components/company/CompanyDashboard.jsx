@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { Description } from "@radix-ui/react-dialog";
 import CompanyDetail from "./CompanyDetails";
+import CompanyEditDetailsForm from "./CompanyEditDetailsForm";
 
 const CompanyDashboard = () => {
   const [user, setUser] = useState(null);
@@ -156,14 +157,14 @@ const CompanyDashboard = () => {
                 <span className="sr-only">Toggle navigation menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="flex flex-col">
+            <SheetContent side="left" className="flex flex-col h-full">
               <div className="hidden">
                 <DialogTitle>
                   This is a mobile menu for company dashboard
                 </DialogTitle>
                 <Description>Menu for navigating the dashboard</Description>
               </div>
-              <nav className="grid gap-2 text-lg font-medium">
+              <nav className="flex flex-col flex-1 gap-2 text-lg font-medium">
                 <div className="flex items-center gap-2 text-lg font-semibold">
                   <EcoSyncLogo />
                 </div>
@@ -221,6 +222,15 @@ const CompanyDashboard = () => {
                   <ClipboardList className="h-4 w-4" />
                   Projects
                 </Link>
+
+                {/* Add mt-auto here to push the logout button to the bottom */}
+                <div
+                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-red-600 hover:text-red-800 hover:bg-red-100 cursor-pointer transition-colors mt-auto"
+                  onClick={handleLogout}
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </div>
               </nav>
             </SheetContent>
           </Sheet>
@@ -231,6 +241,7 @@ const CompanyDashboard = () => {
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
           <Routes>
             <Route path="company-details" element={<CompanyDetail />} />
+            <Route path="company-edit-details" element={<CompanyEditDetailsForm />} />
             {/* Add other routes here */}
           </Routes>
         </main>
