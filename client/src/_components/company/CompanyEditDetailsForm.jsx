@@ -5,7 +5,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, ChevronLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const EditForm = () => {
   const [user, setUser] = useState(null);
@@ -21,6 +22,8 @@ const EditForm = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
+  const BASE_URL = "http://localhost:5000/";
 
   useEffect(() => {
     // Fetch current user and company details to populate form
@@ -89,6 +92,7 @@ const EditForm = () => {
       );
 
       setSuccess("Details updated successfully!");
+      navigate(-1);
     } catch (error) {
       setError("Error updating details: " + error.response.data.message);
     } finally {
@@ -98,9 +102,15 @@ const EditForm = () => {
 
   return (
     <div className="container mx-auto p-6 space-y-8">
+      <div className="flex items-center mb-4">
+        <ChevronLeft className="cursor-pointer" onClick={() => navigate(-1)} />
+        <span className="ml-2 text-xl font-bold">Edit Form</span>
+      </div>
       <Card className="shadow-lg">
         <CardHeader>
-          <CardTitle className="text-xl font-bold">Edit Your Details</CardTitle>
+          <CardTitle className="text-xl font-bold">
+            <span>Edit Your Details</span>
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {user && company ? (
@@ -110,7 +120,7 @@ const EditForm = () => {
                 <Label htmlFor="avatar">Avatar</Label>
                 <div className="flex items-center space-x-4">
                   <Avatar className="w-16 h-16">
-                    <AvatarImage src={user.avatarUrl} alt="User Avatar" />
+                    <AvatarImage src={`${BASE_URL}${user.avatarUrl}`} alt="User Avatar" />
                     <AvatarFallback>{company.companyName[0]}</AvatarFallback>
                   </Avatar>
                   <Input id="avatar" type="file" onChange={handleFileChange} />
@@ -187,7 +197,7 @@ const EditForm = () => {
               </Button>
             </div>
           ) : (
-            <div>Loading...</div>
+            <div>Could not fetch data</div>
           )}
         </CardContent>
       </Card>

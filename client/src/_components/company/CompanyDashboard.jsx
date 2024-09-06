@@ -87,6 +87,8 @@ const CompanyDashboard = () => {
                 to="/company-dashboard/company-details"
                 className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
                   "/company-dashboard/company-details"
+                )} ${getLinkClasses(
+                  "/company-dashboard/company-details/company-edit-details"
                 )}`}
               >
                 <Building className="h-4 w-4" />
@@ -241,7 +243,10 @@ const CompanyDashboard = () => {
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
           <Routes>
             <Route path="company-details" element={<CompanyDetail />} />
-            <Route path="company-edit-details" element={<CompanyEditDetailsForm />} />
+            <Route
+              path="company-details/company-edit-details"
+              element={<CompanyEditDetailsForm />}
+            />
             {/* Add other routes here */}
           </Routes>
         </main>
