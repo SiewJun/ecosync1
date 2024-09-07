@@ -126,12 +126,12 @@ const CompanyDetail = () => {
         <div className="grid lg:grid-cols-2 gap-8">
           {/* User Information Card */}
           <Card className="shadow-lg hover:shadow-xl transition-shadow duration-200">
-            <CardHeader>
+            <CardHeader className="border-b">
               <CardTitle className="text-xl font-bold text-card-foreground">
                 User Information
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-3 mt-5">
               <div className="flex items-center space-x-4">
                 <Avatar className="w-16 h-16">
                   <AvatarImage src={user.avatarUrl} alt="User Avatar" />
@@ -147,7 +147,7 @@ const CompanyDetail = () => {
                 </div>
               </div>
               <Link to="/company-dashboard/company-details/company-edit-details">
-                <Button className="mt-10" variant="outline">
+                <Button className="mt-32 w-full" variant="secondary">
                   Edit Information
                 </Button>
               </Link>
@@ -156,12 +156,12 @@ const CompanyDetail = () => {
 
           {/* Company Information Card */}
           <Card className="shadow-lg hover:shadow-xl transition-shadow duration-200">
-            <CardHeader>
+            <CardHeader className="border-b">
               <CardTitle className="text-xl font-bold text-card-foreground">
                 Company Details
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-3 mt-5">
               <div>
                 <strong>Company Name:</strong> {company.companyName}
               </div>
