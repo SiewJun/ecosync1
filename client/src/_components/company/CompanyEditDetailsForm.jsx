@@ -101,107 +101,116 @@ const EditForm = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-8">
+    <>
       <div className="flex items-center mb-4">
         <ChevronLeft className="cursor-pointer" onClick={() => navigate(-1)} />
-        <span className="ml-2 text-xl font-bold">Edit Form</span>
+        <span className="ml-2 text-xl font-bold">Back</span>{" "}
       </div>
-      <Card className="shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-xl font-bold">
-            <span>Edit Your Details</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {user && company ? (
-            <div className="space-y-4">
-              {/* Avatar Upload */}
-              <div className="space-y-2">
-                <Label htmlFor="avatar">Avatar</Label>
-                <div className="flex items-center space-x-4">
-                  <Avatar className="w-16 h-16">
-                    <AvatarImage src={`${BASE_URL}${user.avatarUrl}`} alt="User Avatar" />
-                    <AvatarFallback>{company.companyName[0]}</AvatarFallback>
-                  </Avatar>
-                  <Input id="avatar" type="file" onChange={handleFileChange} />
+      <div className="max-w-5xl container mx-auto p-6 space-y-8">
+        <Card className="shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-xl font-bold">
+              <span>Edit Your Details</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {user && company ? (
+              <div className="space-y-4">
+                {/* Avatar Upload */}
+                <div className="space-y-2">
+                  <Label htmlFor="avatar">Avatar</Label>
+                  <div className="flex items-center space-x-4">
+                    <Avatar className="w-16 h-16">
+                      <AvatarImage
+                        src={`${BASE_URL}${user.avatarUrl}`}
+                        alt="User Avatar"
+                      />
+                      <AvatarFallback>{company.companyName[0]}</AvatarFallback>
+                    </Avatar>
+                    <Input
+                      id="avatar"
+                      type="file"
+                      onChange={handleFileChange}
+                    />
+                  </div>
                 </div>
-              </div>
 
-              {/* User Details */}
-              <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
-                <Input
-                  id="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                />
-              </div>
-
-              {/* Company Details */}
-              <div className="space-y-2">
-                <Label htmlFor="phoneNumber">Phone Number</Label>
-                <Input
-                  id="phoneNumber"
-                  value={formData.phoneNumber}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="address">Address</Label>
-                <Input
-                  id="address"
-                  value={formData.address}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="website">Website</Label>
-                <Input
-                  id="website"
-                  value={formData.website}
-                  onChange={handleChange}
-                />
-              </div>
-
-              {error && (
-                <div className="flex items-center space-x-2 border border-red-500 bg-red-100 text-red-700 p-2 rounded-md mt-2">
-                  <AlertCircle className="h-5 w-5" />
-                  <p className="text-sm">{error}</p>
+                {/* User Details */}
+                <div className="space-y-2">
+                  <Label htmlFor="username">Username</Label>
+                  <Input
+                    id="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                  />
                 </div>
-              )}
 
-              {success && (
-                <div className="flex items-center space-x-2 border border-green-500 bg-green-100 text-green-700 p-2 rounded-md mt-2">
-                  <AlertCircle className="h-5 w-5" />
-                  <p className="text-sm">{success}</p>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                  />
                 </div>
-              )}
 
-              <Button
-                onClick={handleSubmit}
-                disabled={isSubmitting}
-                className="w-full"
-              >
-                {isSubmitting ? "Updating..." : "Update Details"}
-              </Button>
-            </div>
-          ) : (
-            <div>Could not fetch data</div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+                {/* Company Details */}
+                <div className="space-y-2">
+                  <Label htmlFor="phoneNumber">Phone Number</Label>
+                  <Input
+                    id="phoneNumber"
+                    value={formData.phoneNumber}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="address">Address</Label>
+                  <Input
+                    id="address"
+                    value={formData.address}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="website">Website</Label>
+                  <Input
+                    id="website"
+                    value={formData.website}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                {error && (
+                  <div className="flex items-center space-x-2 border border-red-500 bg-red-100 text-red-700 p-2 rounded-md mt-2">
+                    <AlertCircle className="h-5 w-5" />
+                    <p className="text-sm">{error}</p>
+                  </div>
+                )}
+
+                {success && (
+                  <div className="flex items-center space-x-2 border border-green-500 bg-green-100 text-green-700 p-2 rounded-md mt-2">
+                    <AlertCircle className="h-5 w-5" />
+                    <p className="text-sm">{success}</p>
+                  </div>
+                )}
+
+                <Button
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                  className="w-full"
+                >
+                  {isSubmitting ? "Updating..." : "Update Details"}
+                </Button>
+              </div>
+            ) : (
+              <div>Could not fetch data</div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </>
   );
 };
 
