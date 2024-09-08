@@ -2,54 +2,53 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-  class CompanyDetail extends Model {
+  class SolarSolution extends Model {
     static associate(models) {
-      // CompanyDetail belongs to a User
-      this.belongsTo(models.User, { foreignKey: 'userId' });
+      // Associate with CompanyProfile
+      this.belongsTo(models.CompanyProfile, { foreignKey: 'companyProfileId' });
     }
   }
-  
-  CompanyDetail.init({
-    userId: {
+
+  SolarSolution.init({
+    companyProfileId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Users',
+        model: 'CompanyProfiles',
         key: 'id',
       },
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE',
     },
-    companyName: {
+    solutionName: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    solarPanelType: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    phoneNumber: {
-      type: DataTypes.STRING,
+    powerOutput: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
-    address: {
-      type: DataTypes.STRING,
+    efficiency: {
+      type: DataTypes.DECIMAL(5, 2),
       allowNull: false,
     },
-    website: {
-      type: DataTypes.STRING,
+    warranty: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
-    registrationNumber: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-    },
-    businessLicense: {
-      type: DataTypes.STRING,
+    price: {
+      type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
     },
   }, {
     sequelize,
-    modelName: 'CompanyDetail',
+    modelName: 'SolarSolution',
     timestamps: true,
   });
-  
-  return CompanyDetail;
+
+  return SolarSolution;
 };

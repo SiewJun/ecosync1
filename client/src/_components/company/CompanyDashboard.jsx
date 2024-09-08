@@ -21,6 +21,7 @@ import { DialogTitle } from "@radix-ui/react-dialog";
 import { Description } from "@radix-ui/react-dialog";
 import CompanyDetail from "./CompanyDetails";
 import CompanyEditDetailsForm from "./CompanyEditDetailsForm";
+import CompanyProfile from "./CompanyProfile";
 
 const CompanyDashboard = () => {
   const [user, setUser] = useState(null);
@@ -247,6 +248,7 @@ const CompanyDashboard = () => {
               path="company-details/company-edit-details"
               element={<CompanyEditDetailsForm />}
             />
+            <Route path="company-profile" element={<CompanyProfile />} />
             {/* Add other routes here */}
           </Routes>
         </main>

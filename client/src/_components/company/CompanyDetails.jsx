@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   Dialog,
@@ -121,17 +122,18 @@ const CompanyDetail = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-8">
+    <div className="max-w-5xl container mx-auto p-6 space-y-8">
       {user && company ? (
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="space-y-8">
           {/* User Information Card */}
           <Card className="shadow-lg hover:shadow-xl transition-shadow duration-200">
-            <CardHeader className="border-b">
+            <CardHeader>
               <CardTitle className="text-xl font-bold text-card-foreground">
                 User Information
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 mt-5">
+            <Separator />
+            <CardContent className="space-y-4 mt-5">
               <div className="flex items-center space-x-4">
                 <Avatar className="w-16 h-16">
                   <AvatarImage src={user.avatarUrl} alt="User Avatar" />
@@ -156,11 +158,13 @@ const CompanyDetail = () => {
 
           {/* Company Information Card */}
           <Card className="shadow-lg hover:shadow-xl transition-shadow duration-200">
-            <CardHeader className="border-b">
+            <CardHeader>
               <CardTitle className="text-xl font-bold text-card-foreground">
                 Company Details
               </CardTitle>
             </CardHeader>
+            <Separator />
+
             <CardContent className="space-y-3 mt-5">
               <div>
                 <strong>Company Name:</strong> {company.companyName}
@@ -253,9 +257,11 @@ const CompanyDetail = () => {
                   Change Password
                 </CardTitle>
               </CardHeader>
+              <Separator />
+
               <CardContent className="space-y-4">
                 {/* Current Password */}
-                <div className="space-y-2">
+                <div className="space-y-2 mt-5">
                   <Label htmlFor="current-password">Current Password</Label>
                   <div className="relative">
                     <Input

@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const cuid = require("cuid");
 const router = express.Router();
-const { User, CompanyDetail, CompanyApplication } = require("../models");
+const { User, CompanyDetail, CompanyApplication, CompanyProfile } = require("../models");
 const authenticateToken = require("../middleware/auth");
 require("dotenv").config();
 const { Op } = require("sequelize");
@@ -213,7 +213,8 @@ router.post("/complete-registration", async (req, res) => {
       role: "COMPANY",
     });
 
-    await CompanyDetail.create({
+    // Create company details
+    const companyDetail = await CompanyDetail.create({
       userId: user.id,
       companyName: application.companyName,
       phoneNumber: application.phoneNumber,
@@ -221,6 +222,14 @@ router.post("/complete-registration", async (req, res) => {
       website: application.website,
       registrationNumber: application.registrationNumber,
       businessLicense: application.businessLicense,
+    });
+
+    // Create company profile
+    await CompanyProfile.create({
+      userId: user.id,
+      description: "",
+      overview: "",
+      certificate: null, // Can be updated by the company later
     });
 
     res.status(201).json({ message: "Registration completed successfully." });
@@ -237,5 +246,6 @@ router.post("/complete-registration", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
 
 module.exports = router;

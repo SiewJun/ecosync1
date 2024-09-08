@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { User, CompanyDetail } = require("../models");
+const { User, CompanyDetail, CompanyProfile, CompanyGallery, SolarSolution } = require("../models");
 const authenticateToken = require("../middleware/auth");
 const upload = require("../middleware/multer");
 
@@ -100,5 +100,33 @@ router.put(
     }
   }
 );
+
+router.get("/company-profile", authenticateToken, async (req, res) => {
+  try {
+    const profile = await CompanyProfile.findOne({
+      where: { userId: req.user.id },
+      attributes: ["description", "overview", "certificate", "services"],
+      include: [
+        {
+          model: CompanyGallery,
+          attributes: ["imageUrl"],
+        },
+        {
+          model: SolarSolution,
+          attributes: ["solutionName", "solarPanelType", "powerOutput", "efficiency", "warranty", "price"],
+        },
+      ],
+    });
+
+    if (!profile) {
+      return res.status(404).json({ message: "Company profile not found" });
+    }
+
+    res.json(profile);
+  } catch (error) {
+    console.error("Error fetching company profile:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 module.exports = router;
