@@ -1,17 +1,31 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Images, Zap, ShieldCheck, Info } from "lucide-react";
+import { Images, Zap, ShieldCheck, Info, MoreHorizontal } from "lucide-react";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
   Dialog,
   DialogTrigger,
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const CompanyProfile = () => {
   const [profile, setProfile] = useState(null);
@@ -76,6 +90,11 @@ const CompanyProfile = () => {
                     ? `Company overview: ${profile.overview}`
                     : "Update your company overview now."}
                 </p>
+                <p className="text-sm leading-relaxed">
+                  {profile.services
+                    ? `Services: ${profile.services}`
+                    : "No services stated. Update your services now."}
+                </p>
                 {profile.certificate ? (
                   <div className="flex items-center gap-4 mt-4">
                     <ShieldCheck className="h-5 w-5 text-primary" />
@@ -118,9 +137,6 @@ const CompanyProfile = () => {
                     </span>
                   </div>
                 )}
-                <p className="text-sm leading-relaxed">
-                  {profile.services ? `Services: ${profile.services}` : ""}
-                </p>
                 <Separator />
                 <Link to="/company-dashboard/company-profile/company-profile-edit">
                   <Button variant="secondary" className="mt-4">
@@ -203,44 +219,105 @@ const CompanyProfile = () => {
             </CardTitle>
           </CardHeader>
           <Separator />
-          <CardContent className="space-y-6 mt-5">
+          <CardContent className="mt-5">
             {profile.SolarSolutions?.length > 0 ? (
               <>
-                {profile.SolarSolutions.map((solution, index) => (
-                  <div key={index} className="border rounded-lg p-4">
-                    <div className="flex justify-between items-center">
-                      <h3 className="text-lg font-semibold">
-                        {solution.solutionName}
-                      </h3>
-                      <Badge variant="outline">{solution.solarPanelType}</Badge>
-                    </div>
-                    <Separator className="my-2" />
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <p>
-                        <strong>Power Output:</strong> {solution.powerOutput} kW
-                      </p>
-                      <p>
-                        <strong>Efficiency:</strong> {solution.efficiency}%
-                      </p>
-                      <p>
-                        <strong>Warranty:</strong> {solution.warranty} years
-                      </p>
-                      <p>
-                        <strong>Price:</strong> ${solution.price}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-                <Button variant="secondary" size="sm">
-                  Add new solar solutions{" "}
-                </Button>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Image</TableHead>
+                      <TableHead>Solution Name</TableHead>
+                      <TableHead>Panel Type</TableHead>
+                      <TableHead>Power Output</TableHead>
+                      <TableHead>Efficiency</TableHead>
+                      <TableHead>Warranty</TableHead>
+                      <TableHead>Price</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {profile.SolarSolutions.map((solution, index) => (
+                      <TableRow key={index}>
+                        {/* Solution Image */}
+                        <TableCell>
+                          {solution.solutionPic ? (
+                            <img
+                              src={`${BASE_URL}${solution.solutionPic}`}
+                              alt={`Solution ${index + 1}`}
+                              className="rounded-lg object-cover w-20 h-20"
+                            />
+                          ) : (
+                            <span className="text-sm italic">No image</span>
+                          )}
+                        </TableCell>
+
+                        {/* Solution Name */}
+                        <TableCell className="font-semibold">
+                          {solution.solutionName}
+                        </TableCell>
+
+                        {/* Panel Type */}
+                        <TableCell>
+                          <Badge variant="outline">
+                            {solution.solarPanelType}
+                          </Badge>
+                        </TableCell>
+
+                        {/* Power Output */}
+                        <TableCell>{solution.powerOutput} W</TableCell>
+
+                        {/* Efficiency */}
+                        <TableCell>{solution.efficiency}%</TableCell>
+
+                        {/* Warranty */}
+                        <TableCell>{solution.warranty} years</TableCell>
+
+                        {/* Price */}
+                        <TableCell>RM{solution.price}</TableCell>
+                        <TableCell>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open menu</span>
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                //onClick={() => handleReview(app.id, "Approved")}
+                              >
+                                Update 
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                //onClick={() => handleReview(app.id, "Rejected")}
+                                className="text-red-500"
+                              >
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+
+                <div className="flex justify-end mt-4">
+                  <Link to="/company-dashboard/company-profile/company-add-solution">
+                    <Button variant="secondary" size="sm">
+                      Add new solar solutions
+                    </Button>
+                  </Link>
+                </div>
               </>
             ) : (
               <div className="flex flex-col justify-center items-center h-full">
                 <p className="mb-2">No Solar Solutions available.</p>
-                <Button variant="secondary">
-                  Add some solar solutions here
-                </Button>
+                <Link to="/company-dashboard/company-profile/company-add-solution">
+                  <Button variant="secondary">
+                    Add some solar solutions here
+                  </Button>
+                </Link>
               </div>
             )}
           </CardContent>

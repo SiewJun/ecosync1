@@ -197,6 +197,7 @@ const AdminPendingCompanyAppDashboard = () => {
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => handleReview(app.id, "Rejected")}
+                className="text-red-500"
               >
                 Reject
               </DropdownMenuItem>

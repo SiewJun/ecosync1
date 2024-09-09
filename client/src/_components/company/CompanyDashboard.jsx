@@ -24,6 +24,7 @@ import CompanyEditDetailsForm from "./CompanyEditDetailsForm";
 import CompanyProfile from "./CompanyProfile";
 import CompanyProfileEditForm from "./CompanyEditProfileForm";
 import CompanyGalleryEditForm from "./CompanyGalleryEditForm";
+import CompanyAddSolutionForm from "./CompanyAddSolutionForm";
 
 const CompanyDashboard = () => {
   const [user, setUser] = useState(null);
@@ -257,6 +258,7 @@ const CompanyDashboard = () => {
             <Route path="company-profile" element={<CompanyProfile />} />
             <Route path="company-profile/company-profile-edit" element={<CompanyProfileEditForm />} />
             <Route path="company-profile/company-gallery-edit" element={<CompanyGalleryEditForm />} />
+            <Route path="company-profile/company-add-solution" element={<CompanyAddSolutionForm />} />
             {/* Add other routes here */}
           </Routes>
         </main>

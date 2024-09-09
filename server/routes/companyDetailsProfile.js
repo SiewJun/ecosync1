@@ -113,7 +113,7 @@ router.get("/company-profile", authenticateToken, async (req, res) => {
         },
         {
           model: SolarSolution,
-          attributes: ["id", "solutionName", "solarPanelType", "powerOutput", "efficiency", "warranty", "price"],
+          attributes: ["id", "solutionName", "solutionPic", "solarPanelType", "powerOutput", "efficiency", "warranty", "price"],
         },
       ],
     });
@@ -225,31 +225,121 @@ router.delete("/company-gallery/:id", authenticateToken, async (req, res) => {
   }
 });
 
-router.put("/update-solar-solution/:solutionId", authenticateToken, async (req, res) => {
-  const { solutionName, solarPanelType, powerOutput, efficiency, warranty, price } = req.body;
+router.post(
+  "/add-solar-solution",
+  authenticateToken,
+  upload.single("solutionPic"), // Single file upload for the solution picture
+  async (req, res) => {
+    try {
+      const {
+        solutionName,
+        solarPanelType,
+        powerOutput,
+        efficiency,
+        warranty,
+        price,
+      } = req.body;
 
+      // Check if the company profile exists for the user
+      const companyProfile = await CompanyProfile.findOne({
+        where: { userId: req.user.id },
+      });
+
+      if (!companyProfile) {
+        return res.status(404).json({ message: "Company profile not found" });
+      }
+
+      // Construct the new solar solution data
+      const newSolutionData = {
+        companyProfileId: companyProfile.id,
+        solutionName,
+        solarPanelType,
+        powerOutput,
+        efficiency,
+        warranty,
+        price,
+      };
+
+      // Check if the solutionPic is uploaded
+      if (req.file) {
+        const solutionPicUrl = req.file.path;
+        newSolutionData.solutionPic = solutionPicUrl;
+      }
+
+      // Create new solar solution
+      const newSolution = await SolarSolution.create(newSolutionData);
+
+      res.status(201).json({ message: "Solar solution added successfully", solution: newSolution });
+    } catch (error) {
+      console.error("Error adding solar solution:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+);
+
+router.put(
+  "/update-solar-solution/:id",
+  authenticateToken,
+  upload.single("solutionPic"),
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const {
+        solutionName,
+        solarPanelType,
+        powerOutput,
+        efficiency,
+        warranty,
+        price,
+      } = req.body;
+
+      const companyProfile = await CompanyProfile.findOne({
+        where: { userId: req.user.id },
+      });
+
+      const solarSolution = await SolarSolution.findOne({
+        where: { id, companyProfileId: companyProfile.id },
+      });
+
+      if (!solarSolution) {
+        return res.status(404).json({ message: "Solar solution not found" });
+      }
+
+      // Update fields if they exist
+      if (solutionName) solarSolution.solutionName = solutionName;
+      if (solarPanelType) solarSolution.solarPanelType = solarPanelType;
+      if (powerOutput) solarSolution.powerOutput = powerOutput;
+      if (efficiency) solarSolution.efficiency = efficiency;
+      if (warranty) solarSolution.warranty = warranty;
+      if (price) solarSolution.price = price;
+
+      if (req.file) {
+        solarSolution.solutionPic = req.file.path;
+      }
+
+      await solarSolution.save();
+
+      res.status(200).json({ message: "Solar solution updated successfully", solution: solarSolution });
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+);
+
+router.delete("/delete-solar-solution/:id", authenticateToken, async (req, res) => {
   try {
-    const solution = await SolarSolution.findOne({
-      where: { id: req.params.solutionId, userId: req.user.id },
+    const { id } = req.params;
+
+    const deleted = await SolarSolution.destroy({
+      where: { id, companyProfileId: req.user.id },
     });
 
-    if (!solution) {
+    if (!deleted) {
       return res.status(404).json({ message: "Solar solution not found" });
     }
 
-    // Update solution fields
-    if (solutionName) solution.solutionName = solutionName;
-    if (solarPanelType) solution.solarPanelType = solarPanelType;
-    if (powerOutput) solution.powerOutput = powerOutput;
-    if (efficiency) solution.efficiency = efficiency;
-    if (warranty) solution.warranty = warranty;
-    if (price) solution.price = price;
-
-    // Save updated solution
-    await solution.save();
-    res.status(200).json({ message: "Solar solution updated successfully" });
+    res.status(200).json({ message: "Solar solution deleted successfully" });
   } catch (error) {
-    console.error("Error updating solar solution:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });

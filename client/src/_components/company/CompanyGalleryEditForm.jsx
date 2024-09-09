@@ -121,7 +121,7 @@ const CompanyGalleryEditForm = () => {
                     <img
                       src={`http://localhost:5000/${image.imageUrl}`}
                       alt={`Gallery Image ${image.id}`}
-                      className="rounded-md w-full h-32 object-cover"
+                      className="rounded-md w-full h-32 object-contain border"
                     />
                     <button
                       type="button"

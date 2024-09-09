@@ -24,6 +24,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
+    solutionPic: {
+      type: DataTypes.STRING, 
+      allowNull: true
+    },
     solarPanelType: {
       type: DataTypes.STRING,
       allowNull: false,

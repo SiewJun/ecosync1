@@ -22,6 +22,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
+      solutionPic: {
+        type: Sequelize.STRING, // URL or path to the solution picture
+        allowNull: true
+      },
       solarPanelType: {
         type: Sequelize.STRING,
         allowNull: false

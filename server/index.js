@@ -6,7 +6,7 @@ const path = require('path');
 const protectedRoutes = require('./routes/protectedRoute');
 const authRoutes = require('./routes/auth');
 const companyAuthRoutes = require('./routes/companyAuth');
-const companyDashboard = require('./routes/companyDashboard');
+const companyDetailsProfile = require('./routes/companyDetailsProfile');
 
 dotenv.config();
 
@@ -24,7 +24,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', authRoutes);
 app.use('/api/auth', companyAuthRoutes);
 app.use('/api', protectedRoutes);
-app.use('/api/company', companyDashboard);
+app.use('/api/company', companyDetailsProfile);
 
 // Other middlewares and route setups
 
