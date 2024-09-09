@@ -122,18 +122,18 @@ const CompanyProfile = () => {
                   {profile.services ? `Services: ${profile.services}` : ""}
                 </p>
                 <Separator />
-                <Button variant="secondary">
-                  <Link to="/company-dashboard/company-profile/company-profile-edit">
+                <Link to="/company-dashboard/company-profile/company-profile-edit">
+                  <Button variant="secondary">
                     Update your company profile
-                  </Link>
-                </Button>
+                  </Button>
+                </Link>
               </>
             ) : (
-              <Button variant="secondary">
-                <Link to="/company-dashboard/company-profile/company-profile-edit">
+              <Link to="/company-dashboard/company-profile/company-profile-edit">
+                <Button variant="secondary">
                   Upload your company profile here
-                </Link>
-              </Button>
+                </Button>
+              </Link>
             )}
           </CardContent>
         </Card>
@@ -173,21 +173,17 @@ const CompanyProfile = () => {
                     </Dialog>
                   </div>
                 ))}
-                <Button variant="secondary">
-                  <Link to="/company-dashboard/company-profile/company-gallery-edit">
-                    Add more galleries
-                  </Link>
-                </Button>
+                <Link to="/company-dashboard/company-profile/company-gallery-edit">
+                  <Button variant="secondary">Add more galleries</Button>
+                </Link>
               </>
             ) : (
               <>
                 <div className="block">
                   <p className="mb-2">No galleries available.</p>
-                  <Button variant="secondary">
-                    <Link to="/company-dashboard/company-profile/company-gallery-edit">
-                      Add some now
-                    </Link>
-                  </Button>
+                  <Link to="/company-dashboard/company-profile/company-gallery-edit">
+                    <Button variant="secondary">Add some now</Button>
+                  </Link>
                 </div>
               </>
             )}
