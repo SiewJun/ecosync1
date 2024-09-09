@@ -52,6 +52,19 @@ const CompanyProfile = () => {
     return <p>Loading...</p>;
   }
 
+  const onDelete = async (id) => {
+    try {
+      await axios.delete(`${BASE_URL}api/company/delete-solar-solution/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      window.location.reload(); // Reload the page after successful deletion
+    } catch (error) {
+      console.error("Failed to delete solutions", error);
+    }
+  };
+  
   const hasProfileData =
     profile &&
     (profile.description ||
@@ -284,12 +297,12 @@ const CompanyProfile = () => {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem
-                                //onClick={() => handleReview(app.id, "Approved")}
+                              //onClick={() => onEdit(solution)}
                               >
-                                Update 
+                                Update
                               </DropdownMenuItem>
                               <DropdownMenuItem
-                                //onClick={() => handleReview(app.id, "Rejected")}
+                                onClick={() => onDelete(solution.id)}
                                 className="text-red-500"
                               >
                                 Delete

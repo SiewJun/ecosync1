@@ -330,8 +330,12 @@ router.delete("/delete-solar-solution/:id", authenticateToken, async (req, res) 
   try {
     const { id } = req.params;
 
+    const companyProfile = await CompanyProfile.findOne({
+      where: { userId: req.user.id },
+    });
+
     const deleted = await SolarSolution.destroy({
-      where: { id, companyProfileId: req.user.id },
+      where: { id, companyProfileId: companyProfile.id },
     });
 
     if (!deleted) {
