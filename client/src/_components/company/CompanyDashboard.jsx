@@ -22,6 +22,8 @@ import { Description } from "@radix-ui/react-dialog";
 import CompanyDetail from "./CompanyDetails";
 import CompanyEditDetailsForm from "./CompanyEditDetailsForm";
 import CompanyProfile from "./CompanyProfile";
+import CompanyProfileEditForm from "./CompanyEditProfileForm";
+import CompanyGalleryEditForm from "./CompanyGalleryEditForm";
 
 const CompanyDashboard = () => {
   const [user, setUser] = useState(null);
@@ -102,6 +104,8 @@ const CompanyDashboard = () => {
                 to="/company-dashboard/company-profile"
                 className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
                   "/company-dashboard/company-profile"
+                )} ${getLinkClasses(
+                  "/company-dashboard/company-profile/company-profile-edit"
                 )}`}
               >
                 <User className="h-4 w-4" />
@@ -192,7 +196,7 @@ const CompanyDashboard = () => {
                 <Link
                   to="/company-dashboard/company-profile"
                   className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
-                    "/company-dashboard/company-profile"
+                    "/company-dashboard/company-profile" 
                   )}`}
                 >
                   <User className="h-4 w-4" />
@@ -249,6 +253,8 @@ const CompanyDashboard = () => {
               element={<CompanyEditDetailsForm />}
             />
             <Route path="company-profile" element={<CompanyProfile />} />
+            <Route path="company-profile/company-profile-edit" element={<CompanyProfileEditForm />} />
+            <Route path="company-profile/company-gallery-edit" element={<CompanyGalleryEditForm />} />
             {/* Add other routes here */}
           </Routes>
         </main>

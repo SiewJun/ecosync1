@@ -110,7 +110,7 @@ const EditForm = () => {
         <Card className="shadow-lg">
           <CardHeader>
             <CardTitle className="text-xl font-bold">
-              <span>Edit Your Details</span>
+              <span>Edit Company Details</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">

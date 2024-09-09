@@ -5,9 +5,17 @@ import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const CompanyProfile = () => {
   const [profile, setProfile] = useState(null);
+  const BASE_URL = "http://localhost:5000/";
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -59,38 +67,72 @@ const CompanyProfile = () => {
             {hasProfileData ? (
               <>
                 <p className="text-sm leading-relaxed">
-                  {profile.description || "Update your company description"}
+                  {profile.description
+                    ? `Company description: ${profile.description}`
+                    : "Update your company description"}
                 </p>
                 <p className="text-sm leading-relaxed">
-                  {profile.overview || "Update your company overview now."}
+                  {profile.overview
+                    ? `Company overview: ${profile.overview}`
+                    : "Update your company overview now."}
                 </p>
                 {profile.certificate ? (
                   <div className="flex items-center gap-4 mt-4">
-                    <ShieldCheck className="h-5 w-5" />
-                    <a
-                      href={profile.certificate}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline"
-                    >
-                      View Certificate
-                    </a>
+                    <ShieldCheck className="h-5 w-5 text-primary" />
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="link"
+                          className="text-blue-500 hover:underline p-0"
+                        >
+                          View Certificate
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogTitle>Certificate</DialogTitle>
+                        <object
+                          data={`${BASE_URL}${profile.certificate}`}
+                          type="application/pdf"
+                          width="100%"
+                          height="500px"
+                        >
+                          <p>
+                            Your browser does not support this document.{" "}
+                            <a
+                              href={`${BASE_URL}${profile.certificate}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <Button variant="link">Download the PDF</Button>
+                            </a>
+                          </p>
+                        </object>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 ) : (
                   <div className="flex items-center gap-4 mt-4">
                     <ShieldCheck className="h-5 w-5 text-gray-400" />
                     <span>
-                      Upload Certificate to build more trust with consumer
+                      Upload a certificate to build more trust with customers
                     </span>
                   </div>
                 )}
-                <p className="text-sm leading-relaxed">{profile.services}</p>
+                <p className="text-sm leading-relaxed">
+                  {profile.services ? `Services: ${profile.services}` : ""}
+                </p>
                 <Separator />
-                <Button variant="secondary">Update your company profile</Button>
+                <Button variant="secondary">
+                  <Link to="/company-dashboard/company-profile/company-profile-edit">
+                    Update your company profile
+                  </Link>
+                </Button>
               </>
             ) : (
               <Button variant="secondary">
-                Upload your company profile here
+                <Link to="/company-dashboard/company-profile/company-profile-edit">
+                  Upload your company profile here
+                </Link>
               </Button>
             )}
           </CardContent>
@@ -112,20 +154,40 @@ const CompanyProfile = () => {
               <>
                 {profile.CompanyGalleries.map((gallery, index) => (
                   <div key={index}>
-                    <img
-                      src={gallery.imageUrl}
-                      alt={`Gallery ${index + 1}`}
-                      className="rounded-lg object-cover w-full h-48"
-                    />
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <img
+                          src={`${BASE_URL}${gallery.imageUrl}`}
+                          alt={`Gallery ${index + 1}`}
+                          className="rounded-lg object-cover w-full h-48 cursor-pointer"
+                        />
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogTitle>Gallery Image {index + 1}</DialogTitle>
+                        <img
+                          src={`${BASE_URL}${gallery.imageUrl}`}
+                          alt={`Gallery ${index + 1}`}
+                          className="rounded-lg object-cover w-full"
+                        />
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 ))}
-                <Button variant="secondary">Add more gallery</Button>
+                <Button variant="secondary">
+                  <Link to="/company-dashboard/company-profile/company-gallery-edit">
+                    Add more galleries
+                  </Link>
+                </Button>
               </>
             ) : (
               <>
                 <div className="block">
                   <p className="mb-2">No galleries available.</p>
-                  <Button variant="secondary">Add some now</Button>
+                  <Button variant="secondary">
+                    <Link to="/company-dashboard/company-profile/company-gallery-edit">
+                      Add some now
+                    </Link>
+                  </Button>
                 </div>
               </>
             )}

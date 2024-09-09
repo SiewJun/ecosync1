@@ -129,4 +129,97 @@ router.get("/company-profile", authenticateToken, async (req, res) => {
   }
 });
 
+router.put("/update-company-profile", authenticateToken, upload.single("certificate"), async (req, res) => {
+  const { description, overview, services } = req.body;
+
+  try {
+    const profile = await CompanyProfile.findOne({ where: { userId: req.user.id } });
+
+    if (!profile) {
+      return res.status(404).json({ message: "Company profile not found" });
+    }
+
+    // Update profile fields
+    if (description) profile.description = description;
+    if (overview) profile.overview = overview;
+    if (services) profile.services = services;
+
+    // Check if the certificate file is uploaded
+    if (req.file) {
+      const certificatePath = req.file.path; // Path of the uploaded file
+      profile.certificate = certificatePath;
+    }
+
+    // Save updated profile
+    await profile.save();
+    res.status(200).json({ message: "Company profile updated successfully" });
+  } catch (error) {
+    console.error("Error updating company profile:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.put("/update-gallery", authenticateToken, upload.array("images", 5), async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Find the user's company profile
+    const companyProfile = await CompanyProfile.findOne({ where: { userId } });
+
+    if (!companyProfile) {
+      return res.status(404).json({ message: "Company profile not found" });
+    }
+
+    const companyProfileId = companyProfile.id; // Get the company profile ID
+
+    // Check if files are uploaded
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ message: "No files uploaded" });
+    }
+
+    // Create entries for each uploaded image
+    const imageEntries = req.files.map((file) => ({
+      companyProfileId, // Use the retrieved companyProfileId
+      imageUrl: file.path,
+    }));
+
+    // Bulk create or update gallery images
+    await CompanyGallery.bulkCreate(imageEntries);
+
+    res.status(200).json({ message: "Gallery updated successfully" });
+  } catch (error) {
+    console.error("Error updating gallery:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.put("/update-solar-solution/:solutionId", authenticateToken, async (req, res) => {
+  const { solutionName, solarPanelType, powerOutput, efficiency, warranty, price } = req.body;
+
+  try {
+    const solution = await SolarSolution.findOne({
+      where: { id: req.params.solutionId, userId: req.user.id },
+    });
+
+    if (!solution) {
+      return res.status(404).json({ message: "Solar solution not found" });
+    }
+
+    // Update solution fields
+    if (solutionName) solution.solutionName = solutionName;
+    if (solarPanelType) solution.solarPanelType = solarPanelType;
+    if (powerOutput) solution.powerOutput = powerOutput;
+    if (efficiency) solution.efficiency = efficiency;
+    if (warranty) solution.warranty = warranty;
+    if (price) solution.price = price;
+
+    // Save updated solution
+    await solution.save();
+    res.status(200).json({ message: "Solar solution updated successfully" });
+  } catch (error) {
+    console.error("Error updating solar solution:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 module.exports = router;
