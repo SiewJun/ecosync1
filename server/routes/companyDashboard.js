@@ -109,11 +109,11 @@ router.get("/company-profile", authenticateToken, async (req, res) => {
       include: [
         {
           model: CompanyGallery,
-          attributes: ["imageUrl"],
+          attributes: ["id", "imageUrl"],
         },
         {
           model: SolarSolution,
-          attributes: ["solutionName", "solarPanelType", "powerOutput", "efficiency", "warranty", "price"],
+          attributes: ["id", "solutionName", "solarPanelType", "powerOutput", "efficiency", "warranty", "price"],
         },
       ],
     });
@@ -189,6 +189,38 @@ router.put("/update-gallery", authenticateToken, upload.array("images", 5), asyn
     res.status(200).json({ message: "Gallery updated successfully" });
   } catch (error) {
     console.error("Error updating gallery:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.delete("/company-gallery/:id", authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find the company profile associated with the user
+    const companyProfile = await CompanyProfile.findOne({
+      where: { userId: req.user.id },
+    });
+
+    if (!companyProfile) {
+      return res.status(404).json({ message: "Company profile not found" });
+    }
+
+    // Delete the image by id and companyProfileId
+    const deletedImage = await CompanyGallery.destroy({
+      where: {
+        id,
+        companyProfileId: companyProfile.id,
+      },
+    });
+
+    if (!deletedImage) {
+      return res.status(404).json({ message: "Image not found" });
+    }
+
+    res.json({ message: "Image deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting image:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });

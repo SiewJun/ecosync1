@@ -1,16 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { AlertCircle, ChevronLeft, Asterisk } from "lucide-react";
+import { AlertCircle, ChevronLeft, Asterisk, Trash } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const CompanyGalleryEditForm = () => {
   const [images, setImages] = useState([]); // State for selected images
+  const [existingImages, setExistingImages] = useState([]); // State for existing images
   const [error, setError] = useState(null); // Error state
   const [success, setSuccess] = useState(null); // Success state
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchGalleryImages = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get("http://localhost:5000/api/company/company-profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setExistingImages(response.data.CompanyGalleries);
+      } catch (error) {
+        console.error("Error fetching gallery images", error);
+      }
+    };
+  
+    fetchGalleryImages();
+  }, []);
 
   // Handle image selection
   const handleFileChange = (e) => {
@@ -67,6 +84,21 @@ const CompanyGalleryEditForm = () => {
     }
   };
 
+  // Handle image deletion
+  const handleDeleteImage = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`http://localhost:5000/api/company//company-gallery/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setExistingImages(existingImages.filter((image) => image.id !== id));
+      setSuccess("Image deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting image", error);
+      setError("Failed to delete image. Please try again.");
+    }
+  };
+
   return (
     <>
       <div className="flex items-center mb-4">
@@ -82,9 +114,29 @@ const CompanyGalleryEditForm = () => {
           </CardHeader>
           <CardContent className="p-6">
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Display existing images */}
+              <div className="grid grid-cols-2 gap-4">
+                {existingImages.map((image) => (
+                  <div key={image.id} className="relative">
+                    <img
+                      src={`http://localhost:5000/${image.imageUrl}`}
+                      alt={`Gallery Image ${image.id}`}
+                      className="rounded-md w-full h-32 object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteImage(image.id)}
+                      className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full"
+                    >
+                      <Trash className="h-5 w-5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
               <div>
                 <label htmlFor="gallery" className="block text-sm font-medium">
-                  Upload Images
+                  Upload New Images
                 </label>
                 <Input
                   id="gallery"
@@ -97,7 +149,7 @@ const CompanyGalleryEditForm = () => {
                 <div className="flex mt-2 items-center">
                   <p className="flex items-center text-sm text-slate-400">
                     <Asterisk className="w-3 h-3" />
-                    Upload 5 images at a time
+                    Upload up to 5 images at a time
                   </p>
                 </div>
               </div>
