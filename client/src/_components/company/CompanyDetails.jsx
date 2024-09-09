@@ -126,7 +126,7 @@ const CompanyDetail = () => {
       {user && company ? (
         <div className="space-y-8">
           {/* User Information Card */}
-          <Card className="shadow-lg hover:shadow-xl transition-shadow duration-200">
+          <Card className="shadow-md">
             <CardHeader>
               <CardTitle className="text-xl font-bold text-card-foreground">
                 User Information
@@ -157,7 +157,7 @@ const CompanyDetail = () => {
           </Card>
 
           {/* Company Information Card */}
-          <Card className="shadow-lg hover:shadow-xl transition-shadow duration-200">
+          <Card className="shadow-md">
             <CardHeader>
               <CardTitle className="text-xl font-bold text-card-foreground">
                 Company Details
@@ -251,7 +251,7 @@ const CompanyDetail = () => {
 
           {/* Password Update Section */}
           {showChangePasswordForm && (
-            <Card className="col-span-1 md:col-span-2 shadow-lg hover:shadow-xl transition-shadow duration-200">
+            <Card className="col-span-1 md:col-span-2 shadow-md">
               <CardHeader>
                 <CardTitle className="text-xl font-bold text-card-foreground">
                   Change Password

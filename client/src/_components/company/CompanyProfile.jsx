@@ -49,7 +49,7 @@ const CompanyProfile = () => {
     <>
       <div className="max-w-5xl container mx-auto p-6 space-y-8">
         {/* Company Overview */}
-        <Card>
+        <Card className="shadow-md">
           <CardHeader>
             <CardTitle>
               <span className="flex items-center gap-2 text-xl font-semibold">
@@ -139,7 +139,7 @@ const CompanyProfile = () => {
         </Card>
 
         {/* Company Galleries */}
-        <Card>
+        <Card className="shadow-md">
           <CardHeader>
             <CardTitle>
               <span className="flex items-center gap-2 text-xl font-semibold">
@@ -195,7 +195,7 @@ const CompanyProfile = () => {
         </Card>
 
         {/* Solar Solutions */}
-        <Card>
+        <Card className="shadow-md">
           <CardHeader>
             <CardTitle>
               <span className="flex items-center gap-2 text-xl font-semibold">
