@@ -123,7 +123,7 @@ const CompanyProfile = () => {
                 </p>
                 <Separator />
                 <Link to="/company-dashboard/company-profile/company-profile-edit">
-                  <Button variant="secondary">
+                  <Button variant="secondary" className="mt-4">
                     Update your company profile
                   </Button>
                 </Link>
@@ -173,9 +173,11 @@ const CompanyProfile = () => {
                     </Dialog>
                   </div>
                 ))}
-                <Link to="/company-dashboard/company-profile/company-gallery-edit">
-                  <Button variant="secondary">Add more galleries</Button>
-                </Link>
+                <div className="flex justify-center items-center">
+                  <Link to="/company-dashboard/company-profile/company-gallery-edit">
+                    <Button variant="secondary">Add more galleries</Button>
+                  </Link>
+                </div>
               </>
             ) : (
               <>
@@ -230,14 +232,14 @@ const CompanyProfile = () => {
                   </div>
                 ))}
                 <Button variant="secondary" size="sm">
-                  Add New Solar Solutions
+                  Add new solar solutions{" "}
                 </Button>
               </>
             ) : (
-              <div className="block">
+              <div className="flex flex-col justify-center items-center h-full">
                 <p className="mb-2">No Solar Solutions available.</p>
                 <Button variant="secondary">
-                  Add Some Solar Solutions here
+                  Add some solar solutions here
                 </Button>
               </div>
             )}
