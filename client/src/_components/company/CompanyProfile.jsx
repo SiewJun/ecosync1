@@ -26,10 +26,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useNavigate } from "react-router-dom";
 
 const CompanyProfile = () => {
   const [profile, setProfile] = useState(null);
   const BASE_URL = "http://localhost:5000/";
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -297,7 +299,7 @@ const CompanyProfile = () => {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem
-                              //onClick={() => onEdit(solution)}
+                              onClick={() => navigate(`/company-dashboard/company-profile/company-edit-solution/${solution.id}`)}
                               >
                                 Update
                               </DropdownMenuItem>

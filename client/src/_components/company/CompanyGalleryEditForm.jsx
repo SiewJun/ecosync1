@@ -32,13 +32,13 @@ const CompanyGalleryEditForm = () => {
   // Handle image selection
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
-    const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
+    const validImageType = ["image/*"];
     const invalidFiles = selectedFiles.filter(
-      (file) => !validImageTypes.includes(file.type)
+      (file) => !validImageType.includes(file.type)
     );
 
     if (invalidFiles.length > 0) {
-      setError("Only image files (jpeg, png, gif) are allowed.");
+      setError("Only image files are allowed.");
       setImages([]);
       return;
     }

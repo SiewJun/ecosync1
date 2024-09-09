@@ -25,6 +25,7 @@ import CompanyProfile from "./CompanyProfile";
 import CompanyProfileEditForm from "./CompanyEditProfileForm";
 import CompanyGalleryEditForm from "./CompanyGalleryEditForm";
 import CompanyAddSolutionForm from "./CompanyAddSolutionForm";
+import CompanyEditSolutionForm from "./CompanyEditSolutionForm";
 
 const CompanyDashboard = () => {
   const [user, setUser] = useState(null);
@@ -64,10 +65,12 @@ const CompanyDashboard = () => {
     fetchUser();
   }, []);
 
-  const getLinkClasses = (path) =>
-    location.pathname === path
+  const getLinkClasses = (path) => {
+    const regex = new RegExp(`^${path.replace(/:\w+/g, "\\w+")}$`);
+    return regex.test(location.pathname)
       ? "bg-primary text-primary-foreground"
       : "text-muted-foreground hover:text-foreground hover:bg-accent";
+  };
 
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
@@ -109,6 +112,10 @@ const CompanyDashboard = () => {
                   "/company-dashboard/company-profile/company-profile-edit"
                 )} ${getLinkClasses(
                   "/company-dashboard/company-profile/company-gallery-edit"
+                )} ${getLinkClasses(
+                  "/company-dashboard/company-profile/company-add-solution"
+                )} ${getLinkClasses(
+                  "/company-dashboard/company-profile/company-edit-solution/:id"
                 )}`}
               >
                 <User className="h-4 w-4" />
@@ -259,6 +266,8 @@ const CompanyDashboard = () => {
             <Route path="company-profile/company-profile-edit" element={<CompanyProfileEditForm />} />
             <Route path="company-profile/company-gallery-edit" element={<CompanyGalleryEditForm />} />
             <Route path="company-profile/company-add-solution" element={<CompanyAddSolutionForm />} />
+            <Route path="company-profile/company-edit-solution/:id" element={<CompanyEditSolutionForm />} />
+
             {/* Add other routes here */}
           </Routes>
         </main>

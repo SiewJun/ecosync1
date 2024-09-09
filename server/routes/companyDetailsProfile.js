@@ -277,6 +277,35 @@ router.post(
   }
 );
 
+router.get('/solar-solution/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find the company profile of the authenticated user
+    const companyProfile = await CompanyProfile.findOne({
+      where: { userId: req.user.id },
+    });
+
+    if (!companyProfile) {
+      return res.status(404).json({ message: "Company profile not found" });
+    }
+
+    // Find the solar solution by ID and company profile ID
+    const solarSolution = await SolarSolution.findOne({
+      where: { id, companyProfileId: companyProfile.id },
+    });
+
+    if (!solarSolution) {
+      return res.status(404).json({ message: "Solar solution not found" });
+    }
+
+    res.status(200).json({ solution: solarSolution });
+  } catch (error) {
+    console.error("Error fetching solar solution", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 router.put(
   "/update-solar-solution/:id",
   authenticateToken,
