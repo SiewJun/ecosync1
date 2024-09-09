@@ -106,6 +106,8 @@ const CompanyDashboard = () => {
                   "/company-dashboard/company-profile"
                 )} ${getLinkClasses(
                   "/company-dashboard/company-profile/company-profile-edit"
+                )} ${getLinkClasses(
+                  "/company-dashboard/company-profile/company-gallery-edit"
                 )}`}
               >
                 <User className="h-4 w-4" />
