@@ -206,7 +206,7 @@ const CompanyProfile = () => {
                 ))}
                 <div className="flex justify-center items-center">
                   <Link to="/company-dashboard/company-profile/company-gallery-edit">
-                    <Button variant="secondary">Add more galleries</Button>
+                    <Button variant="secondary">Add/Edit galleries</Button>
                   </Link>
                 </div>
               </>
