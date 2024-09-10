@@ -32,6 +32,13 @@ const ProfileDropdown = ({ user }) => {
     }
   };
 
+  if (!user) {
+    return null;
+  }
+
+  const BASE_URL = "http://localhost:5000/";
+  const imageUrl = `${BASE_URL}${user.avatarUrl}`;
+
   const renderMenuItems = () => {
     switch (user.role) {
       case "CONSUMER":
@@ -195,10 +202,7 @@ const ProfileDropdown = ({ user }) => {
       <DropdownMenuTrigger asChild>
         <div className="flex items-center gap-2 cursor-pointer">
           <Avatar>
-            <AvatarImage
-              src={user.avatarUrl || "https://via.placeholder.com/150"}
-              alt="User Avatar"
-            />
+            <AvatarImage src={imageUrl} alt="User Avatar" />
             <AvatarFallback>{user.username[0]}</AvatarFallback>
           </Avatar>
         </div>
