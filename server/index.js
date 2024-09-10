@@ -8,6 +8,7 @@ const authRoutes = require('./routes/auth');
 const companyAuthRoutes = require('./routes/companyAuth');
 const companyDetailsProfile = require('./routes/companyDetailsProfile');
 const consumerProfile = require('./routes/consumerProfile');
+const companyServices = require('./routes/companyServices');
 
 dotenv.config();
 
@@ -27,6 +28,8 @@ app.use('/api/auth', companyAuthRoutes);
 app.use('/api', protectedRoutes);
 app.use('/api/company', companyDetailsProfile);
 app.use('/api/consumer', consumerProfile);
+app.use('/api/company-services', companyServices);
+
 // Other middlewares and route setups
 
 app.listen(5000, () => {
