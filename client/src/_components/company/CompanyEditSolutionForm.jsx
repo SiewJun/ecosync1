@@ -178,7 +178,7 @@ const UpdateSolutionForm = () => {
                 <div>
                   <Label htmlFor="solutionPic">Solution Picture</Label>
                   {currentPicUrl && (
-                    <div className="mb-4">
+                    <div className="mb-4 border">
                       <img
                         src={`${BASE_URL}/${currentPicUrl}`}
                         alt="Solution"
