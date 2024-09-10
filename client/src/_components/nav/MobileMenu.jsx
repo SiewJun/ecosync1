@@ -47,36 +47,36 @@ const renderDashboardLinks = (user) => {
     case "CONSUMER":
       return (
         <>
-          <li className={linkClasses}>
-            <Link to="/profile">
+          <Link to="consumer-dashboard/consumer-profile">
+            <li className={linkClasses}>
               <User className="inline-block mr-2" />
               Profile
-            </Link>
-          </li>
-          <li className={linkClasses}>
-            <Link to="/chat">
+            </li>
+          </Link>
+          <Link to="/chat">
+            <li className={linkClasses}>
               <MessageSquare className="inline-block mr-2" />
               Chat
-            </Link>
-          </li>
-          <li className={linkClasses}>
-            <Link to="/quotation">
+            </li>
+          </Link>
+          <Link to="/quotation">
+            <li className={linkClasses}>
               <FileText className="inline-block mr-2" />
               Quotation
-            </Link>
-          </li>
-          <li className={linkClasses}>
-            <Link to="/order">
+            </li>
+          </Link>
+          <Link to="/order">
+            <li className={linkClasses}>
               <ShoppingCart className="inline-block mr-2" />
               Order
-            </Link>
-          </li>
-          <li className={linkClasses}>
-            <Link to="/invoice">
+            </li>
+          </Link>
+          <Link to="/invoice">
+            <li className={linkClasses}>
               <ReceiptText className="inline-block mr-2" />
               Invoice
-            </Link>
-          </li>
+            </li>
+          </Link>
           <li
             className="py-2 px-4 rounded-md text-red-600 hover:text-red-800 hover:bg-red-100 font-semibold cursor-pointer transition-colors"
             onClick={handleLogout}
@@ -89,42 +89,42 @@ const renderDashboardLinks = (user) => {
     case "COMPANY":
       return (
         <>
-          <li className={linkClasses}>
-            <Link to="/company-dashboard">
+          <Link to="/company-dashboard">
+            <li className={linkClasses}>
               <LayoutDashboard className="inline-block mr-2" />
               Dashboard
-            </Link>
-          </li>
-          <li className={linkClasses}>
-            <Link to="/company-dashboard/company-details">
+            </li>
+          </Link>
+          <Link to="/company-dashboard/company-details">
+            <li className={linkClasses}>
               <Building className="inline-block mr-2" />
               Company Details
-            </Link>
-          </li>
-          <li className={linkClasses}>
-            <Link to="/company-dashboard/company-profile">
+            </li>
+          </Link>
+          <Link to="/company-dashboard/company-profile">
+            <li className={linkClasses}>
               <User className="inline-block mr-2" />
               Company Profile
-            </Link>
-          </li>
-          <li className={linkClasses}>
-            <Link to="/company-dashboard/chat">
+            </li>
+          </Link>
+          <Link to="/company-dashboard/chat">
+            <li className={linkClasses}>
               <MessageCircle className="inline-block mr-2" />
               Chat
-            </Link>
-          </li>
-          <li className={linkClasses}>
-            <Link to="/company-dashboard/quotation">
+            </li>
+          </Link>
+          <Link to="/company-dashboard/quotation">
+            <li className={linkClasses}>
               <FileCheck className="inline-block mr-2" />
               Quotation
-            </Link>
-          </li>
-          <li className={linkClasses}>
-            <Link to="/company-dashboard/projects">
+            </li>
+          </Link>
+          <Link to="/company-dashboard/projects">
+            <li className={linkClasses}>
               <ClipboardList className="inline-block mr-2" />
               Projects
-            </Link>
-          </li>
+            </li>
+          </Link>
           <li
             className="py-2 px-4 rounded-md text-red-600 hover:text-red-800 hover:bg-red-100 font-semibold cursor-pointer transition-colors"
             onClick={handleLogout}
@@ -137,18 +137,19 @@ const renderDashboardLinks = (user) => {
     case "ADMIN":
       return (
         <>
-          <li className={linkClasses}>
-            <Link to="/admindashboard">
+          <Link to="/admindashboard">
+            <li className={linkClasses}>
               <LayoutDashboard className="inline-block mr-2" />
               Dashboard
-            </Link>
-          </li>
-          <li className={linkClasses}>
-            <Link to="/chat">
+            </li>
+          </Link>
+          <Link to="/chat">
+            <li className={linkClasses}>
               <MessageSquare className="inline-block mr-2" />
               Chat
-            </Link>
-          </li>
+            </li>
+          </Link>
+
           <li
             className="py-2 px-4 rounded-md text-red-600 hover:text-red-800 hover:bg-red-100 font-semibold cursor-pointer transition-colors"
             onClick={handleLogout}

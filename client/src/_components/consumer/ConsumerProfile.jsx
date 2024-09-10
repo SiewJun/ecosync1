@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,17 +6,13 @@ import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Eye, EyeOff, AlertCircle, X } from "lucide-react";
+import { AlertCircle, Eye, EyeOff, X } from "lucide-react";
+import { Link } from "react-router-dom";
 
-const CompanyDetail = () => {
+const ConsumerProfile = () => {
   const [user, setUser] = useState(null);
-  const [company, setCompany] = useState(null);
+  const [consumerProfile, setConsumerProfile] = useState(null);
+  const [error, setError] = useState("");
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -32,7 +27,6 @@ const CompanyDetail = () => {
     number: false,
     specialChar: false,
   });
-  const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showChangePasswordForm, setShowChangePasswordForm] = useState(false);
@@ -40,11 +34,11 @@ const CompanyDetail = () => {
   const BASE_URL = "http://localhost:5000/";
 
   useEffect(() => {
-    const fetchCompanyDetails = async () => {
+    const fetchUserProfile = async () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          "http://localhost:5000/api/company/company-details",
+          "http://localhost:5000/api/consumer/profile",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -52,14 +46,32 @@ const CompanyDetail = () => {
         const userData = response.data.user;
         userData.avatarUrl = `${BASE_URL}${userData.avatarUrl}`;
         setUser(userData);
-        setCompany(userData.CompanyDetail);
+        setConsumerProfile(response.data.consumerProfile);
       } catch (error) {
-        console.error("Error fetching company details:", error);
+        console.error("Error fetching consumer profile:", error);
+        setError("Error fetching consumer profile. Please try again later.");
       }
     };
 
-    fetchCompanyDetails();
+    fetchUserProfile();
   }, []);
+
+  const handleCreateProfile = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        "http://localhost:5000/api/consumer/profile",
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setConsumerProfile(response.data.profile);
+    } catch (error) {
+      console.error("Error creating consumer profile:", error);
+      setError("Error creating consumer profile. Please try again later.");
+    }
+  };
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -123,9 +135,15 @@ const CompanyDetail = () => {
 
   return (
     <div className="max-w-5xl container mx-auto p-6 space-y-8">
-      {user && company ? (
+      {error && (
+        <div className="flex items-center space-x-2 border border-red-500 bg-red-100 text-red-700 p-2 rounded-md">
+          <AlertCircle className="h-5 w-5" />
+          <p>{error}</p>
+        </div>
+      )}
+
+      {user ? (
         <div className="space-y-8">
-          {/* User Information Card */}
           <Card className="shadow-md">
             <CardHeader>
               <CardTitle className="text-xl font-bold text-card-foreground">
@@ -137,7 +155,7 @@ const CompanyDetail = () => {
               <div className="flex items-center space-x-4">
                 <Avatar className="w-16 h-16">
                   <AvatarImage src={user.avatarUrl} alt="User Avatar" />
-                  <AvatarFallback>{company.companyName[0]}</AvatarFallback>
+                  <AvatarFallback>{user.username[0]}</AvatarFallback>
                 </Avatar>
                 <div>
                   <div>
@@ -148,97 +166,52 @@ const CompanyDetail = () => {
                   </div>
                 </div>
               </div>
-              <Link to="/company-dashboard/company-details/company-edit-details">
-                <Button className="mt-32 w-full" variant="secondary">
-                  Update Information
-                </Button>
-              </Link>
             </CardContent>
           </Card>
 
-          {/* Company Information Card */}
-          <Card className="shadow-md">
-            <CardHeader>
-              <CardTitle className="text-xl font-bold text-card-foreground">
-                Company Details
-              </CardTitle>
-            </CardHeader>
-            <Separator />
-
-            <CardContent className="space-y-3 mt-5">
-              <div>
-                <strong>Company Name:</strong> {company.companyName}
-              </div>
-              <div>
-                <strong>Phone Number:</strong> {company.phoneNumber}
-              </div>
-              <div>
-                <strong>Address:</strong> {company.address}
-              </div>
-              <div>
-                <strong>Website:</strong>{" "}
-                <a
-                  href={
-                    company.website.startsWith("http://") ||
-                    company.website.startsWith("https://")
-                      ? company.website
-                      : `https://${company.website}`
-                  }
-                  className="text-blue-500 hover:underline"
-                  target="_blank"
-                  rel="noopener noreferrer"
+          {!consumerProfile ? (
+            <Card className="shadow-md">
+              <CardHeader>
+                <CardTitle className="text-xl font-bold text-card-foreground">
+                  Consumer Profile
+                </CardTitle>
+              </CardHeader>
+              <Separator />
+              <CardContent className="space-y-4 mt-5">
+                <p>No consumer profile found for this user.</p>
+                <Button
+                  className="w-full"
+                  variant="primary"
+                  onClick={handleCreateProfile}
                 >
-                  {company.website}
-                </a>
-              </div>
-              <div>
-                <strong>Registration Number:</strong>{" "}
-                {company.registrationNumber}
-              </div>
+                  Create a Consumer Profile Now
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card className="shadow-md">
+              <CardHeader>
+                <CardTitle className="text-xl font-bold text-card-foreground">
+                  Consumer Profile Details
+                </CardTitle>
+              </CardHeader>
+              <Separator />
+              <CardContent className="space-y-4 mt-5">
+                <div>
+                  <strong>Phone Number:</strong> {consumerProfile.phoneNumber}
+                </div>
+                <div>
+                  <strong>Address:</strong> {consumerProfile.address}
+                </div>
+                <Link to="/consumer-dashboard/consumer-profile/consumer-edit-profile">
+                  <Button className="mt-32 w-full" variant="secondary">
+                    Update Information{" "}
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          )}
 
-              {/* Business License Document */}
-              <div>
-                <strong>Business License:</strong>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button
-                      variant="link"
-                      className="text-blue-500 hover:underline"
-                    >
-                      View Business License
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogTitle>Business License</DialogTitle>
-                    <object
-                      data={company.businessLicense}
-                      type="application/pdf"
-                      width="100%"
-                      height="500px"
-                    >
-                      <p>
-                        Your browser does not support this document.{" "}
-                        <a
-                          href={company.businessLicense}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <Button variant="link">Download the PDF</Button>
-                        </a>
-                      </p>
-                    </object>
-                  </DialogContent>
-                </Dialog>
-              </div>
-
-              <div>
-                <strong>Joined On:</strong>{" "}
-                {new Date(company.createdAt).toLocaleDateString()}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Change Password Button */}
           <div className="col-span-1 md:col-span-2">
             <Button
               variant="outline"
@@ -249,7 +222,6 @@ const CompanyDetail = () => {
             </Button>
           </div>
 
-          {/* Password Update Section */}
           {showChangePasswordForm && (
             <Card className="col-span-1 md:col-span-2 shadow-md">
               <CardHeader>
@@ -260,7 +232,6 @@ const CompanyDetail = () => {
               <Separator />
 
               <CardContent className="space-y-4">
-                {/* Current Password */}
                 <div className="space-y-2 mt-5">
                   <Label htmlFor="current-password">Current Password</Label>
                   <div className="relative">
@@ -285,7 +256,6 @@ const CompanyDetail = () => {
                   </div>
                 </div>
 
-                {/* New Password */}
                 <div className="space-y-2">
                   <Label htmlFor="new-password">New Password</Label>
                   <div className="relative">
@@ -362,7 +332,6 @@ const CompanyDetail = () => {
                   )}
                 </div>
 
-                {/* Confirm New Password */}
                 <div className="space-y-2">
                   <Label htmlFor="confirm-password">Confirm New Password</Label>
                   <div className="relative">
@@ -389,7 +358,6 @@ const CompanyDetail = () => {
                   </div>
                 </div>
 
-                {/* Error and Success Messages */}
                 {error && (
                   <div className="flex items-center space-x-2 border border-red-500 bg-red-100 text-red-700 p-2 rounded-md mt-2">
                     <AlertCircle className="h-5 w-5" />
@@ -403,7 +371,6 @@ const CompanyDetail = () => {
                   </div>
                 )}
 
-                {/* Update Password Button */}
                 <Button
                   onClick={handlePasswordUpdate}
                   disabled={isSubmitting}
@@ -416,10 +383,10 @@ const CompanyDetail = () => {
           )}
         </div>
       ) : (
-        <div>Could not fetch data</div>
+        <p>Loading...</p>
       )}
     </div>
   );
 };
 
-export default CompanyDetail;
+export default ConsumerProfile;

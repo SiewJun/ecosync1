@@ -5,6 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // Define the association with CompanyDetail
       this.hasOne(models.CompanyDetail, { foreignKey: 'userId' });
+      this.hasOne(models.ConsumerProfile, { foreignKey: 'userId' });
     }
   }
   

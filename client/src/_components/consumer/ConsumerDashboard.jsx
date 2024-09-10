@@ -2,31 +2,26 @@ import { Link, Routes, Route, useLocation } from "react-router-dom";
 import {
   Home,
   User,
-  FileCheck,
-  ClipboardList,
-  LayoutDashboard,
-  Building,
-  MessageCircle,
+  MessageSquare,
+  FileText,
+  ShoppingCart,
+  ReceiptText,
   Menu,
   LogOut,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { Badge } from "@/components/ui/badge";
 import EcoSyncLogo from "../nav/EcoSyncLogo";
 import ProfileDropdown from "../nav/ProfileDropdown";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { Description } from "@radix-ui/react-dialog";
-import CompanyDetail from "./CompanyDetails";
-import CompanyEditDetailsForm from "./CompanyEditDetailsForm";
-import CompanyProfile from "./CompanyProfile";
-import CompanyProfileEditForm from "./CompanyEditProfileForm";
-import CompanyGalleryEditForm from "./CompanyGalleryEditForm";
-import CompanyAddSolutionForm from "./CompanyAddSolutionForm";
-import CompanyEditSolutionForm from "./CompanyEditSolutionForm";
+import ConsumerProfile from "./ConsumerProfile";
+import ConsumerEditProfileForm from "./ConsumerEditProfileForm";
 
-const CompanyDashboard = () => {
+const ConsumerDashboard = () => {
   const [user, setUser] = useState(null);
   const location = useLocation();
 
@@ -81,68 +76,62 @@ const CompanyDashboard = () => {
           <div className="flex-1">
             <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
               <Link
-                to="/company-dashboard"
+                to="/consumer-dashboard/consumer-profile"
                 className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
-                  "/company-dashboard"
-                )}`}
-              >
-                <LayoutDashboard className="h-4 w-4" />
-                Dashboard
-              </Link>
-              <Link
-                to="/company-dashboard/company-details"
-                className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
-                  "/company-dashboard/company-details"
-                )} ${getLinkClasses(
-                  "/company-dashboard/company-details/company-edit-details"
-                )}`}
-              >
-                <Building className="h-4 w-4" />
-                Company Details
-              </Link>
-              <Link
-                to="/company-dashboard/company-profile"
-                className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
-                  "/company-dashboard/company-profile"
-                )} ${getLinkClasses(
-                  "/company-dashboard/company-profile/company-profile-edit"
-                )} ${getLinkClasses(
-                  "/company-dashboard/company-profile/company-gallery-edit"
-                )} ${getLinkClasses(
-                  "/company-dashboard/company-profile/company-add-solution"
-                )} ${getLinkClasses(
-                  "/company-dashboard/company-profile/company-edit-solution/:id"
+                  "/consumer-dashboard/consumer-profile"
                 )}`}
               >
                 <User className="h-4 w-4" />
-                Company Profile
+                Profile
               </Link>
               <Link
-                to="/company-dashboard/company-chat"
+                to="/consumer-dashboard/company-details"
                 className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
-                  "/company-dashboard/company-chat"
+                  "/consumer-dashboard/company-details"
+                )} ${getLinkClasses(
+                  "/consumer-dashboard/company-details/company-edit-details"
                 )}`}
               >
-                <MessageCircle className="h-4 w-4" />
+                <MessageSquare className="h-4 w-4" />
                 Chat
+                <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
+                  6
+                </Badge>
               </Link>
               <Link
-                to="/company-dashboard/company-quotation"
+                to="/consumer-dashboard/company-profile"
                 className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
-                  "/company-dashboard/company-quotation"
+                  "/consumer-dashboard/company-profile"
+                )} ${getLinkClasses(
+                  "/consumer-dashboard/company-profile/company-profile-edit"
+                )} ${getLinkClasses(
+                  "/consumer-dashboard/company-profile/company-gallery-edit"
+                )} ${getLinkClasses(
+                  "/consumer-dashboard/company-profile/company-add-solution"
+                )} ${getLinkClasses(
+                  "/consumer-dashboard/company-profile/company-edit-solution/:id"
                 )}`}
               >
-                <FileCheck className="h-4 w-4" />
+                <FileText className="h-4 w-4" />
                 Quotation
               </Link>
               <Link
-                to="/company-dashboard/company-projects"
+                to="/consumer-dashboard/company-chat"
                 className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
-                  "/company-dashboard/company-projects"
+                  "/consumer-dashboard/company-chat"
                 )}`}
               >
-                <ClipboardList className="h-4 w-4" />
-                Projects
+                <ShoppingCart className="h-4 w-4" />
+                Order
+              </Link>
+              <Link
+                to="/consumer-dashboard/company-quotation"
+                className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
+                  "/consumer-dashboard/company-quotation"
+                )}`}
+              >
+                <ReceiptText className="h-4 w-4" />
+                Invoice
               </Link>
             </nav>
           </div>
@@ -173,7 +162,7 @@ const CompanyDashboard = () => {
             <SheetContent side="left" className="flex flex-col h-full">
               <div className="hidden">
                 <DialogTitle>
-                  This is a mobile menu for company dashboard
+                  This is a mobile menu for consumer dashboard
                 </DialogTitle>
                 <Description>Menu for navigating the dashboard</Description>
               </div>
@@ -182,58 +171,58 @@ const CompanyDashboard = () => {
                   <EcoSyncLogo />
                 </div>
                 <Link
-                  to="/company-dashboard"
+                  to="/consumer-dashboard"
                   className={`mx-[-0.65rem] flex items-center gap-4 mt-5 rounded-xl px-3 py-2 ${getLinkClasses(
-                    "/company-dashboard"
+                    "/consumer-dashboard"
                   )}`}
                 >
                   <Home className="h-5 w-5" />
                   Dashboard
                 </Link>
                 <Link
-                  to="/company-dashboard/company-details"
+                  to="/consumer-dashboard/consumer-profile"
                   className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
-                    "/company-dashboard/company-details"
-                  )}`}
-                >
-                  <Building className="h-5 w-5" />
-                  Company Details
-                </Link>
-                <Link
-                  to="/company-dashboard/company-profile"
-                  className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
-                    "/company-dashboard/company-profile" 
+                    "/consumer-dashboard/company-details"
                   )}`}
                 >
                   <User className="h-4 w-4" />
-                  Company Profile
+                  Profile
                 </Link>
                 <Link
-                  to="/company-dashboard/company-chat"
+                  to="/consumer-dashboard/company-profile"
                   className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
-                    "/company-dashboard/company-chat"
+                    "/consumer-dashboard/company-profile"
                   )}`}
                 >
-                  <MessageCircle className="h-4 w-4" />
+                  <MessageSquare className="h-4 w-4" />
                   Chat
                 </Link>
                 <Link
-                  to="/company-dashboard/company-quotation"
+                  to="/consumer-dashboard/company-chat"
                   className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
-                    "/company-dashboard/company-quotation"
+                    "/consumer-dashboard/company-chat"
                   )}`}
                 >
-                  <FileCheck className="h-4 w-4" />
+                  <FileText className="h-4 w-4" />
                   Quotation
                 </Link>
                 <Link
-                  to="/company-dashboard/company-projects"
+                  to="/consumer-dashboard/company-quotation"
                   className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
-                    "/company-dashboard/company-projects"
+                    "/consumer-dashboard/company-quotation"
                   )}`}
                 >
-                  <ClipboardList className="h-4 w-4" />
-                  Projects
+                  <ShoppingCart className="h-4 w-4" />
+                  Order
+                </Link>
+                <Link
+                  to="/consumer-dashboard/company-projects"
+                  className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
+                    "/consumer-dashboard/company-projects"
+                  )}`}
+                >
+                  <ReceiptText className="h-4 w-4" />
+                  Invoice
                 </Link>
 
                 {/* Add mt-auto here to push the logout button to the bottom */}
@@ -253,18 +242,8 @@ const CompanyDashboard = () => {
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
           <Routes>
-            <Route path="company-details" element={<CompanyDetail />} />
-            <Route
-              path="company-details/company-edit-details"
-              element={<CompanyEditDetailsForm />}
-            />
-            <Route path="company-profile" element={<CompanyProfile />} />
-            <Route path="company-profile/company-profile-edit" element={<CompanyProfileEditForm />} />
-            <Route path="company-profile/company-gallery-edit" element={<CompanyGalleryEditForm />} />
-            <Route path="company-profile/company-add-solution" element={<CompanyAddSolutionForm />} />
-            <Route path="company-profile/company-edit-solution/:id" element={<CompanyEditSolutionForm />} />
-
-            {/* Add other routes here */}
+            <Route path="consumer-profile" element={<ConsumerProfile />} />
+            <Route path="consumer-profile/consumer-edit-profile" element={<ConsumerEditProfileForm />} />
           </Routes>
         </main>
       </div>
@@ -272,4 +251,4 @@ const CompanyDashboard = () => {
   );
 };
 
-export default CompanyDashboard;
+export default ConsumerDashboard;

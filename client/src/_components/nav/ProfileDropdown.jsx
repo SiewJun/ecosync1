@@ -46,7 +46,7 @@ const ProfileDropdown = ({ user }) => {
           <>
             <DropdownMenuItem asChild>
               <Link
-                to="/profile"
+                to="/consumer-dashboard/consumer-profile"
                 className="flex items-center gap-2 p-2 rounded-md cursor-pointer"
               >
                 <User className="h-4 w-4" />
@@ -55,7 +55,7 @@ const ProfileDropdown = ({ user }) => {
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link
-                to="/chat"
+                to="/consumer-dashboard/consumer-chat"
                 className="flex items-center gap-2 p-2 rounded-md cursor-pointer"
               >
                 <MessageSquare className="h-4 w-4" />
@@ -64,7 +64,7 @@ const ProfileDropdown = ({ user }) => {
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link
-                to="/quotation"
+                to="/consumer-dashboard/consumer-quotation"
                 className="flex items-center gap-2 p-2 rounded-md cursor-pointer"
               >
                 <FileText className="h-4 w-4" />
@@ -73,7 +73,7 @@ const ProfileDropdown = ({ user }) => {
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link
-                to="/order"
+                to="/consumer-dashboard/consumer-order"
                 className="flex items-center gap-2 p-2 rounded-md cursor-pointer"
               >
                 <ShoppingCart className="h-4 w-4" />
@@ -82,7 +82,7 @@ const ProfileDropdown = ({ user }) => {
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link
-                to="/invoice"
+                to="/consumer-dashboard/consumer-invoice"
                 className="flex items-center gap-2 p-2 rounded-md cursor-pointer"
               >
                 <ReceiptText className="h-4 w-4" />

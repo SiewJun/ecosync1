@@ -5,7 +5,6 @@ import HomePage from "./pages/HomePage";
 import ThemeProvider from "./context/ThemeContext";
 import SignInPage from "./pages/auth/SignInPage";
 import SignUpPage from "./pages/auth/SignUpPage";
-import ProfilePage from "./pages/ProfilePage";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 import CompanyRegistrationPage from "./pages/auth/CompanySignUpPage";
@@ -13,6 +12,7 @@ import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 import AdminPendingCompanyAppDashboardPage from "./pages/admin/AdminPendingCompanyAppDashboardPage";
 import CompletedCompanySignUpPage from "./pages/auth/CompletedCompanySignUpPage";
 import CompanyDashboard from "./_components/company/CompanyDashboard";
+import ConsumerDashboard from "./_components/consumer/ConsumerDashboard";
 
 // Custom ProtectedRoute component
 const ProtectedRoute = ({ element, role }) => {
@@ -63,7 +63,7 @@ const App = () => {
           />
           <Route path="/complete-registration" element={<CompletedCompanySignUpPage />} />
           <Route path="/company-dashboard/*" element={<ProtectedRoute element={<CompanyDashboard />} role="COMPANY" />} />
-          <Route path="/profile" element={<ProtectedRoute element={<ProfilePage />} />} />
+          <Route path="/consumer-dashboard/*" element={<ProtectedRoute element={<ConsumerDashboard />} role="CONSUMER" />} />
         </Routes>
       </Router>
     </div>
