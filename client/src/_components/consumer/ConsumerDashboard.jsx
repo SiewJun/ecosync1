@@ -20,6 +20,7 @@ import { DialogTitle } from "@radix-ui/react-dialog";
 import { Description } from "@radix-ui/react-dialog";
 import ConsumerProfile from "./ConsumerProfile";
 import ConsumerEditProfileForm from "./ConsumerEditProfileForm";
+import Chat from "../communication/Chat";
 
 const ConsumerDashboard = () => {
   const [user, setUser] = useState(null);
@@ -79,17 +80,17 @@ const ConsumerDashboard = () => {
                 to="/consumer-dashboard/consumer-profile"
                 className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
                   "/consumer-dashboard/consumer-profile"
+                )} ${getLinkClasses(
+                  "/consumer-dashboard/consumer-profile/consumer-edit-profile"
                 )}`}
               >
                 <User className="h-4 w-4" />
                 Profile
               </Link>
               <Link
-                to="/consumer-dashboard/company-details"
+                to="/consumer-dashboard/chat"
                 className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
-                  "/consumer-dashboard/company-details"
-                )} ${getLinkClasses(
-                  "/consumer-dashboard/company-details/company-edit-details"
+                  "/consumer-dashboard/chat"
                 )}`}
               >
                 <MessageSquare className="h-4 w-4" />
@@ -102,14 +103,6 @@ const ConsumerDashboard = () => {
                 to="/consumer-dashboard/company-profile"
                 className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
                   "/consumer-dashboard/company-profile"
-                )} ${getLinkClasses(
-                  "/consumer-dashboard/company-profile/company-profile-edit"
-                )} ${getLinkClasses(
-                  "/consumer-dashboard/company-profile/company-gallery-edit"
-                )} ${getLinkClasses(
-                  "/consumer-dashboard/company-profile/company-add-solution"
-                )} ${getLinkClasses(
-                  "/consumer-dashboard/company-profile/company-edit-solution/:id"
                 )}`}
               >
                 <FileText className="h-4 w-4" />
@@ -244,6 +237,7 @@ const ConsumerDashboard = () => {
           <Routes>
             <Route path="consumer-profile" element={<ConsumerProfile />} />
             <Route path="consumer-profile/consumer-edit-profile" element={<ConsumerEditProfileForm />} />
+            <Route path="chat/:companyId" element={<Chat />} />
           </Routes>
         </main>
       </div>
