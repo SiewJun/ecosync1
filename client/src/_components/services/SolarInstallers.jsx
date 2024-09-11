@@ -15,9 +15,9 @@ const SolarInstallers = ({ companies }) => {
       <div className="space-y-3">
         {companies.length ? (
           companies.map((company, index) => (
-            <Accordion key={index} type="single" collapsible className="rounded-md overflow-hidden shadow-sm ">
+            <Accordion key={index} type="single" collapsible className="rounded-md overflow-hidden shadow-sm">
               <AccordionItem value={`item-${index}`}>
-                <AccordionTrigger className="px-3 py-2 hover:no-underline">
+                <AccordionTrigger className="px-3 py-2 hover:no-underline mb-6">
                   <div className="flex flex-row items-center space-x-3 w-full">
                     <Avatar className="w-10 h-10 sm:w-12 sm:h-12">
                       {company.avatarUrl ? (
@@ -48,7 +48,7 @@ const SolarInstallers = ({ companies }) => {
                     </div>
                   </div>
                 </AccordionTrigger>
-                <AccordionContent className="px-3 py-2">
+                <AccordionContent className="px-3 py-2 mb-6">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <h3 className="text-xs sm:text-sm font-semibold mb-2">Contact Information</h3>
