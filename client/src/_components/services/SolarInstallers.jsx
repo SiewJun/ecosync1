@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -19,10 +20,13 @@ const SolarInstallers = ({ companies }) => {
                 <AccordionTrigger className="px-3 py-2 hover:no-underline">
                   <div className="flex flex-row items-center space-x-3 w-full">
                     <Avatar className="w-10 h-10 sm:w-12 sm:h-12">
-                      <AvatarImage src={`${BASE_URL}${company.avatarUrl}`} alt={company.CompanyDetail.companyName} />
-                      <AvatarFallback>
-                        <LucideSun className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-500" />
-                      </AvatarFallback>
+                      {company.avatarUrl ? (
+                        <AvatarImage src={`${BASE_URL}${company.avatarUrl}`} alt={company.CompanyDetail.companyName} />
+                      ) : (
+                        <AvatarFallback>
+                          <LucideSun className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-500" />
+                        </AvatarFallback>
+                      )}
                     </Avatar>
                     <div className="flex-1 text-left">
                       <h4 className="text-sm sm:text-base font-semibold">{company.CompanyDetail.companyName}</h4>
@@ -62,7 +66,7 @@ const SolarInstallers = ({ companies }) => {
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <Button variant="outline" size="sm" className="w-full justify-start text-xs py-1">
-                                <Globe className="mr-1 h-3 w-3" /> Website
+                                <Globe className="mr-1 h-3 w-3" /> {company.CompanyDetail.website ? `${company.CompanyDetail.website}` : "Website"}
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent>
@@ -74,7 +78,7 @@ const SolarInstallers = ({ companies }) => {
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <Button variant="outline" size="sm" className="w-full justify-start text-xs py-1">
-                                <MapPin className="mr-1 h-3 w-3" /> Address
+                                <MapPin className="mr-1 h-3 w-3" /> {company.CompanyDetail.address ? `${company.CompanyDetail.address}` : "Address"}
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent>
@@ -99,6 +103,26 @@ const SolarInstallers = ({ companies }) => {
       </div>
     </ScrollArea>
   );
+};
+
+SolarInstallers.propTypes = {
+  companies: PropTypes.arrayOf(
+    PropTypes.shape({
+      avatarUrl: PropTypes.string,
+      CompanyDetail: PropTypes.shape({
+        companyName: PropTypes.string.isRequired,
+        phoneNumber: PropTypes.string,
+        website: PropTypes.string,
+        address: PropTypes.string,
+        businessLicense: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
+      }).isRequired,
+      CompanyProfile: PropTypes.shape({
+        overview: PropTypes.string,
+        certificate: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
+        services: PropTypes.string,
+      }).isRequired,
+    })
+  ).isRequired,
 };
 
 export default SolarInstallers;

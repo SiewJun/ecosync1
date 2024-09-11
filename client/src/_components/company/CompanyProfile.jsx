@@ -1,32 +1,18 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Images, Zap, ShieldCheck, Info, MoreHorizontal } from "lucide-react";
+import { Images, ShieldCheck, Info } from "lucide-react";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import {
   Dialog,
   DialogTrigger,
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
+import SolarSolutionsSection from "./SolarSolutionsSection";
 
 const CompanyProfile = () => {
   const [profile, setProfile] = useState(null);
@@ -66,7 +52,7 @@ const CompanyProfile = () => {
       console.error("Failed to delete solutions", error);
     }
   };
-  
+
   const hasProfileData =
     profile &&
     (profile.description ||
@@ -112,7 +98,7 @@ const CompanyProfile = () => {
                 </p>
                 {profile.certificate ? (
                   <div className="flex items-center gap-4 mt-4">
-                    <ShieldCheck className="h-5 w-5 text-primary" />
+                    <ShieldCheck className="h-5 w-5 text-blue-500" />
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button
@@ -224,119 +210,22 @@ const CompanyProfile = () => {
         </Card>
 
         {/* Solar Solutions */}
-        <Card className="shadow-md">
-          <CardHeader>
-            <CardTitle>
-              <span className="flex items-center gap-2 text-xl font-semibold">
-                <Zap className="h-6 w-6" />
-                Solar Solutions
-              </span>
-            </CardTitle>
-          </CardHeader>
-          <Separator />
-          <CardContent className="mt-5">
-            {profile.SolarSolutions?.length > 0 ? (
-              <>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Image</TableHead>
-                      <TableHead>Solution Name</TableHead>
-                      <TableHead>Panel Type</TableHead>
-                      <TableHead>Power Output</TableHead>
-                      <TableHead>Efficiency</TableHead>
-                      <TableHead>Warranty</TableHead>
-                      <TableHead>Price</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {profile.SolarSolutions.map((solution, index) => (
-                      <TableRow key={index}>
-                        {/* Solution Image */}
-                        <TableCell>
-                          {solution.solutionPic ? (
-                            <img
-                              src={`${BASE_URL}${solution.solutionPic}`}
-                              alt={`Solution ${index + 1}`}
-                              className="rounded-lg object-cover w-20 h-20"
-                            />
-                          ) : (
-                            <span className="text-sm italic">No image</span>
-                          )}
-                        </TableCell>
-
-                        {/* Solution Name */}
-                        <TableCell className="font-semibold">
-                          {solution.solutionName}
-                        </TableCell>
-
-                        {/* Panel Type */}
-                        <TableCell>
-                          <Badge variant="outline">
-                            {solution.solarPanelType}
-                          </Badge>
-                        </TableCell>
-
-                        {/* Power Output */}
-                        <TableCell>{solution.powerOutput} W</TableCell>
-
-                        {/* Efficiency */}
-                        <TableCell>{solution.efficiency}%</TableCell>
-
-                        {/* Warranty */}
-                        <TableCell>{solution.warranty} years</TableCell>
-
-                        {/* Price */}
-                        <TableCell>RM{solution.price}</TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Open menu</span>
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem
-                              onClick={() => navigate(`/company-dashboard/company-profile/company-edit-solution/${solution.id}`)}
-                              >
-                                Update
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => onDelete(solution.id)}
-                                className="text-red-500"
-                              >
-                                Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-
-                <div className="flex justify-end mt-4">
-                  <Link to="/company-dashboard/company-profile/company-add-solution">
-                    <Button variant="secondary" size="sm">
-                      Add new solar solutions
-                    </Button>
-                  </Link>
-                </div>
-              </>
-            ) : (
-              <div className="flex flex-col justify-center items-center h-full">
-                <p className="mb-2">No Solar Solutions available.</p>
-                <Link to="/company-dashboard/company-profile/company-add-solution">
-                  <Button variant="secondary">
-                    Add some solar solutions here
-                  </Button>
-                </Link>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <SolarSolutionsSection
+          profile={{
+            ...profile,
+            SolarSolutions: profile.SolarSolutions.map((solution) => ({
+              ...solution,
+              id: solution.id.toString(),
+              powerOutput: solution.powerOutput.toString(),
+              efficiency: solution.efficiency.toString(),
+              warranty: solution.warranty.toString(),
+              price: solution.price.toString(),
+            })),
+          }}
+          BASE_URL={BASE_URL}
+          onDelete={onDelete}
+          navigate={navigate}
+        />
       </div>
     </>
   );

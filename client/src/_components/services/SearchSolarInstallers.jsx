@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import SolarInstallers from "./SolarInstallers";
-import { Loader, AlertCircle, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { AlertCircle, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import NavBar from "../nav/NavBar";
@@ -11,9 +10,7 @@ import NavBar from "../nav/NavBar";
 const SearchSolarInstallers = () => {
   const [companies, setCompanies] = useState([]);
   const [filteredCompanies, setFilteredCompanies] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [progress, setProgress] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -21,17 +18,11 @@ const SearchSolarInstallers = () => {
   useEffect(() => {
     const fetchCompanyDetails = async () => {
       try {
-        setProgress(25);
         const response = await axios.get("http://localhost:5000/api/company-services/company-details");
-        setProgress(75);
         setCompanies(response.data);
         setFilteredCompanies(response.data);
-        setLoading(false);
-        setProgress(100);
       } catch (err) {
         setError("Error fetching company details", err);
-        setLoading(false);
-        setProgress(100);
       }
     };
 
@@ -57,19 +48,9 @@ const SearchSolarInstallers = () => {
     currentPage * itemsPerPage
   );
 
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen space-y-6 bg-gray-50">
-        <Loader className="animate-spin h-16 w-16 text-blue-500" />
-        <Progress value={progress} className="w-64" />
-        <p className="text-gray-600 text-lg">Loading solar installers...</p>
-      </div>
-    );
-  }
-
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="flex items-center justify-center min-h-screen">
         <Alert variant="destructive" className="max-w-md">
           <AlertCircle className="h-5 w-5" />
           <AlertTitle className="text-lg font-semibold">Error</AlertTitle>
