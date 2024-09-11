@@ -17,24 +17,33 @@ const CompanyGalleryEditForm = () => {
     const fetchGalleryImages = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:5000/api/company/company-profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get(
+          "http://localhost:5000/api/company/company-profile",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         setExistingImages(response.data.CompanyGalleries);
       } catch (error) {
         console.error("Error fetching gallery images", error);
       }
     };
-  
+
     fetchGalleryImages();
   }, []);
 
   // Handle image selection
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
-    const validImageType = ["image/*"];
+    const validImageTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/bmp",
+      "image/webp",
+    ];
     const invalidFiles = selectedFiles.filter(
-      (file) => !validImageType.includes(file.type)
+      (file) => !validImageTypes.includes(file.type)
     );
 
     if (invalidFiles.length > 0) {
@@ -88,9 +97,12 @@ const CompanyGalleryEditForm = () => {
   const handleDeleteImage = async (id) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5000/api/company//company-gallery/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.delete(
+        `http://localhost:5000/api/company//company-gallery/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setExistingImages(existingImages.filter((image) => image.id !== id));
       setSuccess("Image deleted successfully!");
     } catch (error) {
@@ -165,7 +177,7 @@ const CompanyGalleryEditForm = () => {
                 </div>
               )}
               {success && (
-                <div className="flex items-center space-x-2 border border-green-500 bg-green-100 p-2 rounded-md mt-2">
+                <div className="flex items-center space-x-2 border border-green-500 bg-green-100 text-green-700 p-2 rounded-md mt-2">
                   <AlertCircle className="h-5 w-5" />
                   <p className="text-sm">{success}</p>
                 </div>

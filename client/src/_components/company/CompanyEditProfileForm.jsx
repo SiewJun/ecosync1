@@ -172,7 +172,7 @@ const CompanyProfileEditForm = () => {
               )}
 
               {success && (
-                <div className="flex items-center space-x-2 border border-green-500 bg-green-100 p-2 rounded-md mt-2">
+                <div className="flex items-center space-x-2 border border-green-500 bg-green-100 text-green-700 p-2 rounded-md mt-2">
                   <AlertCircle className="h-5 w-5" />
                   <p className="text-sm">{success}</p>
                 </div>
