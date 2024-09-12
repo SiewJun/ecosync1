@@ -5,7 +5,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, Loader2, ArrowLeft, Building2, MoreVertical } from "lucide-react";
+import {
+  Send,
+  Loader2,
+  ArrowLeft,
+  Building2,
+  MoreVertical,
+} from "lucide-react";
 import { format } from "date-fns";
 import {
   DropdownMenu,
@@ -13,7 +19,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const BASE_URL = "http://localhost:5000/";
 
@@ -65,7 +76,7 @@ const ChatPage = () => {
   useEffect(() => {
     // Scroll to the bottom when messages are loaded or updated
     if (lastMessageRef.current) {
-      lastMessageRef.current.scrollIntoView({ behavior: 'smooth' });
+      lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
 
@@ -182,38 +193,44 @@ const ChatPage = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem>View Company Profile</DropdownMenuItem>
-              <DropdownMenuItem>Block Company</DropdownMenuItem>
-              <DropdownMenuItem className="text-red-600">Report Issue</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </header>
 
-      <ScrollArea className="flex-1 p-4 h-0 min-h-0 max-h-full" ref={scrollAreaRef}>
+      <ScrollArea
+        className="flex-1 p-4 h-0 min-h-0 max-h-full"
+        ref={scrollAreaRef}
+      >
         <div className="max-w-3xl mx-auto space-y-4">
           {messages.length > 0 ? (
-            messages.map((msg, index) => (
-              <div
-                key={index}
-                ref={index === messages.length - 1 ? lastMessageRef : null}
-                className={`flex ${
-                  company?.id !== msg.senderId ? "justify-end" : "justify-start"
-                }`}
-              >
+            messages.map((msg, index) => {
+              const isCompanySender =
+                String(company?.id) === String(msg.senderId);
+
+              return (
                 <div
-                  className={`p-3 rounded-lg max-w-[80%] shadow-sm ${
-                    company?.id !== msg.senderId
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  key={index}
+                  ref={index === messages.length - 1 ? lastMessageRef : null}
+                  className={`flex ${
+                    isCompanySender ? "justify-start" : "justify-end"
                   }`}
                 >
-                  <p className="text-sm">{msg.messageText}</p>
-                  <p className="text-xs mt-1 opacity-70">
-                    {formatTimestamp(msg.createdAt)}
-                  </p>
+                  <div
+                    className={`p-3 rounded-lg max-w-[80%] shadow-sm ${
+                      isCompanySender
+                        ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        : "bg-primary text-primary-foreground"
+                    }`}
+                  >
+                    <p className="text-sm">{msg.messageText}</p>
+                    <p className="text-xs mt-1 opacity-70">
+                      {formatTimestamp(msg.createdAt)}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           ) : (
             <p className="text-center mt-8 text-gray-500 dark:text-gray-400">
               No messages yet. Start the conversation!
@@ -234,7 +251,11 @@ const ChatPage = () => {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button type="submit" disabled={sending} className="bg-primary hover:bg-primary/90">
+                <Button
+                  type="submit"
+                  disabled={sending}
+                  className="bg-primary hover:bg-primary/90"
+                >
                   {sending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (

@@ -8,6 +8,7 @@ const {
 } = require("../models");
 const router = express.Router();
 const authenticateToken = require("../middleware/auth");
+const upload = require("../middleware/multer");
 
 router.post("/chats/initiate", authenticateToken, async (req, res) => {
   const { companyId } = req.body;
@@ -44,7 +45,7 @@ router.get("/companies/:companyId", authenticateToken, async (req, res) => {
   try {
     // Fetch company avatarUrl
     const company = await User.findByPk(companyId, {
-      attributes: ["avatarUrl"],
+      attributes: ["id", "avatarUrl"],
     });
 
     if (!company) {
@@ -80,6 +81,33 @@ router.get("/companies/:companyId", authenticateToken, async (req, res) => {
         companyName: companyDetail.companyName,
         businessLicense: companyDetail.businessLicense,
         certificate: companyDetail.certificate,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching company data:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get("/consumers/:consumerId", authenticateToken, async (req, res) => {
+  const { consumerId } = req.params;
+
+  try {
+    const consumer = await User.findByPk(consumerId, {
+      attributes: ["id", "avatarUrl", "username", "role"],
+    });
+
+    if (!consumer) {
+      return res.status(404).json({ message: "Consumer not found" });
+    }
+
+    // Respond with the combined data
+    res.json({
+      consumer: {
+        id: consumer.id,
+        avatarUrl: consumer.avatarUrl,
+        username: consumer.username,
+        role: consumer.role,
       },
     });
   } catch (error) {
@@ -175,9 +203,78 @@ router.get("/chats/company", authenticateToken, async (req, res) => {
   }
 });
 
+router.get("/company-chats/:consumerId", authenticateToken, async (req, res) => {
+  const companyId = req.user.id; // Get company ID from token
+  const { consumerId } = req.params;
+  const userRole = req.user.role; // Get user role from token
+
+  if (userRole !== "COMPANY") {
+    return res.status(403).json({
+      message: "Forbidden: Only companies can view chat with a consumer",
+    });
+  }
+
+  try {
+    const chat = await Chat.findOne({
+      where: { companyId, consumerId },
+      include: [
+        {
+          model: Message,
+          attributes: ["id", "messageText", "senderId", "createdAt", "updatedAt"], // Include message details
+        },
+      ],
+    });
+
+    if (!chat) {
+      return res.status(404).json({ message: "Chat not found between the company and this consumer" });
+    }
+    const formattedMessages = chat.Messages.map((message) => ({
+      ...message.toJSON(),
+      createdAt: message.createdAt.toISOString(),
+      updatedAt: message.updatedAt.toISOString(),
+    }));
+
+    // Return formatted messages associated with the chat
+    res.json({ messages: formattedMessages });
+  } catch (error) {
+    console.error("Error fetching company-consumer chat:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 router.get("/chats/:companyId", authenticateToken, async (req, res) => {
   const { companyId } = req.params;
   const consumerId = req.user.id; // Get consumer ID from token
+
+  try {
+    // Find the chat for the given company and consumer
+    const chat = await Chat.findOne({
+      where: { consumerId, companyId },
+      include: [Message],
+    });
+
+    if (!chat) {
+      return res.status(404).json({ message: "Chat not found" });
+    }
+
+    // Format the messages, ensuring timestamps are in ISO 8601 format
+    const formattedMessages = chat.Messages.map((message) => ({
+      ...message.toJSON(),
+      createdAt: message.createdAt.toISOString(),
+      updatedAt: message.updatedAt.toISOString(),
+    }));
+
+    // Return formatted messages associated with the chat
+    res.json({ messages: formattedMessages });
+  } catch (error) {
+    console.error("Error fetching messages:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get("/chats/:consumerId", authenticateToken, async (req, res) => {
+  const { consumerId } = req.params;
+  const companyId = req.user.id; // Get company ID from token
 
   try {
     // Find the chat for the given company and consumer
@@ -227,6 +324,46 @@ router.post(
         senderId: consumerId, // assuming consumer is the sender
         messageText: content,
         messageType: "text", // for now assuming all messages are text
+      });
+
+      // Respond with the new message
+      return res.status(201).json({ message });
+    } catch (error) {
+      console.error("Error sending message:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
+);
+
+router.post(
+  "/company-chats/:consumerId/messages",
+  authenticateToken,
+  async (req, res) => {
+    const { consumerId } = req.params;
+    const { content } = req.body; // assuming `content` holds the message text
+    const companyId = req.user.id; // Get company ID from token
+    const userRole = req.user.role; // Get user role from token
+
+    if (userRole !== "COMPANY") {
+      return res.status(403).json({
+        message: "Forbidden: Only companies can send messages in this chat",
+      });
+    }
+
+    try {
+      // Find the chat between the company and the consumer
+      const chat = await Chat.findOne({ where: { consumerId, companyId } });
+
+      if (!chat) {
+        return res.status(404).json({ message: "Chat not found" });
+      }
+
+      // Create a new message associated with the chat
+      const message = await Message.create({
+        chatId: chat.id,
+        senderId: companyId, // company is the sender
+        messageText: content,
+        messageType: "text", // assuming all messages are text
       });
 
       // Respond with the new message

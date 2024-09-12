@@ -123,6 +123,8 @@ const CompanyDashboard = () => {
                 to="/company-dashboard/company-chat"
                 className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
                   "/company-dashboard/company-chat"
+                )} ${getLinkClasses(
+                  "/company-dashboard/company-chat/:id"
                 )}`}
               >
                 <MessageCircle className="h-4 w-4" />
@@ -266,7 +268,7 @@ const CompanyDashboard = () => {
             <Route path="company-profile/company-add-solution" element={<CompanyAddSolutionForm />} />
             <Route path="company-profile/company-edit-solution/:id" element={<CompanyEditSolutionForm />} />
             <Route path="/company-chat" element={<ChatListCompany />} />
-            <Route path="/company-chat/:id" element={<ChatCompany />} />
+            <Route path="/company-chat/:consumerId" element={<ChatCompany />} />
             {/* Add other routes here */}
           </Routes>
         </main>

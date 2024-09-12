@@ -60,8 +60,8 @@ const ChatListCompany = () => {
           <div className="space-y-4">
             {chats.map((chat) => (
               <Link
-                key={chat.id}
-                to={`/company-dashboard/chat/${chat.id}`}
+                key={chat.consumerId}
+                to={`/company-dashboard/company-chat/${chat.consumerId}`}
                 className="block"
               >
                 <Card className="hover:bg-accent transition-colors">

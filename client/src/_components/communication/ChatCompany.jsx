@@ -5,7 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, Loader2, ArrowLeft, Building2, MoreVertical } from "lucide-react";
+import { Send, Loader2, ArrowLeft, User, MoreVertical } from "lucide-react";
 import { format } from "date-fns";
 import {
   DropdownMenu,
@@ -13,14 +13,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const BASE_URL = "http://localhost:5000/";
 
-const ChatPage = () => {
-  const { companyId } = useParams();
+const ChatCompany = () => {
+  const { consumerId } = useParams();
   const navigate = useNavigate();
-  const [company, setCompany] = useState(null);
+  const [consumer, setConsumer] = useState(null);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
@@ -36,17 +41,21 @@ const ChatPage = () => {
         if (!token) return;
 
         setLoading(true);
-        const [companyResponse, messagesResponse] = await Promise.all([
-          axios.get(`${BASE_URL}api/communication/companies/${companyId}`, {
+
+        const [consumerResponse, messagesResponse] = await Promise.all([
+          axios.get(`${BASE_URL}api/communication/consumers/${consumerId}`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get(`${BASE_URL}api/communication/chats/${companyId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
+          axios.get(
+            `${BASE_URL}api/communication/company-chats/${consumerId}`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          ),
         ]);
 
-        setCompany(companyResponse.data.company);
-        setMessages(messagesResponse.data.messages);
+        setConsumer(consumerResponse.data.consumer);
+        setMessages(messagesResponse.data.messages);   
       } catch (error) {
         if (error.response && error.response.status === 404) {
           setError("The chat or company you're looking for does not exist.");
@@ -60,33 +69,32 @@ const ChatPage = () => {
     };
 
     fetchCompanyAndMessages();
-  }, [companyId]);
+  }, [consumerId]);
 
   useEffect(() => {
     // Scroll to the bottom when messages are loaded or updated
     if (lastMessageRef.current) {
-      lastMessageRef.current.scrollIntoView({ behavior: 'smooth' });
+      lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!message.trim() || sending) return;
-
+  
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
-
+  
       setSending(true);
       const response = await axios.post(
-        `${BASE_URL}api/communication/chats/${companyId}/messages`,
+        `${BASE_URL}api/communication/company-chats/${consumerId}/messages`,
         { content: message },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      // Assuming the server returns the message object with createdAt
+  
       const newMessage = response.data.message;
-
+  
       // Append the new message from the server response
       setMessages([...messages, newMessage]);
       setMessage("");
@@ -96,7 +104,7 @@ const ChatPage = () => {
     } finally {
       setSending(false);
     }
-  };
+  };  
 
   if (loading) {
     return (
@@ -143,7 +151,7 @@ const ChatPage = () => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => navigate("/consumer-dashboard/chat")}
+                    onClick={() => navigate("/company-dashboard/company-chat")}
                   >
                     <ArrowLeft className="h-5 w-5" />
                   </Button>
@@ -154,23 +162,23 @@ const ChatPage = () => {
               </Tooltip>
             </TooltipProvider>
             <Avatar className="w-12 h-12 ring-2 ring-emerald-400 ring-offset-2 ring-offset-background">
-              {company?.avatarUrl ? (
+              {consumer?.avatarUrl ? (
                 <AvatarImage
-                  src={`${BASE_URL}${company.avatarUrl}`}
-                  alt={company?.companyName || "Company Avatar"}
+                  src={`${BASE_URL}${consumer.avatarUrl}`}
+                  alt={consumer?.companyName || "Company Avatar"}
                 />
               ) : (
                 <AvatarFallback>
-                  <Building2 className="h-6 w-6 ring-emerald-400" />
+                  <User className="h-6 w-6 ring-emerald-400" />
                 </AvatarFallback>
               )}
             </Avatar>
             <div>
               <h1 className="text-xl font-semibold">
-                {company?.companyName || "Unknown Company"}
+                {consumer?.username || "Unknown Company"}
               </h1>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                {company?.website || "No website"}
+              {consumer?.role ? consumer.role.charAt(0).toUpperCase() + consumer.role.slice(1).toLowerCase() : "No data"}
               </p>
             </div>
           </div>
@@ -181,30 +189,33 @@ const ChatPage = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>View Company Profile</DropdownMenuItem>
-              <DropdownMenuItem>Block Company</DropdownMenuItem>
-              <DropdownMenuItem className="text-red-600">Report Issue</DropdownMenuItem>
+              <DropdownMenuItem>View User Profile</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </header>
 
-      <ScrollArea className="flex-1 p-4 h-0 min-h-0 max-h-full" ref={scrollAreaRef}>
+      <ScrollArea
+        className="flex-1 p-4 h-0 min-h-0 max-h-full"
+        ref={scrollAreaRef}
+      >
         <div className="max-w-3xl mx-auto space-y-4">
-          {messages.length > 0 ? (
+          {messages?.length > 0 ? (
             messages.map((msg, index) => (
               <div
                 key={index}
                 ref={index === messages.length - 1 ? lastMessageRef : null}
                 className={`flex ${
-                  company?.id !== msg.senderId ? "justify-end" : "justify-start"
+                  consumer?.id !== msg.senderId
+                    ? "justify-end"
+                    : "justify-start"
                 }`}
               >
                 <div
                   className={`p-3 rounded-lg max-w-[80%] shadow-sm ${
-                    company?.id !== msg.senderId
+                    consumer?.id !== msg.senderId
                       ? "bg-primary text-primary-foreground"
-                      : "bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      : "bg-secondary"
                   }`}
                 >
                   <p className="text-sm">{msg.messageText}</p>
@@ -234,7 +245,11 @@ const ChatPage = () => {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button type="submit" disabled={sending} className="bg-primary hover:bg-primary/90">
+                <Button
+                  type="submit"
+                  disabled={sending}
+                  className="bg-primary hover:bg-primary/90"
+                >
                   {sending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
@@ -254,4 +269,4 @@ const ChatPage = () => {
   );
 };
 
-export default ChatPage;
+export default ChatCompany;
