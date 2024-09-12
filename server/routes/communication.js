@@ -230,11 +230,9 @@ router.get(
       });
 
       if (!chat) {
-        return res
-          .status(404)
-          .json({
-            message: "Chat not found between the company and this consumer",
-          });
+        return res.status(404).json({
+          message: "Chat not found between the company and this consumer",
+        });
       }
       const formattedMessages = chat.Messages.map((message) => ({
         ...message.toJSON(),
@@ -346,7 +344,9 @@ router.post(
 
       let attachments = [];
       if (req.file) {
-        const fileType = req.file.mimetype.startsWith("image/") ? "image" : "document";
+        const fileType = req.file.mimetype.startsWith("image/")
+          ? "image"
+          : "document";
         const attachment = await Attachment.create({
           messageId: message.id,
           filePath: `uploads/${req.file.filename}`,
@@ -355,7 +355,9 @@ router.post(
         attachments.push(attachment);
       }
 
-      return res.status(201).json({ message: { ...message.toJSON(), attachments } });
+      return res
+        .status(201)
+        .json({ message: { ...message.toJSON(), attachments } });
     } catch (error) {
       console.error("Error sending message:", error);
       return res.status(500).json({ message: "Internal server error" });
@@ -388,7 +390,9 @@ router.post(
 
       let attachments = [];
       if (req.file) {
-        const fileType = req.file.mimetype.startsWith("image/") ? "image" : "document";
+        const fileType = req.file.mimetype.startsWith("image/")
+          ? "image"
+          : "document";
         const attachment = await Attachment.create({
           messageId: message.id,
           filePath: `uploads/${req.file.filename}`,
@@ -397,7 +401,9 @@ router.post(
         attachments.push(attachment);
       }
 
-      return res.status(201).json({ message: { ...message.toJSON(), attachments } });
+      return res
+        .status(201)
+        .json({ message: { ...message.toJSON(), attachments } });
     } catch (error) {
       console.error("Error sending message:", error);
       return res.status(500).json({ message: "Internal server error" });
