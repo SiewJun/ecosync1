@@ -74,7 +74,7 @@ module.exports = {
         allowNull: true
       },
       messageType: {
-        type: Sequelize.ENUM('text', 'document', 'image'),
+        type: Sequelize.ENUM('text', 'attachment'),
         allowNull: false,
         defaultValue: 'text'
       },

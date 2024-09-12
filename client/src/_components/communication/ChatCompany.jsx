@@ -33,6 +33,7 @@ const ChatCompany = () => {
   const [error, setError] = useState(null);
   const scrollAreaRef = useRef(null);
   const lastMessageRef = useRef(null);
+  const [attachment, setAttachment] = useState(null);
 
   useEffect(() => {
     const fetchCompanyAndMessages = async () => {
@@ -55,7 +56,11 @@ const ChatCompany = () => {
         ]);
 
         setConsumer(consumerResponse.data.consumer);
-        setMessages(messagesResponse.data.messages);   
+        // Sort messages by createdAt timestamp
+        const sortedMessages = messagesResponse.data.messages.sort(
+          (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+        );
+        setMessages(sortedMessages);
       } catch (error) {
         if (error.response && error.response.status === 404) {
           setError("The chat or company you're looking for does not exist.");
@@ -80,31 +85,38 @@ const ChatCompany = () => {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!message.trim() || sending) return;
-  
+    if ((!message.trim() && !attachment) || sending) return;
+
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
-  
+      const formData = new FormData();
+      formData.append("content", message);
+      if (attachment) formData.append("attachment", attachment);
+
       setSending(true);
       const response = await axios.post(
         `${BASE_URL}api/communication/company-chats/${consumerId}/messages`,
-        { content: message },
-        { headers: { Authorization: `Bearer ${token}` } }
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
-  
+
       const newMessage = response.data.message;
-  
-      // Append the new message from the server response
-      setMessages([...messages, newMessage]);
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
       setMessage("");
+      setAttachment(null);
     } catch (error) {
       console.error("Error sending message:", error);
       setError("An error occurred while sending the message.");
     } finally {
       setSending(false);
     }
-  };  
+  };
 
   if (loading) {
     return (
@@ -178,7 +190,10 @@ const ChatCompany = () => {
                 {consumer?.username || "Unknown Company"}
               </h1>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-              {consumer?.role ? consumer.role.charAt(0).toUpperCase() + consumer.role.slice(1).toLowerCase() : "No data"}
+                {consumer?.role
+                  ? consumer.role.charAt(0).toUpperCase() +
+                    consumer.role.slice(1).toLowerCase()
+                  : "No data"}
               </p>
             </div>
           </div>
@@ -218,7 +233,40 @@ const ChatCompany = () => {
                       : "bg-secondary"
                   }`}
                 >
-                  <p className="text-sm">{msg.messageText}</p>
+                  {msg.attachments && msg.attachments.length > 0 ? (
+                    msg.attachments.map((attachment) =>
+                      attachment.fileType === "image" ? (
+                        <img
+                          key={attachment.id}
+                          src={`${BASE_URL}${attachment.filePath}`}
+                          alt="attachment"
+                          className="max-w-full rounded-lg"
+                        />
+                      ) : attachment.fileType === "document" ? (
+                        <a
+                          key={attachment.id}
+                          href={`${BASE_URL}${attachment.filePath}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 underline"
+                        >
+                          Download Document
+                        </a>
+                      ) : (
+                        <a
+                          key={attachment.id}
+                          href={`${BASE_URL}${attachment.filePath}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 underline"
+                        >
+                          Download Attachment
+                        </a>
+                      )
+                    )
+                  ) : (
+                    <p>{msg.messageText}</p>
+                  )}
                   <p className="text-xs mt-1 opacity-70">
                     {formatTimestamp(msg.createdAt)}
                   </p>
@@ -242,27 +290,18 @@ const ChatCompany = () => {
             placeholder="Type your message..."
             className="flex-1 border"
           />
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="submit"
-                  disabled={sending}
-                  className="bg-primary hover:bg-primary/90"
-                >
-                  {sending ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Send className="h-4 w-4" />
-                  )}
-                  <span className="ml-2 hidden sm:inline">Send</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Send Message</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <input
+            type="file"
+            onChange={(e) => setAttachment(e.target.files[0])}
+          />
+          <Button type="submit" disabled={sending}>
+            {sending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
+            <span className="ml-2 hidden sm:inline">Send</span>
+          </Button>
         </div>
       </form>
     </div>

@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
       // Message belongs to a Chat and a User (Sender)
       this.belongsTo(models.Chat, { foreignKey: 'chatId' });
       this.belongsTo(models.User, { foreignKey: 'senderId' }); // Assuming 'Users' is the table of all users
-      this.hasOne(models.Attachment, { foreignKey: 'messageId' }); // One message may have one attachment
+      this.hasMany(models.Attachment, { foreignKey: 'messageId' }); // One message may have one attachment
     }
   }
 
@@ -37,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
     },
     messageType: {
-      type: DataTypes.ENUM('text', 'document', 'image'),
+      type: DataTypes.ENUM('text', 'attachment'),
       allowNull: false,
       defaultValue: 'text',
     },

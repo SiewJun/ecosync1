@@ -5,6 +5,7 @@ const {
   Message,
   CompanyDetail,
   CompanyProfile,
+  Attachment,
 } = require("../models");
 const router = express.Router();
 const authenticateToken = require("../middleware/auth");
@@ -194,7 +195,7 @@ router.get("/chats/company", authenticateToken, async (req, res) => {
     });
 
     // Filter out chats that have no messages
-    const chatsWithMessages = chats.filter(chat => chat.Messages.length > 0);
+    const chatsWithMessages = chats.filter((chat) => chat.Messages.length > 0);
 
     res.json({ chats: chatsWithMessages });
   } catch (error) {
@@ -203,44 +204,55 @@ router.get("/chats/company", authenticateToken, async (req, res) => {
   }
 });
 
-router.get("/company-chats/:consumerId", authenticateToken, async (req, res) => {
-  const companyId = req.user.id; // Get company ID from token
-  const { consumerId } = req.params;
-  const userRole = req.user.role; // Get user role from token
+router.get(
+  "/company-chats/:consumerId",
+  authenticateToken,
+  async (req, res) => {
+    const companyId = req.user.id; // Get company ID from token
+    const { consumerId } = req.params;
+    const userRole = req.user.role; // Get user role from token
 
-  if (userRole !== "COMPANY") {
-    return res.status(403).json({
-      message: "Forbidden: Only companies can view chat with a consumer",
-    });
-  }
-
-  try {
-    const chat = await Chat.findOne({
-      where: { companyId, consumerId },
-      include: [
-        {
-          model: Message,
-          attributes: ["id", "messageText", "senderId", "createdAt", "updatedAt"], // Include message details
-        },
-      ],
-    });
-
-    if (!chat) {
-      return res.status(404).json({ message: "Chat not found between the company and this consumer" });
+    if (userRole !== "COMPANY") {
+      return res.status(403).json({
+        message: "Forbidden: Only companies can view chat with a consumer",
+      });
     }
-    const formattedMessages = chat.Messages.map((message) => ({
-      ...message.toJSON(),
-      createdAt: message.createdAt.toISOString(),
-      updatedAt: message.updatedAt.toISOString(),
-    }));
 
-    // Return formatted messages associated with the chat
-    res.json({ messages: formattedMessages });
-  } catch (error) {
-    console.error("Error fetching company-consumer chat:", error);
-    res.status(500).json({ message: "Internal server error" });
+    try {
+      const chat = await Chat.findOne({
+        where: { companyId, consumerId },
+        include: [
+          {
+            model: Message,
+            include: [Attachment], // Include attachments in the message
+          },
+        ],
+      });
+
+      if (!chat) {
+        return res
+          .status(404)
+          .json({
+            message: "Chat not found between the company and this consumer",
+          });
+      }
+      const formattedMessages = chat.Messages.map((message) => ({
+        ...message.toJSON(),
+        createdAt: message.createdAt.toISOString(),
+        updatedAt: message.updatedAt.toISOString(),
+        attachments: message.Attachments.map((attachment) =>
+          attachment.toJSON()
+        ),
+      }));
+
+      // Return formatted messages associated with the chat
+      res.json({ messages: formattedMessages });
+    } catch (error) {
+      console.error("Error fetching company-consumer chat:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
   }
-});
+);
 
 router.get("/chats/:companyId", authenticateToken, async (req, res) => {
   const { companyId } = req.params;
@@ -250,7 +262,12 @@ router.get("/chats/:companyId", authenticateToken, async (req, res) => {
     // Find the chat for the given company and consumer
     const chat = await Chat.findOne({
       where: { consumerId, companyId },
-      include: [Message],
+      include: [
+        {
+          model: Message,
+          include: [Attachment], // Include attachments in the message
+        },
+      ],
     });
 
     if (!chat) {
@@ -262,6 +279,7 @@ router.get("/chats/:companyId", authenticateToken, async (req, res) => {
       ...message.toJSON(),
       createdAt: message.createdAt.toISOString(),
       updatedAt: message.updatedAt.toISOString(),
+      attachments: message.Attachments.map((attachment) => attachment.toJSON()), // Include attachments
     }));
 
     // Return formatted messages associated with the chat
@@ -305,29 +323,39 @@ router.get("/chats/:consumerId", authenticateToken, async (req, res) => {
 router.post(
   "/chats/:companyId/messages",
   authenticateToken,
+  upload.single("attachment"),
   async (req, res) => {
     const { companyId } = req.params;
-    const { content } = req.body; // assuming `content` holds the message text
+    const { content } = req.body; // Text content of the message
     const consumerId = req.user.id; // Get consumer ID from token
 
     try {
-      // Find the chat between the consumer and the company
       const chat = await Chat.findOne({ where: { consumerId, companyId } });
 
       if (!chat) {
         return res.status(404).json({ message: "Chat not found" });
       }
 
-      // Create a new message associated with the chat
+      // Create a new message
       const message = await Message.create({
         chatId: chat.id,
-        senderId: consumerId, // assuming consumer is the sender
-        messageText: content,
-        messageType: "text", // for now assuming all messages are text
+        senderId: consumerId,
+        messageText: req.file ? req.file.originalname : content,
+        messageType: req.file ? "attachment" : "text",
       });
 
-      // Respond with the new message
-      return res.status(201).json({ message });
+      let attachments = [];
+      if (req.file) {
+        const fileType = req.file.mimetype.startsWith("image/") ? "image" : "document";
+        const attachment = await Attachment.create({
+          messageId: message.id,
+          filePath: `uploads/${req.file.filename}`,
+          fileType: fileType,
+        });
+        attachments.push(attachment);
+      }
+
+      return res.status(201).json({ message: { ...message.toJSON(), attachments } });
     } catch (error) {
       console.error("Error sending message:", error);
       return res.status(500).json({ message: "Internal server error" });
@@ -338,36 +366,38 @@ router.post(
 router.post(
   "/company-chats/:consumerId/messages",
   authenticateToken,
+  upload.single("attachment"), // Handle file uploads for companies
   async (req, res) => {
     const { consumerId } = req.params;
-    const { content } = req.body; // assuming `content` holds the message text
-    const companyId = req.user.id; // Get company ID from token
-    const userRole = req.user.role; // Get user role from token
-
-    if (userRole !== "COMPANY") {
-      return res.status(403).json({
-        message: "Forbidden: Only companies can send messages in this chat",
-      });
-    }
+    const { content } = req.body;
+    const companyId = req.user.id;
 
     try {
-      // Find the chat between the company and the consumer
       const chat = await Chat.findOne({ where: { consumerId, companyId } });
 
       if (!chat) {
         return res.status(404).json({ message: "Chat not found" });
       }
 
-      // Create a new message associated with the chat
       const message = await Message.create({
         chatId: chat.id,
-        senderId: companyId, // company is the sender
-        messageText: content,
-        messageType: "text", // assuming all messages are text
+        senderId: companyId,
+        messageText: req.file ? req.file.originalname : content, // Use file name if attachment
+        messageType: req.file ? "attachment" : "text",
       });
 
-      // Respond with the new message
-      return res.status(201).json({ message });
+      let attachments = [];
+      if (req.file) {
+        const fileType = req.file.mimetype.startsWith("image/") ? "image" : "document";
+        const attachment = await Attachment.create({
+          messageId: message.id,
+          filePath: `uploads/${req.file.filename}`,
+          fileType: fileType,
+        });
+        attachments.push(attachment);
+      }
+
+      return res.status(201).json({ message: { ...message.toJSON(), attachments } });
     } catch (error) {
       console.error("Error sending message:", error);
       return res.status(500).json({ message: "Internal server error" });
