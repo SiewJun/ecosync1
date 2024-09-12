@@ -16,13 +16,13 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
-  LucideSun,
+  Building2,
   CheckCircle,
   ShieldCheck,
   Phone,
   Globe,
   MapPin,
-  MessageCircle,
+  MessageSquare,
 } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -100,7 +100,7 @@ const SolarInstallers = ({ companies }) => {
                         />
                       ) : (
                         <AvatarFallback>
-                          <LucideSun className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-500" />
+                          <Building2 className="h-6 w-6 text-muted-foreground" />
                         </AvatarFallback>
                       )}
                     </Avatar>
@@ -136,16 +136,13 @@ const SolarInstallers = ({ companies }) => {
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <div
-                                className="p-2 cursor-pointer flex items-center space-x-2 rounded-md"
+                                className="p-2 cursor-pointer flex items-center space-x-2 rounded-lg"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleChatClick(company.id);
                                 }}
                               >
-                                <MessageCircle className="h-4 w-4 text-primary" />
-                                <span className="text-sm font-medium text-primary">
-                                  Inquire
-                                </span>
+                                <MessageSquare className="h-4 w-4 text-primary" />
                               </div>
                             </TooltipTrigger>
                             <TooltipContent>

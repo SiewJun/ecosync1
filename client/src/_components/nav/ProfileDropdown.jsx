@@ -55,7 +55,7 @@ const ProfileDropdown = ({ user }) => {
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link
-                to="/consumer-dashboard/consumer-chat"
+                to="/consumer-dashboard/chat"
                 className="flex items-center gap-2 p-2 rounded-md cursor-pointer"
               >
                 <MessageSquare className="h-4 w-4" />

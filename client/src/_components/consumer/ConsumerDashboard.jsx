@@ -21,6 +21,7 @@ import { Description } from "@radix-ui/react-dialog";
 import ConsumerProfile from "./ConsumerProfile";
 import ConsumerEditProfileForm from "./ConsumerEditProfileForm";
 import Chat from "../communication/Chat";
+import ChatList from "../communication/ChatLIst";
 
 const ConsumerDashboard = () => {
   const [user, setUser] = useState(null);
@@ -238,6 +239,7 @@ const ConsumerDashboard = () => {
             <Route path="consumer-profile" element={<ConsumerProfile />} />
             <Route path="consumer-profile/consumer-edit-profile" element={<ConsumerEditProfileForm />} />
             <Route path="chat/:companyId" element={<Chat />} />
+            <Route path="chat" element={<ChatList />} />
           </Routes>
         </main>
       </div>

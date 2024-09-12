@@ -44,7 +44,7 @@ router.get('/companies/:companyId', authenticateToken, async (req, res) => {
     // Fetch companyName from CompanyDetail
     const companyDetail = await CompanyDetail.findOne({
       where: { userId: companyId },
-      attributes: ['companyName'],
+      attributes: ['companyName', 'businessLicense'],
     });
 
     if (!companyDetail) {
@@ -54,7 +54,7 @@ router.get('/companies/:companyId', authenticateToken, async (req, res) => {
     // Fetch overview from CompanyProfile
     const companyProfile = await CompanyProfile.findOne({
       where: { userId: companyId },
-      attributes: ['overview'],
+      attributes: ['certificate'],
     });
 
     if (!companyProfile) {
@@ -66,11 +66,48 @@ router.get('/companies/:companyId', authenticateToken, async (req, res) => {
       company: {
         avatarUrl: company.avatarUrl,
         companyName: companyDetail.companyName,
-        overview: companyProfile.overview,
+        businessLicense: companyDetail.businessLicense,
+        certificate: companyDetail.certificate,
       },
     });
   } catch (error) {
     console.error('Error fetching company data:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+router.get('/chats/consumer', authenticateToken, async (req, res) => {
+  const consumerId = req.user.id; // Get consumer ID from token
+
+  try {
+    const chats = await Chat.findAll({
+      where: { consumerId },
+      include: [
+        {
+          model: User,
+          as: 'Company',
+          attributes: ['id', 'avatarUrl'],
+          include: [
+            {
+              model: CompanyDetail,
+              attributes: ['companyName', 'businessLicense']
+            },
+            {
+              model: CompanyProfile,
+              attributes: ['certificate']
+            }
+          ]
+        }
+      ]
+    });
+
+    if (!chats.length) {
+      return res.status(404).json({ message: 'No chats found' });
+    }
+
+    res.json({ chats });
+  } catch (error) {
+    console.error('Error fetching chats:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });

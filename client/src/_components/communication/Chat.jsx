@@ -5,7 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ShieldCheck, Send, Loader2, ArrowLeft } from "lucide-react";
+import { Send, Loader2, ArrowLeft, Building2 } from "lucide-react";
 import { format } from "date-fns";
 
 const BASE_URL = "http://localhost:5000/";
@@ -106,7 +106,7 @@ const ChatPage = () => {
 
   return (
     <div className="flex flex-col h-full bg-gray-0">
-      <header className="p-4 shadow-md">
+      <header className="p-4 shadow-md border rounded-md">
         <div className="flex items-center space-x-4">
           <Button
             variant="ghost"
@@ -124,7 +124,7 @@ const ChatPage = () => {
               />
             ) : (
               <AvatarFallback>
-                <ShieldCheck className="h-6 w-6 text-yellow-500" />
+                <Building2 className="h-6 w-6 text-muted-foreground" />
               </AvatarFallback>
             )}
           </Avatar>
