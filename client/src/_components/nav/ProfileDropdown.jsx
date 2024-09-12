@@ -131,7 +131,7 @@ const ProfileDropdown = ({ user }) => {
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link
-                to="/company-dashboard/chat"
+                to="/company-dashboard/company-chat"
                 className="flex items-center gap-2 p-2 rounded-md cursor-pointer"
               >
                 <MessageCircle className="h-4 w-4" />

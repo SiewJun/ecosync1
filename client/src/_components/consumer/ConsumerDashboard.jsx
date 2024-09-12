@@ -238,8 +238,8 @@ const ConsumerDashboard = () => {
           <Routes>
             <Route path="consumer-profile" element={<ConsumerProfile />} />
             <Route path="consumer-profile/consumer-edit-profile" element={<ConsumerEditProfileForm />} />
-            <Route path="chat/:companyId" element={<Chat />} />
             <Route path="chat" element={<ChatList />} />
+            <Route path="chat/:companyId" element={<Chat />} />
           </Routes>
         </main>
       </div>

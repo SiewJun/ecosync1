@@ -68,10 +68,7 @@ const SolarInstallers = ({ companies }) => {
           },
         }
       );
-  
-      const chat = response.data.chat;
-      console.log(`Chat initiated with company ID: ${companyId}`, chat);
-  
+    
       navigate(`/consumer-dashboard/chat/${companyId}`);
     } catch (error) {
       console.error("Failed to initiate chat", error);

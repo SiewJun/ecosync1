@@ -181,7 +181,7 @@ const ConsumerProfile = () => {
                 <p>No consumer profile found for this user.</p>
                 <Button
                   className="w-full"
-                  variant="primary"
+                  variant="link"
                   onClick={handleCreateProfile}
                 >
                   Create a Consumer Profile Now

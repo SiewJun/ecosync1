@@ -25,6 +25,8 @@ import CompanyProfileEditForm from "./CompanyEditProfileForm";
 import CompanyGalleryEditForm from "./CompanyGalleryEditForm";
 import CompanyAddSolutionForm from "./CompanyAddSolutionForm";
 import CompanyEditSolutionForm from "./CompanyEditSolutionForm";
+import ChatListCompany from "../communication/ChatListCompany";
+import ChatCompany from "../communication/ChatCompany";
 
 const CompanyDashboard = () => {
   const [user, setUser] = useState(null);
@@ -263,7 +265,8 @@ const CompanyDashboard = () => {
             <Route path="company-profile/company-gallery-edit" element={<CompanyGalleryEditForm />} />
             <Route path="company-profile/company-add-solution" element={<CompanyAddSolutionForm />} />
             <Route path="company-profile/company-edit-solution/:id" element={<CompanyEditSolutionForm />} />
-
+            <Route path="/company-chat" element={<ChatListCompany />} />
+            <Route path="/company-chat/:id" element={<ChatCompany />} />
             {/* Add other routes here */}
           </Routes>
         </main>
