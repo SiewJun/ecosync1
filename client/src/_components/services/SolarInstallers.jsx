@@ -132,48 +132,59 @@ const SolarInstallers = ({ companies }) => {
                         </Badge>
                       )}
                       {userRole === "CONSUMER" ? (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div
-                              className="p-2 cursor-pointer flex items-center border border-primary space-x-2 rounded-lg hover:bg-primary/10 transition-colors"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleChatClick(company.id);
-                              }}
-                            >
-                              <MessageSquare className="h-4 w-4 text-primary" />
-                              <span className="text-xs text-primary">Inquire</span>
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="text-xs">Start a conversation</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    ) : (
-                      userRole !== "ADMIN" &&
-                      userRole !== "COMPANY" && (
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <Link to="/signin" onClick={(e) => e.stopPropagation()}>
-                                <Button 
-                                  size="sm" 
-                                  variant="outline"
-                                >
-                                  <MessageSquare className="h-4 w-4 mr-2" />
-                                  <span className="text-xs">Inquire</span>
-                                </Button>
-                              </Link>
+                              <div
+                                className="p-2 cursor-pointer flex items-center border border-primary space-x-2 rounded-lg hover:bg-primary/10 transition-colors"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleChatClick(company.id);
+                                }}
+                              >
+                                <MessageSquare className="h-4 w-4 text-primary" />
+                                <span className="text-xs text-primary">
+                                  Inquire
+                                </span>
+                              </div>
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p className="text-xs">Create an account to start conversations with installers</p>
+                              <p className="text-xs">Start a conversation</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
-                      )
-                    )}
+                      ) : (
+                        userRole !== "ADMIN" &&
+                        userRole !== "COMPANY" && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Link
+                                  to="/signin"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <Button size="sm" variant="outline">
+                                    <MessageSquare className="h-4 w-4 mr-2" />
+                                    <span className="text-xs">Inquire</span>
+                                  </Button>
+                                </Link>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="text-xs">
+                                  Create an account to start conversations with
+                                  installers
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )
+                      )}
+                      <Link
+                        to={`/companypublicprofile/${company.id}`}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        View Profile
+                      </Link>
                     </div>
                   </div>
                 </AccordionTrigger>

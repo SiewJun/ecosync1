@@ -137,7 +137,7 @@ function NavBar() {
           </Button>
         ) : (
           <Link to="/signin">
-            <Button variant="outline">Sign in</Button>
+            <Button variant="outline" className="ml-2">Sign in</Button>
           </Link>
         )}
       </div>

@@ -10,6 +10,7 @@ const companyDetailsProfile = require('./routes/companyDetailsProfile');
 const consumerProfile = require('./routes/consumerProfile');
 const companyServices = require('./routes/companyServices');
 const communication = require('./routes/communication');
+const companyPublicProfile = require('./routes/companyPublicProfile');
 
 dotenv.config();
 
@@ -31,7 +32,7 @@ app.use('/api/company', companyDetailsProfile);
 app.use('/api/consumer', consumerProfile);
 app.use('/api/company-services', companyServices);
 app.use('/api/communication', communication);
-
+app.use('/api/companypublic', companyPublicProfile);
 // Other middlewares and route setups
 
 app.listen(5000, () => {
