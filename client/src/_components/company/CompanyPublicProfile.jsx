@@ -5,18 +5,32 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ExternalLink, Phone, MapPin, FileText, Calendar } from "lucide-react";
+import { ExternalLink, Phone, MapPin, FileText, Calendar, X} from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import NavBar from "../nav/NavBar";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose, DrawerFooter } from "@/components/ui/drawer";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const CompanyPublicProfile = () => {
   const { companyId } = useParams();
   const [companyData, setCompanyData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [formData, setFormData] = useState({
+    salutation: "",
+    name: "",
+    email: "",
+    phoneNumber: "",
+    electricityBill: "",
+    propertyType: "",
+    address: "",
+    state: ""
+  });
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const BASE_URL = "http://localhost:5000/";
 
   useEffect(() => {
@@ -35,6 +49,22 @@ const CompanyPublicProfile = () => {
 
     fetchCompanyProfile();
   }, [companyId]);
+
+  const handleSubmitQuotation = async () => {
+    try {
+      await axios.post(`${BASE_URL}api/quotation/submit-quotations`, { ...formData, companyId });
+      setIsDrawerOpen(false);
+      setError(null);
+    // eslint-disable-next-line no-unused-vars
+    } catch (error) {
+      setError("Failed to submit the quotation request. Please try again.");
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
   if (loading) {
     return (
@@ -73,6 +103,110 @@ const CompanyPublicProfile = () => {
                 <p className="text-lg md:text-xl text-gray-600">{companyData.CompanyProfile.overview}</p>
               </div>
             </header>
+
+            <div className="flex justify-center mt-4">
+              <Button 
+                variant="default" 
+                onClick={() => setIsDrawerOpen(true)}
+                className="font-semibold py-2 px-6 rounded-full transition duration-300 ease-in-out transform hover:scale-105 shadow-lg"
+              >
+                Request Quotation
+              </Button>
+            </div>
+
+            <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+              <DrawerContent className="p-6 sm:max-w-2xl mx-auto">
+                <DrawerHeader>
+                  <DrawerTitle className="text-2xl font-bold text-primary">Request Quotation</DrawerTitle>
+                  <DrawerClose asChild>
+                    <Button variant="ghost" className="absolute right-4 top-4">
+                      <X className="h-6 w-6" />
+                    </Button>
+                  </DrawerClose>
+                </DrawerHeader>
+                <form className="space-y-4">
+                  <Input 
+                    label="Salutation" 
+                    name="salutation" 
+                    value={formData.salutation} 
+                    onChange={handleInputChange} 
+                    placeholder="Mr/Mrs" 
+                    className="rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                  />
+                  <Input 
+                    label="Name" 
+                    name="name" 
+                    value={formData.name} 
+                    onChange={handleInputChange} 
+                    placeholder="Your Name" 
+                    className="rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                  />
+                  <Input 
+                    label="Email" 
+                    name="email" 
+                    value={formData.email} 
+                    onChange={handleInputChange} 
+                    placeholder="Your Email" 
+                    className="rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                  />
+                  <Input 
+                    label="Phone Number" 
+                    name="phoneNumber" 
+                    value={formData.phoneNumber} 
+                    onChange={handleInputChange} 
+                    placeholder="Your Phone Number" 
+                    className="rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                  />
+                  <Input 
+                    label="Average Monthly Electricity Bill" 
+                    name="electricityBill" 
+                    value={formData.electricityBill} 
+                    onChange={handleInputChange} 
+                    placeholder="Average Electricity Bill" 
+                    className="rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                  />
+                  <Input 
+                    label="Property Type" 
+                    name="propertyType" 
+                    value={formData.propertyType} 
+                    onChange={handleInputChange} 
+                    placeholder="Property Type" 
+                    className="rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                  />
+                  <Input 
+                    label="Address" 
+                    name="address" 
+                    value={formData.address} 
+                    onChange={handleInputChange} 
+                    placeholder="Your Address" 
+                    className="rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                  />
+                  <Input 
+                    label="State" 
+                    name="state" 
+                    value={formData.state} 
+                    onChange={handleInputChange} 
+                    placeholder="State" 
+                    className="rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                  />
+                </form>
+                <DrawerFooter>
+                  <Button 
+                    variant="default"
+                    onClick={handleSubmitQuotation}
+                    className="w-full font-semibold py-2 px-6 rounded-full transition duration-300 ease-in-out transform hover:scale-105 shadow-lg"
+                  >
+                    Submit Quotation Request
+                  </Button>
+                </DrawerFooter>
+              </DrawerContent>
+            </Drawer>
+
+            {error && (
+              <Alert variant="destructive" className="mt-4">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
 
             <Tabs defaultValue="about" className="rounded-xl shadow-sm">
               <TabsList className="grid w-full grid-cols-4">

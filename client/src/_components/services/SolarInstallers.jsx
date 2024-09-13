@@ -50,7 +50,7 @@ const SolarInstallers = ({ companies }) => {
           },
         });
         setUserRole(response.data.user.role);
-        // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line no-unused-vars
       } catch (error) {
         setUserRole(null);
       }
@@ -62,8 +62,7 @@ const SolarInstallers = ({ companies }) => {
   const handleChatClick = async (companyId) => {
     try {
       const token = localStorage.getItem("token");
-      // eslint-disable-next-line no-unused-vars
-      const response = await axios.post(
+      await axios.post(
         `${BASE_URL}api/communication/chats/initiate`,
         { companyId },
         {
@@ -81,162 +80,149 @@ const SolarInstallers = ({ companies }) => {
 
   return (
     <ScrollArea className="h-[calc(100vh-240px)] sm:h-[calc(100vh-280px)]">
-      <div className="space-y-3">
+      <div className="space-y-6 p-4 sm:p-6 md:p-8">
         {companies.length ? (
           companies.map((company, index) => (
             <Accordion
               key={index}
               type="single"
               collapsible
-              className="rounded-md overflow-hidden shadow-sm"
+              className="rounded-2xl overflow-hidden shadow-sm border transition-all duration-300 hover:shadow-md"
             >
-              <AccordionItem value={`item-${index}`}>
-                <AccordionTrigger className="px-3 py-2 hover:no-underline mb-4">
-                  <div className="flex flex-row items-center space-x-3 w-full">
-                    <Avatar className="w-10 h-10 sm:w-12 sm:h-12">
+              <AccordionItem value={`item-${index}`} className="border-none">
+                <AccordionTrigger className="px-4 sm:px-6 py-6 hover:no-underline group">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6 w-full">
+                    <Avatar className="w-20 h-20 rounded-xl">
                       {company.avatarUrl ? (
                         <AvatarImage
                           src={`${BASE_URL}${company.avatarUrl}`}
                           alt={company.CompanyDetail.companyName}
+                          className="object-cover"
                         />
                       ) : (
-                        <AvatarFallback>
-                          <Building2 className="h-6 w-6 text-muted-foreground" />
+                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600">
+                          <Building2 className="h-10 w-10 text-white" />
                         </AvatarFallback>
                       )}
                     </Avatar>
                     <div className="flex-1 text-left">
-                      <h4 className="text-sm sm:text-base font-semibold">
+                      <h4 className="text-xl font-semibold mb-1 group-hover:text-primary transition-colors duration-300">
                         {company.CompanyDetail.companyName}
                       </h4>
-                      <p className="text-xs line-clamp-1">
+                      <p className="text-sm text-gray-500 line-clamp-2 mb-2">
                         {company.CompanyProfile.overview}
                       </p>
-                    </div>
-                    <div className="flex flex-col items-end space-y-1">
-                      {company.CompanyDetail.businessLicense && (
-                        <Badge
-                          variant="secondary"
-                          className="flex items-center space-x-1 px-1 py-0 text-[10px]"
-                        >
-                          <ShieldCheck className="w-2 h-2" />
-                          <span>Pre-screened</span>
-                        </Badge>
-                      )}
-                      {company.CompanyProfile.certificate && (
-                        <Badge
-                          variant="outline"
-                          className="flex items-center space-x-1 px-1 py-0 text-[10px]"
-                        >
-                          <CheckCircle className="w-2 h-2" />
-                          <span>Certified</span>
-                        </Badge>
-                      )}
-                      <div className="flex space-x-2 mt-2">
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                size="sm"
-                                variant={userRole === "CONSUMER" ? "default" : "outline"}
-                                className="transition-all duration-300 ease-in-out transform hover:scale-105"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  if (userRole === "CONSUMER") {
-                                    handleChatClick(company.id);
-                                  } else if (userRole !== "ADMIN" && userRole !== "COMPANY") {
-                                    window.location.href = "/signin";
-                                  }
-                                }}
-                              >
-                                <MessageSquare className="h-4 w-4" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="text-xs">
-                                {userRole === "CONSUMER"
-                                  ? "Start a conversation"
-                                  : "Create an account to start conversations with installers"}
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                size="sm"
-                                variant="secondary"
-                                className="transition-all duration-300 ease-in-out transform hover:scale-105"
-                                asChild
-                              >
-                                <Link
-                                  to={`/companypublicprofile/${company.id}`}
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  <ExternalLink className="h-4 w-4" />
-                                </Link>
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="text-xs">See detailed company information</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                      <div className="flex flex-wrap gap-2">
+                        {company.CompanyDetail.businessLicense && (
+                          <Badge
+                            variant="secondary"
+                            className="flex items-center space-x-1 px-2 py-1 text-xs bg-blue-100 text-blue-800"
+                          >
+                            <ShieldCheck className="w-3 h-3 mr-1" />
+                            <span>Pre-screened</span>
+                          </Badge>
+                        )}
+                        {company.CompanyProfile.certificate && (
+                          <Badge
+                            variant="outline"
+                            className="flex items-center space-x-1 px-2 py-1 text-xs border-green-300 text-green-600"
+                          >
+                            <CheckCircle className="w-3 h-3 mr-1" />
+                            <span>Certified</span>
+                          </Badge>
+                        )}
                       </div>
+                    </div>
+                    <div className="flex sm:flex-col items-center sm:items-end space-x-2 sm:space-x-0 sm:space-y-2 ml-auto">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size="sm"
+                              variant={userRole === "CONSUMER" ? "default" : "secondary"}
+                              className="transition-all duration-300 ease-in-out transform hover:scale-105"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (userRole === "CONSUMER") {
+                                  handleChatClick(company.id);
+                                } else if (userRole !== "ADMIN" && userRole !== "COMPANY") {
+                                  window.location.href = "/signin";
+                                }
+                              }}
+                            >
+                              <MessageSquare className="h-4 w-4 mr-2" />
+                              <span className="hidden sm:inline">Chat</span>
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-xs">
+                              {userRole === "CONSUMER"
+                                ? "Start a conversation"
+                                : "Create an account to chat with installers"}
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="transition-all duration-300 ease-in-out transform hover:scale-105"
+                              asChild
+                            >
+                              <Link
+                                to={`/installers/companypublicprofile/${company.id}`}
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <ExternalLink className="h-4 w-4 mr-2" />
+                                <span className="hidden sm:inline">Profile</span>
+                              </Link>
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-xs">View detailed company profile</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </div>
                   </div>
                 </AccordionTrigger>
-                <AccordionContent className="px-3 py-2 mb-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <h3 className="text-xs sm:text-sm font-semibold mb-2">
+                <AccordionContent className="px-4 sm:px-6 py-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-gray-500 mb-3">
                         Contact Information
                       </h3>
-                      <div className="space-y-1">
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div className="w-full justify-start text-xs py-1">
-                                <Phone className="mr-1 h-3 w-3" />{" "}
-                                {company.CompanyDetail.phoneNumber}
-                              </div>
-                            </TooltipTrigger>
-                          </Tooltip>
-                        </TooltipProvider>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div className="w-full justify-start text-xs py-1">
-                                <Globe className="mr-1 h-3 w-3" />{" "}
-                                {company.CompanyDetail.website
-                                  ? `${company.CompanyDetail.website}`
-                                  : "Website"}
-                              </div>
-                            </TooltipTrigger>
-                          </Tooltip>
-                        </TooltipProvider>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div className="w-full justify-start text-xs py-1">
-                                <MapPin className="mr-1 h-3 w-3" />{" "}
-                                {company.CompanyDetail.address
-                                  ? `${company.CompanyDetail.address}`
-                                  : "Address"}
-                              </div>
-                            </TooltipTrigger>
-                          </Tooltip>
-                        </TooltipProvider>
+                      <div className="space-y-3">
+                        <div className="flex items-center text-sm p-3 rounded-lg shadow-sm">
+                          <Phone className="mr-3 h-5 w-5 text-primary" />
+                          <span className="font-medium">{company.CompanyDetail.phoneNumber}</span>
+                        </div>
+                        <div className="flex items-center text-sm p-3 rounded-lg shadow-sm">
+                          <Globe className="mr-3 h-5 w-5 text-primary" />
+                          <span className="font-medium">
+                            {company.CompanyDetail.website || "Website not provided"}
+                          </span>
+                        </div>
+                        <div className="flex items-center text-sm p-3 rounded-lg shadow-sm">
+                          <MapPin className="mr-3 h-5 w-5 text-primary" />
+                          <span className="font-medium">
+                            {company.CompanyDetail.address || "Address not provided"}
+                          </span>
+                        </div>
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-xs sm:text-sm font-semibold mb-2">
+                      <h3 className="text-lg text-gray-500 font-semibold mb-3">
                         Services
                       </h3>
-                      <p className="text-xs">
-                        {company.CompanyProfile.services}
-                      </p>
+                      <div className="p-4 rounded-lg shadow-sm">
+                        <p className="text-sm">
+                          {company.CompanyProfile.services || "No services listed"}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </AccordionContent>
@@ -244,7 +230,13 @@ const SolarInstallers = ({ companies }) => {
             </Accordion>
           ))
         ) : (
-          <p className="text-center py-4 text-sm">No solar installers found.</p>
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <Building2 className="h-16 w-16 mb-4" />
+            <p className="text-xl font-semibold mb-2">No solar installers found</p>
+            <p className="text-sm text-gray-600">
+              We could not find any solar installers matching your criteria. Try adjusting your search or check back later.
+            </p>
+          </div>
         )}
       </div>
     </ScrollArea>

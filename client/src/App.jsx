@@ -66,8 +66,8 @@ const App = () => {
           <Route path="/complete-registration" element={<CompletedCompanySignUpPage />} />
           <Route path="/company-dashboard/*" element={<ProtectedRoute element={<CompanyDashboard />} role="COMPANY" />} />
           <Route path="/consumer-dashboard/*" element={<ProtectedRoute element={<ConsumerDashboard />} role="CONSUMER" />} />
-          <Route path="/searchinstallers" element={<SearchSolarInstallers />} />
-          <Route path="/companypublicprofile/:companyId" element={<CompanyPublicProfile />} />
+          <Route path="/installers" element={<SearchSolarInstallers />} />
+          <Route path="/installers/companypublicprofile/:companyId" element={<CompanyPublicProfile />} />
         </Routes>
       </Router>
     </div>

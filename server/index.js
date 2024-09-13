@@ -11,6 +11,7 @@ const consumerProfile = require('./routes/consumerProfile');
 const companyServices = require('./routes/companyServices');
 const communication = require('./routes/communication');
 const companyPublicProfile = require('./routes/companyPublicProfile');
+const quotation = require('./routes/quotation');
 
 dotenv.config();
 
@@ -33,6 +34,7 @@ app.use('/api/consumer', consumerProfile);
 app.use('/api/company-services', companyServices);
 app.use('/api/communication', communication);
 app.use('/api/companypublic', companyPublicProfile);
+app.use('/api/quotation', quotation);
 // Other middlewares and route setups
 
 app.listen(5000, () => {

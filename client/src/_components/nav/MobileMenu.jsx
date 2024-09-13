@@ -187,7 +187,7 @@ const MobileMenu = ({ user }) => {
                       <Link to="/about">About Ecosync</Link>
                     </li>
                     <li className="py-2 px-4 rounded-md text-muted-foreground hover:text-primary-foreground hover:bg-primary transition-colors">
-                      <Link to="/searchinstallers">
+                      <Link to="/installers">
                         Search Solar Installers
                       </Link>
                     </li>
