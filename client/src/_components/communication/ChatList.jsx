@@ -85,7 +85,7 @@ const ChatList = () => {
                           {chat.Company.CompanyDetail.companyName}
                         </h4>
                       </div>
-                      <div className="flex space-x-2">
+                      <div className="flex md:flex-row flex-sm space-x-2">
                         {chat.Company.CompanyDetail.businessLicense && (
                           <Badge
                             variant="secondary"

@@ -74,6 +74,7 @@ const CompanyProfileEditForm = () => {
         }
       );
       setSuccess("Profile updated successfully!");
+      navigate("/company-dashboard/company-profile");
     } catch (error) {
       console.error("Error updating profile", error);
       setError("Failed to update profile. Please try again.");

@@ -87,6 +87,7 @@ const CompanyGalleryEditForm = () => {
         }
       );
       setSuccess("Gallery updated successfully!");
+      navigate("/company-dashboard/company-profile");
     } catch (error) {
       console.error("Error updating gallery", error);
       setError("Failed to update gallery. Please try again.");
@@ -165,13 +166,17 @@ const CompanyGalleryEditForm = () => {
                   </p>
                 </div>
               </div>
-              <Button type="submit" className="w-full" disabled={!!error}>
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={!!error || images.length === 0 || images.length > 5}
+              >
                 Save Changes
               </Button>
 
               {/* Feedback Messages */}
               {error && (
-                <div className="flex items-center space-x-2 border border-red-500 bg-red-100 p-2 rounded-md mt-2">
+                <div className="flex items-center space-x-2 border border-red-500 bg-red-100 text-red-700 p-2 rounded-md mt-2">
                   <AlertCircle className="h-5 w-5" />
                   <p className="text-sm">{error}</p>
                 </div>

@@ -53,25 +53,25 @@ const renderDashboardLinks = (user) => {
               Profile
             </li>
           </Link>
-          <Link to="/chat">
+          <Link to="consumer-dashboard/chat">
             <li className={linkClasses}>
               <MessageSquare className="inline-block mr-2" />
               Chat
             </li>
           </Link>
-          <Link to="/quotation">
+          <Link to="consumer-dashboard/quotation">
             <li className={linkClasses}>
               <FileText className="inline-block mr-2" />
               Quotation
             </li>
           </Link>
-          <Link to="/order">
+          <Link to="consumer-dashboard/order">
             <li className={linkClasses}>
               <ShoppingCart className="inline-block mr-2" />
               Order
             </li>
           </Link>
-          <Link to="/invoice">
+          <Link to="consumer-dashboard/invoice">
             <li className={linkClasses}>
               <ReceiptText className="inline-block mr-2" />
               Invoice
@@ -143,13 +143,6 @@ const renderDashboardLinks = (user) => {
               Dashboard
             </li>
           </Link>
-          <Link to="/chat">
-            <li className={linkClasses}>
-              <MessageSquare className="inline-block mr-2" />
-              Chat
-            </li>
-          </Link>
-
           <li
             className="py-2 px-4 rounded-md text-red-600 hover:text-red-800 hover:bg-red-100 font-semibold cursor-pointer transition-colors"
             onClick={handleLogout}
@@ -194,7 +187,7 @@ const MobileMenu = ({ user }) => {
                       <Link to="/about">About Ecosync</Link>
                     </li>
                     <li className="py-2 px-4 rounded-md text-muted-foreground hover:text-primary-foreground hover:bg-primary transition-colors">
-                      <Link to="/solar-installers">
+                      <Link to="/searchinstallers">
                         Search Solar Installers
                       </Link>
                     </li>

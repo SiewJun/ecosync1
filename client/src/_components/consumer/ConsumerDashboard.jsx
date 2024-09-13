@@ -92,6 +92,8 @@ const ConsumerDashboard = () => {
                 to="/consumer-dashboard/chat"
                 className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
                   "/consumer-dashboard/chat"
+                )} ${getLinkClasses(
+                  "/consumer-dashboard/chat/:id"
                 )}`}
               >
                 <MessageSquare className="h-4 w-4" />
@@ -176,16 +178,20 @@ const ConsumerDashboard = () => {
                 <Link
                   to="/consumer-dashboard/consumer-profile"
                   className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
-                    "/consumer-dashboard/company-details"
+                    "/consumer-dashboard/consumer-profile"
+                  )} ${getLinkClasses(
+                    "/consumer-dashboard/consumer-profile/consumer-edit-profile"
                   )}`}
                 >
                   <User className="h-4 w-4" />
                   Profile
                 </Link>
                 <Link
-                  to="/consumer-dashboard/company-profile"
+                  to="/consumer-dashboard/chat"
                   className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
-                    "/consumer-dashboard/company-profile"
+                    "/consumer-dashboard/chat"
+                  )} ${getLinkClasses(
+                    "/consumer-dashboard/chat/:id"
                   )}`}
                 >
                   <MessageSquare className="h-4 w-4" />

@@ -212,7 +212,7 @@ const SolarSolutionsSection = ({ profile, BASE_URL, onDelete, navigate }) => {
             <Sun className="h-12 w-12 text-yellow-500 mb-4" />
             <p className="text-lg mb-4">No Solar Solutions available yet.</p>
             <Link to="/company-dashboard/company-profile/company-add-solution">
-              <Button variant="default">Add your first solar solution</Button>
+              <Button variant="secondary">Add your first solar solution</Button>
             </Link>
           </div>
         )}

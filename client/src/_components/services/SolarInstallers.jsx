@@ -59,6 +59,7 @@ const SolarInstallers = ({ companies }) => {
   const handleChatClick = async (companyId) => {
     try {
       const token = localStorage.getItem("token");
+      // eslint-disable-next-line no-unused-vars
       const response = await axios.post(
         `${BASE_URL}api/communication/chats/initiate`,
         { companyId },
@@ -161,7 +162,7 @@ const SolarInstallers = ({ companies }) => {
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <div className="w-full justify-start text-xs py-1 cursor-pointer">
+                              <div className="w-full justify-start text-xs py-1">
                                 <Phone className="mr-1 h-3 w-3" />{" "}
                                 {company.CompanyDetail.phoneNumber}
                               </div>
@@ -171,35 +172,25 @@ const SolarInstallers = ({ companies }) => {
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <div className="w-full justify-start text-xs py-1 cursor-pointer">
+                              <div className="w-full justify-start text-xs py-1">
                                 <Globe className="mr-1 h-3 w-3" />{" "}
                                 {company.CompanyDetail.website
                                   ? `${company.CompanyDetail.website}`
                                   : "Website"}
                               </div>
                             </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="text-xs">
-                                {company.CompanyDetail.website}
-                              </p>
-                            </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <div className="w-full justify-start text-xs py-1 cursor-pointer">
+                              <div className="w-full justify-start text-xs py-1">
                                 <MapPin className="mr-1 h-3 w-3" />{" "}
                                 {company.CompanyDetail.address
                                   ? `${company.CompanyDetail.address}`
                                   : "Address"}
                               </div>
                             </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="text-xs">
-                                {company.CompanyDetail.address}
-                              </p>
-                            </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
                       </div>

@@ -82,6 +82,7 @@ const ConsumerEditProfile = () => {
       });
 
       setSuccess("Profile updated successfully!");
+      navigate("/consumer-dashboard/consumer-profile");
     } catch (error) {
       setError("Error updating profile: " + error.response?.data?.message || error.message);
     } finally {

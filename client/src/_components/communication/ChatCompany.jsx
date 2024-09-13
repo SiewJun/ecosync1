@@ -5,7 +5,15 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, Loader2, ArrowLeft, User, MoreVertical } from "lucide-react";
+import {
+  Send,
+  Loader2,
+  ArrowLeft,
+  User,
+  MoreVertical,
+  Paperclip,
+  X,
+} from "lucide-react";
 import { format } from "date-fns";
 import {
   DropdownMenu,
@@ -34,6 +42,7 @@ const ChatCompany = () => {
   const scrollAreaRef = useRef(null);
   const lastMessageRef = useRef(null);
   const [attachment, setAttachment] = useState(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     const fetchCompanyAndMessages = async () => {
@@ -56,16 +65,15 @@ const ChatCompany = () => {
         ]);
 
         setConsumer(consumerResponse.data.consumer);
-        // Sort messages by createdAt timestamp
         const sortedMessages = messagesResponse.data.messages.sort(
           (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
         );
         setMessages(sortedMessages);
       } catch (error) {
         if (error.response && error.response.status === 404) {
-          setError("The chat or company you're looking for does not exist.");
+          setError("The chat or consumer you're looking for does not exist.");
         } else {
-          console.error("Error fetching company or messages:", error);
+          console.error("Error fetching consumer or messages:", error);
           setError("An error occurred while fetching data.");
         }
       } finally {
@@ -77,7 +85,6 @@ const ChatCompany = () => {
   }, [consumerId]);
 
   useEffect(() => {
-    // Scroll to the bottom when messages are loaded or updated
     if (lastMessageRef.current) {
       lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
     }
@@ -118,6 +125,20 @@ const ChatCompany = () => {
     }
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setAttachment(file);
+    }
+  };
+
+  const removeAttachment = () => {
+    setAttachment(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -133,7 +154,7 @@ const ChatCompany = () => {
           {error}
         </p>
         <Button
-          onClick={() => navigate("/consumer-dashboard/chat")}
+          onClick={() => navigate("/company-dashboard/company-chat")}
           variant="outline"
         >
           <ArrowLeft className="mr-2 h-4 w-4" /> Go Back to Chats
@@ -154,7 +175,7 @@ const ChatCompany = () => {
 
   return (
     <div className="flex flex-col h-screen">
-      <header className="p-4 shadow-sm border-b">
+      <header className="p-4 shadow-md border-b">
         <div className="flex items-center justify-between max-w-4xl mx-auto">
           <div className="flex items-center space-x-4">
             <TooltipProvider>
@@ -173,23 +194,23 @@ const ChatCompany = () => {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <Avatar className="w-12 h-12 ring-2 ring-emerald-400 ring-offset-2 ring-offset-background">
+            <Avatar className="w-12 h-12 ring-2 ring-primary ring-offset-2 ring-offset-background">
               {consumer?.avatarUrl ? (
                 <AvatarImage
                   src={`${BASE_URL}${consumer.avatarUrl}`}
-                  alt={consumer?.companyName || "Company Avatar"}
+                  alt={consumer?.username || "Consumer Avatar"}
                 />
               ) : (
                 <AvatarFallback>
-                  <User className="h-6 w-6 ring-emerald-400" />
+                  <User className="h-6 w-6 text-primary" />
                 </AvatarFallback>
               )}
             </Avatar>
             <div>
               <h1 className="text-xl font-semibold">
-                {consumer?.username || "Unknown Company"}
+                {consumer?.username || "Unknown Consumer"}
               </h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm">
                 {consumer?.role
                   ? consumer.role.charAt(0).toUpperCase() +
                     consumer.role.slice(1).toLowerCase()
@@ -230,43 +251,34 @@ const ChatCompany = () => {
                   className={`p-3 rounded-lg max-w-[80%] shadow-sm ${
                     consumer?.id !== msg.senderId
                       ? "bg-primary text-primary-foreground"
-                      : "bg-secondary"
+                      : "bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   }`}
                 >
-                  {msg.attachments && msg.attachments.length > 0 ? (
-                    msg.attachments.map((attachment) =>
-                      attachment.fileType === "image" ? (
-                        <img
-                          key={attachment.id}
-                          src={`${BASE_URL}${attachment.filePath}`}
-                          alt="attachment"
-                          className="max-w-full rounded-lg"
-                        />
-                      ) : attachment.fileType === "document" ? (
-                        <a
-                          key={attachment.id}
-                          href={`${BASE_URL}${attachment.filePath}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 underline"
-                        >
-                          Download Document
-                        </a>
-                      ) : (
-                        <a
-                          key={attachment.id}
-                          href={`${BASE_URL}${attachment.filePath}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 underline"
-                        >
-                          Download Attachment
-                        </a>
+                  {msg.attachments && msg.attachments.length > 0
+                    ? msg.attachments.map((attachment) =>
+                        attachment.fileType === "image" ? (
+                          <img
+                            key={attachment.id}
+                            src={`${BASE_URL}${attachment.filePath}`}
+                            alt="attachment"
+                            className="max-w-full rounded-lg mb-2"
+                          />
+                        ) : (
+                          <a
+                            key={attachment.id}
+                            href={`${BASE_URL}${attachment.filePath}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 underline block mb-2"
+                          >
+                            {attachment.fileType === "document"
+                              ? "Download Document"
+                              : "Download Attachment"}
+                          </a>
+                        )
                       )
-                    )
-                  ) : (
-                    <p>{msg.messageText}</p>
-                  )}
+                    : null}
+                  {msg.messageText && <p>{msg.messageText}</p>}
                   <p className="text-xs mt-1 opacity-70">
                     {formatTimestamp(msg.createdAt)}
                   </p>
@@ -281,28 +293,59 @@ const ChatCompany = () => {
         </div>
       </ScrollArea>
 
-      <form onSubmit={handleSendMessage} className="p-4 border-t">
-        <div className="flex space-x-2 max-w-3xl mx-auto">
-          <Input
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="Type your message..."
-            className="flex-1 border"
-          />
-          <input
-            type="file"
-            onChange={(e) => setAttachment(e.target.files[0])}
-          />
-          <Button type="submit" disabled={sending}>
+      <form
+        onSubmit={handleSendMessage}
+        className="p-4 border-t"
+      >
+        <div className="flex items-end space-x-2 max-w-3xl mx-auto">
+          <div className="flex-1 relative">
+            <Input
+              type="text"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Type your message..."
+              className="pr-10 py-2 rounded-full border-gray-300 dark:border-gray-600 focus:ring-primary focus:border-primary"
+            />
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              className="hidden"
+              id="file-upload"
+            />
+            <label
+              htmlFor="file-upload"
+              className="absolute right-3 bottom-2 cursor-pointer text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            >
+              <Paperclip className="h-5 w-5" />
+            </label>
+          </div>
+          <Button
+            type="submit"
+            variant="default"
+            className="rounded-full px-4 py-2"
+          >
             {sending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-5 w-5 animate-spin" />
             ) : (
-              <Send className="h-4 w-4" />
+              <Send className="h-5 w-5" />
             )}
             <span className="ml-2 hidden sm:inline">Send</span>
           </Button>
         </div>
+        {attachment && (
+          <div className="mt-2 flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
+            <Paperclip className="h-4 w-4" />
+            <span className="truncate">{attachment.name}</span>
+            <button
+              type="button"
+              onClick={removeAttachment}
+              className="text-red-500 hover:text-red-700"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        )}
       </form>
     </div>
   );
