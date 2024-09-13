@@ -23,6 +23,7 @@ import {
   Globe,
   MapPin,
   MessageSquare,
+  ExternalLink,
 } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -131,60 +132,58 @@ const SolarInstallers = ({ companies }) => {
                           <span>Certified</span>
                         </Badge>
                       )}
-                      {userRole === "CONSUMER" ? (
+                      <div className="flex space-x-2 mt-2">
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <div
-                                className="p-2 cursor-pointer flex items-center border border-primary space-x-2 rounded-lg hover:bg-primary/10 transition-colors"
+                              <Button
+                                size="sm"
+                                variant={userRole === "CONSUMER" ? "default" : "outline"}
+                                className="transition-all duration-300 ease-in-out transform hover:scale-105"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleChatClick(company.id);
+                                  if (userRole === "CONSUMER") {
+                                    handleChatClick(company.id);
+                                  } else if (userRole !== "ADMIN" && userRole !== "COMPANY") {
+                                    window.location.href = "/signin";
+                                  }
                                 }}
                               >
-                                <MessageSquare className="h-4 w-4 text-primary" />
-                                <span className="text-xs text-primary">
-                                  Inquire
-                                </span>
-                              </div>
+                                <MessageSquare className="h-4 w-4" />
+                              </Button>
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p className="text-xs">Start a conversation</p>
+                              <p className="text-xs">
+                                {userRole === "CONSUMER"
+                                  ? "Start a conversation"
+                                  : "Create an account to start conversations with installers"}
+                              </p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
-                      ) : (
-                        userRole !== "ADMIN" &&
-                        userRole !== "COMPANY" && (
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                size="sm"
+                                variant="secondary"
+                                className="transition-all duration-300 ease-in-out transform hover:scale-105"
+                                asChild
+                              >
                                 <Link
-                                  to="/signin"
+                                  to={`/companypublicprofile/${company.id}`}
                                   onClick={(e) => e.stopPropagation()}
                                 >
-                                  <Button size="sm" variant="outline">
-                                    <MessageSquare className="h-4 w-4 mr-2" />
-                                    <span className="text-xs">Inquire</span>
-                                  </Button>
+                                  <ExternalLink className="h-4 w-4" />
                                 </Link>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p className="text-xs">
-                                  Create an account to start conversations with
-                                  installers
-                                </p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        )
-                      )}
-                      <Link
-                        to={`/companypublicprofile/${company.id}`}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        View Profile
-                      </Link>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p className="text-xs">See detailed company information</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
                     </div>
                   </div>
                 </AccordionTrigger>

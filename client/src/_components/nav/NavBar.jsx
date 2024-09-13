@@ -130,11 +130,9 @@ function NavBar() {
         </NavigationMenu>
       </div>
       <div className="hidden md:flex items-center justify-between">
-        <ThemeSwitcher />
+        <ThemeSwitcher className="mr-2" />
         {user ? (
-          <Button variant="ghost" className="px-2">
             <ProfileDropdown user={user} />
-          </Button>
         ) : (
           <Link to="/signin">
             <Button variant="outline" className="ml-2">Sign in</Button>

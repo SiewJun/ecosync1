@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ExternalLink, Phone, MapPin, FileText, Calendar } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import NavBar from "../nav/NavBar";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const CompanyPublicProfile = () => {
   const { companyId } = useParams();
@@ -57,96 +60,134 @@ const CompanyPublicProfile = () => {
   return (
     <>
       <NavBar />
-      <div className="container mx-auto p-6 space-y-6">
+      <div className="container mx-auto p-4 md:p-6 space-y-4 md:space-y-6">
         {companyData && (
           <>
-            <Card className="overflow-hidden">
-              <CardHeader className="flex flex-row items-center space-x-4 pb-8">
-                <Avatar className="h-24 w-24">
-                  <AvatarImage src={companyData.avatarUrl} alt="Company Logo" />
-                  <AvatarFallback>
-                    {companyData.CompanyDetail.companyName[0]}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <CardTitle className="text-3xl font-bold">
-                    {companyData.CompanyDetail.companyName}
-                  </CardTitle>
-                  <p className="text-gray-500">
-                    {companyData.CompanyProfile.overview}
-                  </p>
-                </div>
-              </CardHeader>
-              <CardContent className="p-6 space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <Phone className="h-5 w-5 text-gray-400" />
-                      <span>{companyData.CompanyDetail.phoneNumber}</span>
+            <header className="rounded-xl shadow-sm p-4 md:p-8 flex flex-col md:flex-row items-center md:space-x-8 space-y-4 md:space-y-0">
+              <Avatar className="h-24 w-24 md:h-32 md:w-32">
+                <AvatarImage src={`${BASE_URL}${companyData.avatarUrl}`} alt="Company Logo" />
+                <AvatarFallback>{companyData.CompanyDetail.companyName[0]}</AvatarFallback>
+              </Avatar>
+              <div className="text-center md:text-left">
+                <h1 className="text-2xl md:text-4xl font-bold mb-2">{companyData.CompanyDetail.companyName}</h1>
+                <p className="text-lg md:text-xl text-gray-600">{companyData.CompanyProfile.overview}</p>
+              </div>
+            </header>
+
+            <Tabs defaultValue="about" className="rounded-xl shadow-sm">
+              <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger value="about">About</TabsTrigger>
+                <TabsTrigger value="services">Services</TabsTrigger>
+                <TabsTrigger value="gallery">Gallery</TabsTrigger>
+                <TabsTrigger value="solutions">Solar Solutions</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="about" className="p-4 md:p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                  <div className="space-y-4">
+                    <h2 className="text-xl md:text-2xl font-semibold mb-4">Company Details</h2>
+                    <div className="flex items-center space-x-3">
+                      <Phone className="h-5 w-5 text-gray-400 flex-shrink-0" />
+                      <span className="break-all">{companyData.CompanyDetail.phoneNumber}</span>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <MapPin className="h-5 w-5 text-gray-400" />
-                      <span>{companyData.CompanyDetail.address}</span>
+                    <div className="flex items-center space-x-3">
+                      <MapPin className="h-5 w-5 text-gray-400 flex-shrink-0" />
+                      <span className="break-words">{companyData.CompanyDetail.address}</span>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <ExternalLink className="h-5 w-5 text-gray-400" />
-                      <a
-                        href={`https://${companyData.CompanyDetail.website}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
+                    <div className="flex items-center space-x-3">
+                      <ExternalLink className="h-5 w-5 text-gray-400 flex-shrink-0" />
+                      <a href={`https://${companyData.CompanyDetail.website}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">
                         {companyData.CompanyDetail.website}
                       </a>
                     </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <FileText className="h-5 w-5 text-gray-400" />
-                      <span>
-                        Business License:{" "}
-                        {companyData.CompanyDetail.businessLicense}
-                      </span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Calendar className="h-5 w-5 text-gray-400" />
-                      <span>
-                        Joined on:{" "}
-                        {new Date(
-                          companyData.CompanyProfile.createdAt
-                        ).toLocaleDateString()}
-                      </span>
+                    <div className="flex items-center space-x-3">
+                      <Calendar className="h-5 w-5 text-gray-400 flex-shrink-0" />
+                      <span>Joined on: {new Date(companyData.CompanyProfile.createdAt).toLocaleDateString()}</span>
                     </div>
                   </div>
-                </div>
-                <Separator />
-                <div>
-                  <h3 className="text-xl font-semibold mb-2">About Us</h3>
-                  <p className="text-gray-600">
-                    {companyData.CompanyProfile.description}
-                  </p>
-                </div>
-                <Separator />
-                <div>
-                  <h3 className="text-xl font-semibold mb-2">Services</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {companyData.CompanyProfile.services
-                      .split(",")
-                      .map((service, index) => (
-                        <Badge key={index} variant="secondary">
-                          {service.trim()}
-                        </Badge>
-                      ))}
+                  <div>
+                    <h2 className="text-xl md:text-2xl font-semibold mb-4">About Us</h2>
+                    <p className="text-gray-600 leading-relaxed">{companyData.CompanyProfile.description}</p>
                   </div>
                 </div>
-                <Separator />
-                <div>
-                  <h3 className="text-xl font-semibold mb-2">Certifications</h3>
-                  <p className="text-gray-600">
-                    {companyData.CompanyProfile.certificate}
-                  </p>
+                <Separator className="my-6" />
+                <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="w-full sm:w-auto flex items-center justify-center space-x-2">
+                        <FileText className="h-5 w-5" />
+                        <span>View Business License</span>
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="w-full max-w-3xl">
+                      <DialogTitle>Business License</DialogTitle>
+                      <object data={`${BASE_URL}${companyData.CompanyDetail.businessLicense}`} type="application/pdf" width="100%" height="600px">
+                        <p>
+                          Your browser does not support PDFs.{" "}
+                          <a href={`${BASE_URL}${companyData.CompanyDetail.businessLicense}`} target="_blank" rel="noopener noreferrer">Download the PDF</a>
+                        </p>
+                      </object>
+                    </DialogContent>
+                  </Dialog>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="w-full sm:w-auto flex items-center justify-center space-x-2">
+                        <FileText className="h-5 w-5" />
+                        <span>View Certifications</span>
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="w-full max-w-3xl">
+                      <DialogTitle>Certifications</DialogTitle>
+                      <object data={`${BASE_URL}${companyData.CompanyProfile.certificate}`} type="application/pdf" width="100%" height="600px">
+                        <p>
+                          Your browser does not support PDFs.{" "}
+                          <a href={`${BASE_URL}${companyData.CompanyProfile.certificate}`} target="_blank" rel="noopener noreferrer">Download the PDF</a>
+                        </p>
+                      </object>
+                    </DialogContent>
+                  </Dialog>
                 </div>
-              </CardContent>
-            </Card>
+              </TabsContent>
+
+              <TabsContent value="services" className="p-4 md:p-6">
+                <h2 className="text-xl md:text-2xl font-semibold mb-4">Our Services</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {companyData.CompanyProfile.services.split(",").map((service, index) => (
+                    <Badge key={index} variant="secondary" className="text-base md:text-lg py-2 px-4 bg-blue-100 text-blue-800 justify-center">
+                      {service.trim()}
+                    </Badge>
+                  ))}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="gallery" className="p-4 md:p-6">
+                <h2 className="text-xl md:text-2xl font-semibold mb-4">Company Gallery</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {companyData.CompanyProfile.CompanyGalleries.map((gallery) => (
+                    <img key={gallery.id} src={`${BASE_URL}${gallery.imageUrl}`} alt="Gallery" className="rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 object-cover h-48 w-full" />
+                  ))}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="solutions" className="p-4 md:p-6">
+                <h2 className="text-xl md:text-2xl font-semibold mb-4">Solar Solutions</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {companyData.CompanyProfile.SolarSolutions.map((solution) => (
+                    <Card key={solution.id} className="overflow-hidden">
+                      <img src={`${BASE_URL}${solution.solutionPic}`} alt={solution.solutionName} className="w-full h-48 object-cover" />
+                      <CardContent className="p-4">
+                        <h3 className="text-lg md:text-xl font-semibold mb-2">{solution.solutionName}</h3>
+                        <p className="text-gray-600 mb-2">Type: {solution.solarPanelType}</p>
+                        <p className="text-gray-600 mb-2">Power Output: {solution.powerOutput}W</p>
+                        <p className="text-gray-600 mb-2">Efficiency: {solution.efficiency}%</p>
+                        <p className="text-gray-600 mb-2">Warranty: {solution.warranty} years</p>
+                        <p className="text-xl font-bold text-green-600 mt-4">${solution.price}</p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </TabsContent>
+            </Tabs>
           </>
         )}
       </div>

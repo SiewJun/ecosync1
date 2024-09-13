@@ -5,6 +5,7 @@ import { AlertCircle, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import NavBar from "../nav/NavBar";
 
 const SearchSolarInstallers = () => {
@@ -13,6 +14,7 @@ const SearchSolarInstallers = () => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
   const itemsPerPage = 5;
 
   useEffect(() => {
@@ -21,8 +23,10 @@ const SearchSolarInstallers = () => {
         const response = await axios.get("http://localhost:5000/api/company-services/company-details");
         setCompanies(response.data);
         setFilteredCompanies(response.data);
+        setLoading(false);
       } catch (err) {
         setError("Error fetching company details", err);
+        setLoading(false);
       }
     };
 
@@ -47,6 +51,15 @@ const SearchSolarInstallers = () => {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Skeleton className="h-12 w-64" />
+        <Skeleton className="h-64 w-full mt-4" />
+      </div>
+    );
+  }
 
   if (error) {
     return (

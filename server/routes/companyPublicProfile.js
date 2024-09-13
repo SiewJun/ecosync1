@@ -4,20 +4,41 @@ const {
   User,
   CompanyDetail,
   CompanyProfile,
+  CompanyGallery,
+  SolarSolution,
 } = require("../models");
 
 router.get('/company/:companyId', async (req, res) => {
   const { companyId } = req.params;
   
   try {
-    // Fetch user details (company info)
+    // Fetch user details (company info) along with profile, details, galleries, and solar solutions
     const companyUser = await User.findOne({
       where: { id: companyId, role: 'COMPANY' },
       attributes: ['id', 'email', 'avatarUrl'], // User fields
       include: [
         {
           model: CompanyProfile,
-          attributes: ['description', 'certificate', 'overview', 'services', 'createdAt'] // CompanyProfile fields
+          attributes: ['description', 'certificate', 'overview', 'services', 'createdAt'], // CompanyProfile fields
+          include: [
+            {
+              model: CompanyGallery,
+              attributes: ['id', 'imageUrl'], // CompanyGallery fields
+            },
+            {
+              model: SolarSolution,
+              attributes: [
+                'id',
+                'solutionName',
+                'solutionPic',
+                'solarPanelType',
+                'powerOutput',
+                'efficiency',
+                'warranty',
+                'price'
+              ], // SolarSolution fields
+            }
+          ]
         },
         {
           model: CompanyDetail,

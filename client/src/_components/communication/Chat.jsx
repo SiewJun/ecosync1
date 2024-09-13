@@ -171,6 +171,10 @@ const ChatPage = () => {
     }
   };
 
+  const handleViewCompanyProfile = () => {
+    navigate(`/companypublicprofile/${company?.id}`)
+  };
+
   return (
     <div className="flex flex-col h-screen">
       <header className="p-4 shadow-md border-b">
@@ -220,7 +224,7 @@ const ChatPage = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>View Company Profile</DropdownMenuItem>
+              <DropdownMenuItem onClick={handleViewCompanyProfile}>View Company Profile</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

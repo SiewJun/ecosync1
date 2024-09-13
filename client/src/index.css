@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -16,8 +16,8 @@
     --card-foreground: 156 67% 0%;
     --border: 156 4% 92%;
     --input: 156 4% 92%;
-    --primary: 156 56% 73%;
-    --primary-foreground: 156 56% 13%;
+    --primary: 170 54% 61%;
+    --primary-foreground: 0 0% 0%;
     --secondary: 156 4% 91%;
     --secondary-foreground: 156 4% 31%;
     --accent: 156 12% 86%;
@@ -31,16 +31,16 @@
   .dark {
     --background: 156 58% 2%;
     --foreground: 156 32% 100%;
-    --muted: 0 33% 5%;
-    --muted-foreground: 0 5% 65%;
+    --muted: 132 10% 15%;
+    --muted-foreground: 170 0% 60%;
     --popover: 156 58% 2%;
     --popover-foreground: 156 32% 100%;
     --card: 156 58% 2%;
     --card-foreground: 156 32% 100%;
     --border: 156 4% 15%;
     --input: 156 4% 15%;
-    --primary: 156 56% 73%;
-    --primary-foreground: 156 56% 13%;
+    --primary: 170 54% 61%;
+    --primary-foreground: 0 0% 0%;
     --secondary: 0 0% 10%;
     --secondary-foreground: 0 0% 70%;
     --accent: 0 6% 18%;
