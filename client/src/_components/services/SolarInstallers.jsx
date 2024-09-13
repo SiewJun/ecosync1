@@ -26,6 +26,8 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const SolarInstallers = ({ companies }) => {
   const [userRole, setUserRole] = useState(null);
@@ -69,7 +71,7 @@ const SolarInstallers = ({ companies }) => {
           },
         }
       );
-    
+
       navigate(`/consumer-dashboard/chat/${companyId}`);
     } catch (error) {
       console.error("Failed to initiate chat", error);
@@ -88,7 +90,7 @@ const SolarInstallers = ({ companies }) => {
               className="rounded-md overflow-hidden shadow-sm"
             >
               <AccordionItem value={`item-${index}`}>
-                <AccordionTrigger className="px-3 py-2 hover:no-underline">
+                <AccordionTrigger className="px-3 py-2 hover:no-underline mb-4">
                   <div className="flex flex-row items-center space-x-3 w-full">
                     <Avatar className="w-10 h-10 sm:w-12 sm:h-12">
                       {company.avatarUrl ? (
@@ -129,30 +131,53 @@ const SolarInstallers = ({ companies }) => {
                           <span>Certified</span>
                         </Badge>
                       )}
-                      {userRole === "CONSUMER" && (
+                      {userRole === "CONSUMER" ? (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div
+                              className="p-2 cursor-pointer flex items-center border border-primary space-x-2 rounded-lg hover:bg-primary/10 transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleChatClick(company.id);
+                              }}
+                            >
+                              <MessageSquare className="h-4 w-4 text-primary" />
+                              <span className="text-xs text-primary">Inquire</span>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-xs">Start a conversation</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ) : (
+                      userRole !== "ADMIN" &&
+                      userRole !== "COMPANY" && (
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <div
-                                className="p-2 cursor-pointer flex items-center space-x-2 rounded-lg"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleChatClick(company.id);
-                                }}
-                              >
-                                <MessageSquare className="h-4 w-4 text-primary" />
-                              </div>
+                              <Link to="/signin" onClick={(e) => e.stopPropagation()}>
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                >
+                                  <MessageSquare className="h-4 w-4 mr-2" />
+                                  <span className="text-xs">Inquire</span>
+                                </Button>
+                              </Link>
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p className="text-xs">Inquire</p>
+                              <p className="text-xs">Create an account to start conversations with installers</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
-                      )}
+                      )
+                    )}
                     </div>
                   </div>
                 </AccordionTrigger>
-                <AccordionContent className="px-3 py-2">
+                <AccordionContent className="px-3 py-2 mb-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <h3 className="text-xs sm:text-sm font-semibold mb-2">
