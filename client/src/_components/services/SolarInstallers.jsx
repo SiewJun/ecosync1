@@ -27,7 +27,6 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
 const SolarInstallers = ({ companies }) => {
@@ -50,7 +49,7 @@ const SolarInstallers = ({ companies }) => {
           },
         });
         setUserRole(response.data.user.role);
-      // eslint-disable-next-line no-unused-vars
+        // eslint-disable-next-line no-unused-vars
       } catch (error) {
         setUserRole(null);
       }
@@ -137,22 +136,29 @@ const SolarInstallers = ({ companies }) => {
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button
-                              size="sm"
-                              variant={userRole === "CONSUMER" ? "default" : "secondary"}
-                              className="transition-all duration-300 ease-in-out transform hover:scale-105"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (userRole === "CONSUMER") {
-                                  handleChatClick(company.id);
-                                } else if (userRole !== "ADMIN" && userRole !== "COMPANY") {
-                                  window.location.href = "/signin";
-                                }
-                              }}
-                            >
-                              <MessageSquare className="h-4 w-4 mr-2" />
-                              <span className="hidden sm:inline">Chat</span>
-                            </Button>
+                            {userRole !== "ADMIN" && userRole !== "COMPANY" && (
+                              <div
+                                className={`transition-all duration-300 ease-in-out rounded-lg border-2 transform hover:scale-105 ${
+                                  userRole === "CONSUMER"
+                                    ? "bg-primary"
+                                    : "bg-secondary"
+                                } p-2 inline-flex items-center cursor-pointer`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (userRole === "CONSUMER") {
+                                    handleChatClick(company.id);
+                                  } else if (
+                                    userRole !== "ADMIN" &&
+                                    userRole !== "COMPANY"
+                                  ) {
+                                    navigate("/signin");
+                                  }
+                                }}
+                              >
+                                <MessageSquare className="h-4 w-4 mr-2" />
+                                <span className="hidden sm:inline">Chat</span>
+                              </div>
+                            )}
                           </TooltipTrigger>
                           <TooltipContent>
                             <p className="text-xs">
@@ -166,23 +172,26 @@ const SolarInstallers = ({ companies }) => {
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="transition-all duration-300 ease-in-out transform hover:scale-105"
-                              asChild
+                            <div
+                              className="transition-all duration-300 ease-in-out transform hover:scale-105 rounded-lg border-2 p-2 inline-flex items-center cursor-pointer"
+                              onClick={(e) => e.stopPropagation()}
                             >
                               <Link
                                 to={`/installers/companypublicprofile/${company.id}`}
                                 onClick={(e) => e.stopPropagation()}
+                                className="flex items-center"
                               >
                                 <ExternalLink className="h-4 w-4 mr-2" />
-                                <span className="hidden sm:inline">Profile</span>
+                                <span className="hidden sm:inline">
+                                  Profile
+                                </span>
                               </Link>
-                            </Button>
+                            </div>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p className="text-xs">View detailed company profile</p>
+                            <p className="text-xs">
+                              View detailed company profile
+                            </p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -198,18 +207,22 @@ const SolarInstallers = ({ companies }) => {
                       <div className="space-y-3">
                         <div className="flex items-center text-sm p-3 rounded-lg shadow-sm">
                           <Phone className="mr-3 h-5 w-5 text-primary" />
-                          <span className="font-medium">{company.CompanyDetail.phoneNumber}</span>
+                          <span className="font-medium">
+                            {company.CompanyDetail.phoneNumber}
+                          </span>
                         </div>
                         <div className="flex items-center text-sm p-3 rounded-lg shadow-sm">
                           <Globe className="mr-3 h-5 w-5 text-primary" />
                           <span className="font-medium">
-                            {company.CompanyDetail.website || "Website not provided"}
+                            {company.CompanyDetail.website ||
+                              "Website not provided"}
                           </span>
                         </div>
                         <div className="flex items-center text-sm p-3 rounded-lg shadow-sm">
                           <MapPin className="mr-3 h-5 w-5 text-primary" />
                           <span className="font-medium">
-                            {company.CompanyDetail.address || "Address not provided"}
+                            {company.CompanyDetail.address ||
+                              "Address not provided"}
                           </span>
                         </div>
                       </div>
@@ -220,7 +233,8 @@ const SolarInstallers = ({ companies }) => {
                       </h3>
                       <div className="p-4 rounded-lg shadow-sm">
                         <p className="text-sm">
-                          {company.CompanyProfile.services || "No services listed"}
+                          {company.CompanyProfile.services ||
+                            "No services listed"}
                         </p>
                       </div>
                     </div>
@@ -232,9 +246,12 @@ const SolarInstallers = ({ companies }) => {
         ) : (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <Building2 className="h-16 w-16 mb-4" />
-            <p className="text-xl font-semibold mb-2">No solar installers found</p>
+            <p className="text-xl font-semibold mb-2">
+              No solar installers found
+            </p>
             <p className="text-sm text-gray-600">
-              We could not find any solar installers matching your criteria. Try adjusting your search or check back later.
+              We could not find any solar installers matching your criteria. Try
+              adjusting your search or check back later.
             </p>
           </div>
         )}

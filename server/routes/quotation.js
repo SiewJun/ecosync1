@@ -4,7 +4,7 @@ const {
   User,
 } = require("../models");
 
-router.post("/submit-quotations", async (req, res) => {
+router.post("/submit-quotation", async (req, res) => {
   try {
     const { consumerId, companyId, salutation, name, email, phoneNumber, electricityBill, propertyType, address, state } = req.body;
 
