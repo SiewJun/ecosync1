@@ -172,7 +172,7 @@ const ChatPage = () => {
   };
 
   const handleViewCompanyProfile = () => {
-    navigate(`/companypublicprofile/${company?.id}`)
+    navigate(`/searchinstallers/companypublicprofile/${company?.id}`)
   };
 
   return (
