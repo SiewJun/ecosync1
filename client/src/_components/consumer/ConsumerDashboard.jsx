@@ -240,7 +240,7 @@ const ConsumerDashboard = () => {
             <ProfileDropdown user={user} />
           </div>
         </header>
-        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
+        <main className="flex flex-1 flex-col">
           <Routes>
             <Route path="consumer-profile" element={<ConsumerProfile />} />
             <Route path="consumer-profile/consumer-edit-profile" element={<ConsumerEditProfileForm />} />
