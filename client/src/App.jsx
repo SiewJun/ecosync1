@@ -15,6 +15,7 @@ import CompanyDashboard from "./_components/company/CompanyDashboard";
 import ConsumerDashboard from "./_components/consumer/ConsumerDashboard";
 import SearchSolarInstallers from "./_components/services/SearchSolarInstallers";
 import CompanyPublicProfile from "./_components/company/CompanyPublicProfile";
+import SolarSolutionComparison from "./_components/services/SolarSolutionComparison";
 
 // Custom ProtectedRoute component
 const ProtectedRoute = ({ element, role }) => {
@@ -68,6 +69,7 @@ const App = () => {
           <Route path="/consumer-dashboard/*" element={<ProtectedRoute element={<ConsumerDashboard />} role="CONSUMER" />} />
           <Route path="/installers" element={<SearchSolarInstallers />} />
           <Route path="/installers/companypublicprofile/:companyId" element={<CompanyPublicProfile />} />
+          <Route path="/solar-solutions" element={<SolarSolutionComparison />} />
         </Routes>
       </Router>
     </div>

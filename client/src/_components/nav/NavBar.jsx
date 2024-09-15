@@ -99,7 +99,7 @@ function NavBar() {
                   <ListItem href="/installers" title="Search Solar Installers">
                     Find reliable and experienced solar installers in your area.
                   </ListItem>
-                  <ListItem href="/" title="Search/Compare Solar Solutions">
+                  <ListItem href="/solar-solutions" title="Search/Compare Solar Solutions">
                     Discover a wide range of solar solutions to fit your needs
                     and budget.
                   </ListItem>

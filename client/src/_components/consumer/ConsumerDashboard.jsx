@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Badge } from "@/components/ui/badge";
 import EcoSyncLogo from "../nav/EcoSyncLogo";
 import ProfileDropdown from "../nav/ProfileDropdown";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -98,9 +97,6 @@ const ConsumerDashboard = () => {
               >
                 <MessageSquare className="h-4 w-4" />
                 Chat
-                <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
-                  6
-                </Badge>
               </Link>
               <Link
                 to="/consumer-dashboard/company-profile"

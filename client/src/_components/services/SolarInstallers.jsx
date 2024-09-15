@@ -140,8 +140,8 @@ const SolarInstallers = ({ companies }) => {
                               <div
                                 className={`transition-all duration-300 ease-in-out rounded-lg border-2 transform hover:scale-105 ${
                                   userRole === "CONSUMER"
-                                    ? "bg-primary"
-                                    : "bg-secondary"
+                                    ? "bg-primary text-primary-foreground"
+                                    : "bg-secondary text-secondary-foreground"
                                 } p-2 inline-flex items-center cursor-pointer`}
                                 onClick={(e) => {
                                   e.stopPropagation();
