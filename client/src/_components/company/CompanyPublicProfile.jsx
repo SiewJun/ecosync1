@@ -5,14 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import {
-  ExternalLink,
-  Phone,
-  MapPin,
-  FileText,
-  Calendar,
-  X,
-} from "lucide-react";
+import { ExternalLink, Phone, MapPin, FileText, Calendar } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
@@ -23,41 +16,14 @@ import {
 import NavBar from "../nav/NavBar";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerClose,
-  DrawerFooter,
-} from "@/components/ui/drawer";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
-  Select,
-  SelectItem,
-  SelectTrigger,
-  SelectContent,
-  SelectValue,
-} from "@/components/ui/select";
+import QuotationDrawer from "./QuotationDrawer";
 
 const CompanyPublicProfile = () => {
   const { companyId } = useParams();
   const [companyData, setCompanyData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [quotationError, setQuotationError] = useState(null);
   const [user, setUser] = useState(null);
-  const [formData, setFormData] = useState({
-    salutation: "",
-    name: "",
-    email: "",
-    phoneNumber: "",
-    electricityBill: "",
-    propertyType: "",
-    address: "",
-    state: "",
-  });
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const BASE_URL = "http://localhost:5000/";
   const navigate = useNavigate();
@@ -94,8 +60,7 @@ const CompanyPublicProfile = () => {
         }
       } catch (error) {
         if (error.response && error.response.status === 403) {
-          // Handle 403 Forbidden error
-          localStorage.removeItem("token"); // Optionally remove the token
+          localStorage.removeItem("token");
         } else {
           console.error("Error fetching user:", error);
         }
@@ -104,36 +69,6 @@ const CompanyPublicProfile = () => {
 
     fetchUser();
   }, []);
-
-  const handleSubmitQuotation = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (token) {
-        await axios.post(
-          `${BASE_URL}api/quotation/submit-quotation`,
-          {
-            ...formData,
-            companyId,
-          },
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        setIsDrawerOpen(false);
-        setQuotationError(null);
-      }
-      // eslint-disable-next-line no-unused-vars
-    } catch (error) {
-      setQuotationError(
-        "Failed to submit the quotation request. Please try again."
-      );
-    }
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
 
   if (loading) {
     return (
@@ -181,7 +116,6 @@ const CompanyPublicProfile = () => {
                 </p>
               </div>
             </header>
-
             {user ? (
               user.role === "CONSUMER" ? (
                 <div className="flex justify-center mt-4">
@@ -205,134 +139,12 @@ const CompanyPublicProfile = () => {
                 </Button>
               </div>
             )}
-            <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-              <DrawerContent className="w-full p-6">
-                <div className="max-w-full mx-auto">
-                  <DrawerHeader>
-                    <DrawerTitle className="text-2xl font-bold text-primary">
-                      Request Quotation
-                    </DrawerTitle>
-                    <DrawerClose asChild>
-                      <Button
-                        variant="ghost"
-                        className="absolute right-4 top-4"
-                      >
-                        <X className="h-6 w-6" />
-                      </Button>
-                    </DrawerClose>
-                  </DrawerHeader>
-                  <form className="space-y-4">
-                    <Input
-                      label="Salutation"
-                      name="salutation"
-                      value={formData.salutation}
-                      onChange={handleInputChange}
-                      placeholder="Mr/Mrs"
-                    />
-                    <Input
-                      label="Name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      placeholder="Your Name"
-                    />
-                    <Input
-                      label="Email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      placeholder="Your Email"
-                    />
-                    <Input
-                      label="Phone Number"
-                      name="phoneNumber"
-                      value={formData.phoneNumber}
-                      onChange={handleInputChange}
-                      placeholder="Your Phone Number"
-                    />
-                    <Input
-                      label="Average Monthly Electricity Bill"
-                      name="electricityBill"
-                      value={formData.electricityBill}
-                      onChange={handleInputChange}
-                      placeholder="Average Electricity Bill"
-                    />
-                    <Input
-                      label="Address"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      placeholder="Your Address"
-                    />
-                    {/* Dropdown for Property Type */}
-                    <Select
-                      name="propertyType"
-                      value={formData.propertyType}
-                      onValueChange={(value) =>
-                        setFormData({ ...formData, propertyType: value })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Property Type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Bungalow">Bungalow</SelectItem>
-                        <SelectItem value="Semi Detached House">
-                          Semi Detached House
-                        </SelectItem>
-                        <SelectItem value="Terrace/Linked House">
-                          Terrace or Linked House
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-
-                    {/* Dropdown for State */}
-                    <Select
-                      name="state"
-                      value={formData.state}
-                      onValueChange={(value) =>
-                        setFormData({ ...formData, state: value })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select State" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Johor">Johor</SelectItem>
-                        <SelectItem value="Kedah">Kedah</SelectItem>
-                        <SelectItem value="Kelantan">Kelantan</SelectItem>
-                        <SelectItem value="Melaka">Melaka</SelectItem>
-                        <SelectItem value="Negeri Sembilan">
-                          Negeri Sembilan
-                        </SelectItem>
-                        <SelectItem value="Pahang">Pahang</SelectItem>
-                        <SelectItem value="Penang">Penang</SelectItem>
-                        <SelectItem value="Perak">Perak</SelectItem>
-                        <SelectItem value="Perlis">Perlis</SelectItem>
-                        <SelectItem value="Sabah">Sabah</SelectItem>
-                        <SelectItem value="Sarawak">Sarawak</SelectItem>
-                        <SelectItem value="Selangor">Selangor</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </form>
-                  {quotationError && (
-                    <Alert variant="destructive" className="mt-4">
-                      <AlertDescription>{quotationError}</AlertDescription>
-                    </Alert>
-                  )}
-                  <DrawerFooter>
-                    <Button
-                      variant="default"
-                      onClick={handleSubmitQuotation}
-                      className="w-full font-semibold py-2 px-6 rounded-full transition duration-300 ease-in-out transform hover:scale-105 shadow-lg"
-                    >
-                      Submit Quotation Request
-                    </Button>
-                  </DrawerFooter>
-                </div>
-              </DrawerContent>
-            </Drawer>
-
+            <QuotationDrawer
+              isDrawerOpen={isDrawerOpen}
+              setIsDrawerOpen={setIsDrawerOpen}
+              companyId={companyId}
+              BASE_URL={BASE_URL}
+            />{" "}
             <Tabs defaultValue="about" className="rounded-xl shadow-sm">
               <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="about">About</TabsTrigger>
@@ -530,6 +342,7 @@ const CompanyPublicProfile = () => {
                 </div>
               </TabsContent>
             </Tabs>
+            
           </>
         )}
       </div>

@@ -68,7 +68,7 @@ function NavBar() {
 
   return (
     <div className="flex w-full items-center justify-between px-5 py-3 md:px-4">
-        <EcoSyncLogo />
+      <EcoSyncLogo />
       <div className="md:hidden">
         <MobileMenu user={user} />
       </div>
@@ -132,10 +132,14 @@ function NavBar() {
       <div className="hidden md:flex items-center justify-between">
         <ThemeSwitcher className="mr-2" />
         {user ? (
+          <div className="ml-2">
             <ProfileDropdown user={user} />
+          </div>
         ) : (
           <Link to="/signin">
-            <Button variant="outline" className="ml-2">Sign in</Button>
+            <Button variant="outline" className="ml-2">
+              Sign in
+            </Button>
           </Link>
         )}
       </div>
