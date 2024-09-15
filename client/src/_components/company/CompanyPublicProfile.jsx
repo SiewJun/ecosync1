@@ -107,12 +107,21 @@ const CompanyPublicProfile = () => {
 
   const handleSubmitQuotation = async () => {
     try {
-      await axios.post(`${BASE_URL}api/quotation/submit-quotation`, {
-        ...formData,
-        companyId,
-      });
-      setIsDrawerOpen(false);
-      setQuotationError(null);
+      const token = localStorage.getItem("token");
+      if (token) {
+        await axios.post(
+          `${BASE_URL}api/quotation/submit-quotation`,
+          {
+            ...formData,
+            companyId,
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setIsDrawerOpen(false);
+        setQuotationError(null);
+      }
       // eslint-disable-next-line no-unused-vars
     } catch (error) {
       setQuotationError(
@@ -173,8 +182,8 @@ const CompanyPublicProfile = () => {
               </div>
             </header>
 
-            {user &&
-              (user.role === "CONSUMER" ? (
+            {user ? (
+              user.role === "CONSUMER" ? (
                 <div className="flex justify-center mt-4">
                   <Button
                     variant="default"
@@ -184,18 +193,18 @@ const CompanyPublicProfile = () => {
                     Request Quotation
                   </Button>
                 </div>
-              ) : (
-                user.role !== "ADMIN" &&
-                user.role !== "COMPANY" && (
-                  <Button
-                    variant="default"
-                    onClick={() => navigate("/signin")}
-                    className="font-semibold py-2 px-6 rounded-full transition duration-300 ease-in-out transform hover:scale-105 shadow-lg"
-                  >
-                    Request Quotation
-                  </Button>
-                )
-              ))}
+              ) : null
+            ) : (
+              <div className="flex justify-center mt-4">
+                <Button
+                  variant="default"
+                  onClick={() => navigate("/signin")}
+                  className="font-semibold py-2 px-6 rounded-full transition duration-300 ease-in-out transform hover:scale-105 shadow-lg"
+                >
+                  Request Quotation
+                </Button>
+              </div>
+            )}
             <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
               <DrawerContent className="w-full p-6">
                 <div className="max-w-full mx-auto">
@@ -248,7 +257,13 @@ const CompanyPublicProfile = () => {
                       onChange={handleInputChange}
                       placeholder="Average Electricity Bill"
                     />
-
+                    <Input
+                      label="Address"
+                      name="address"
+                      value={formData.address}
+                      onChange={handleInputChange}
+                      placeholder="Your Address"
+                    />
                     {/* Dropdown for Property Type */}
                     <Select
                       name="propertyType"

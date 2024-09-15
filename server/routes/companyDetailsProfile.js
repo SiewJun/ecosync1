@@ -1,6 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const { User, CompanyDetail, CompanyProfile, CompanyGallery, SolarSolution } = require("../models");
+const {
+  User,
+  CompanyDetail,
+  CompanyProfile,
+  CompanyGallery,
+  SolarSolution,
+} = require("../models");
 const authenticateToken = require("../middleware/auth");
 const upload = require("../middleware/multer");
 
@@ -54,13 +60,7 @@ router.put(
   upload.single("avatar"),
   async (req, res) => {
     try {
-      const {
-        username,
-        email,
-        phoneNumber,
-        address,
-        website,
-      } = req.body;
+      const { username, email, phoneNumber, address, website } = req.body;
 
       // Find the user and company details
       const user = await User.findByPk(req.user.id);
@@ -113,7 +113,16 @@ router.get("/company-profile", authenticateToken, async (req, res) => {
         },
         {
           model: SolarSolution,
-          attributes: ["id", "solutionName", "solutionPic", "solarPanelType", "powerOutput", "efficiency", "warranty", "price"],
+          attributes: [
+            "id",
+            "solutionName",
+            "solutionPic",
+            "solarPanelType",
+            "powerOutput",
+            "efficiency",
+            "warranty",
+            "price",
+          ],
         },
       ],
     });
@@ -129,69 +138,83 @@ router.get("/company-profile", authenticateToken, async (req, res) => {
   }
 });
 
-router.put("/update-company-profile", authenticateToken, upload.single("certificate"), async (req, res) => {
-  const { description, overview, services } = req.body;
+router.put(
+  "/update-company-profile",
+  authenticateToken,
+  upload.single("certificate"),
+  async (req, res) => {
+    const { description, overview, services } = req.body;
 
-  try {
-    const profile = await CompanyProfile.findOne({ where: { userId: req.user.id } });
+    try {
+      const profile = await CompanyProfile.findOne({
+        where: { userId: req.user.id },
+      });
 
-    if (!profile) {
-      return res.status(404).json({ message: "Company profile not found" });
+      if (!profile) {
+        return res.status(404).json({ message: "Company profile not found" });
+      }
+
+      // Update profile fields
+      if (description) profile.description = description;
+      if (overview) profile.overview = overview;
+      if (services) profile.services = services;
+
+      // Check if the certificate file is uploaded
+      if (req.file) {
+        const certificatePath = req.file.path; // Path of the uploaded file
+        profile.certificate = certificatePath;
+      }
+
+      // Save updated profile
+      await profile.save();
+      res.status(200).json({ message: "Company profile updated successfully" });
+    } catch (error) {
+      console.error("Error updating company profile:", error);
+      res.status(500).json({ message: "Internal server error" });
     }
-
-    // Update profile fields
-    if (description) profile.description = description;
-    if (overview) profile.overview = overview;
-    if (services) profile.services = services;
-
-    // Check if the certificate file is uploaded
-    if (req.file) {
-      const certificatePath = req.file.path; // Path of the uploaded file
-      profile.certificate = certificatePath;
-    }
-
-    // Save updated profile
-    await profile.save();
-    res.status(200).json({ message: "Company profile updated successfully" });
-  } catch (error) {
-    console.error("Error updating company profile:", error);
-    res.status(500).json({ message: "Internal server error" });
   }
-});
+);
 
-router.put("/update-gallery", authenticateToken, upload.array("images", 5), async (req, res) => {
-  try {
-    const userId = req.user.id;
+router.put(
+  "/update-gallery",
+  authenticateToken,
+  upload.array("images", 5),
+  async (req, res) => {
+    try {
+      const userId = req.user.id;
 
-    // Find the user's company profile
-    const companyProfile = await CompanyProfile.findOne({ where: { userId } });
+      // Find the user's company profile
+      const companyProfile = await CompanyProfile.findOne({
+        where: { userId },
+      });
 
-    if (!companyProfile) {
-      return res.status(404).json({ message: "Company profile not found" });
+      if (!companyProfile) {
+        return res.status(404).json({ message: "Company profile not found" });
+      }
+
+      const companyProfileId = companyProfile.id; // Get the company profile ID
+
+      // Check if files are uploaded
+      if (!req.files || req.files.length === 0) {
+        return res.status(400).json({ message: "No files uploaded" });
+      }
+
+      // Create entries for each uploaded image
+      const imageEntries = req.files.map((file) => ({
+        companyProfileId, // Use the retrieved companyProfileId
+        imageUrl: file.path,
+      }));
+
+      // Bulk create or update gallery images
+      await CompanyGallery.bulkCreate(imageEntries);
+
+      res.status(200).json({ message: "Gallery updated successfully" });
+    } catch (error) {
+      console.error("Error updating gallery:", error);
+      res.status(500).json({ message: "Internal server error" });
     }
-
-    const companyProfileId = companyProfile.id; // Get the company profile ID
-
-    // Check if files are uploaded
-    if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ message: "No files uploaded" });
-    }
-
-    // Create entries for each uploaded image
-    const imageEntries = req.files.map((file) => ({
-      companyProfileId, // Use the retrieved companyProfileId
-      imageUrl: file.path,
-    }));
-
-    // Bulk create or update gallery images
-    await CompanyGallery.bulkCreate(imageEntries);
-
-    res.status(200).json({ message: "Gallery updated successfully" });
-  } catch (error) {
-    console.error("Error updating gallery:", error);
-    res.status(500).json({ message: "Internal server error" });
   }
-});
+);
 
 router.delete("/company-gallery/:id", authenticateToken, async (req, res) => {
   try {
@@ -269,7 +292,12 @@ router.post(
       // Create new solar solution
       const newSolution = await SolarSolution.create(newSolutionData);
 
-      res.status(201).json({ message: "Solar solution added successfully", solution: newSolution });
+      res
+        .status(201)
+        .json({
+          message: "Solar solution added successfully",
+          solution: newSolution,
+        });
     } catch (error) {
       console.error("Error adding solar solution:", error);
       res.status(500).json({ message: "Internal server error" });
@@ -277,7 +305,7 @@ router.post(
   }
 );
 
-router.get('/solar-solution/:id', authenticateToken, async (req, res) => {
+router.get("/solar-solution/:id", authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -348,33 +376,42 @@ router.put(
 
       await solarSolution.save();
 
-      res.status(200).json({ message: "Solar solution updated successfully", solution: solarSolution });
+      res
+        .status(200)
+        .json({
+          message: "Solar solution updated successfully",
+          solution: solarSolution,
+        });
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });
     }
   }
 );
 
-router.delete("/delete-solar-solution/:id", authenticateToken, async (req, res) => {
-  try {
-    const { id } = req.params;
+router.delete(
+  "/delete-solar-solution/:id",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
 
-    const companyProfile = await CompanyProfile.findOne({
-      where: { userId: req.user.id },
-    });
+      const companyProfile = await CompanyProfile.findOne({
+        where: { userId: req.user.id },
+      });
 
-    const deleted = await SolarSolution.destroy({
-      where: { id, companyProfileId: companyProfile.id },
-    });
+      const deleted = await SolarSolution.destroy({
+        where: { id, companyProfileId: companyProfile.id },
+      });
 
-    if (!deleted) {
-      return res.status(404).json({ message: "Solar solution not found" });
+      if (!deleted) {
+        return res.status(404).json({ message: "Solar solution not found" });
+      }
+
+      res.status(200).json({ message: "Solar solution deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
     }
-
-    res.status(200).json({ message: "Solar solution deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
   }
-});
+);
 
 module.exports = router;
