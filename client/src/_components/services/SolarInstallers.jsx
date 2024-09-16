@@ -155,7 +155,7 @@ const SolarInstallers = ({ companies }) => {
                                   }
                                 }}
                               >
-                                <MessageSquare className="h-4 w-4 mr-2" />
+                                <MessageSquare className="h-4 w-4 sm:mr-2" />
                                 <span className="hidden sm:inline">Chat</span>
                               </div>
                             )}
@@ -181,7 +181,7 @@ const SolarInstallers = ({ companies }) => {
                                 onClick={(e) => e.stopPropagation()}
                                 className="flex items-center"
                               >
-                                <ExternalLink className="h-4 w-4 mr-2" />
+                                <ExternalLink className="h-4 w-4 sm:mr-2" />
                                 <span className="hidden sm:inline">
                                   Profile
                                 </span>

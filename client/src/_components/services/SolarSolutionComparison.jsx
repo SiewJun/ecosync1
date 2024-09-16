@@ -163,20 +163,22 @@ const SolarSolutionComparison = () => {
           </div>
         </div>
       </CardContent>
-      <CardFooter>
-        <a
-          href={`${BASE_URL}${solution.CompanyProfile.certificate}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center text-sm text-blue-600 hover:underline"
-        >
-          <Award className="mr-1 h-4 w-4" />
-          View Certificate
-        </a>
-      </CardFooter>
+      {solution.CompanyProfile.certificate && (
+        <CardFooter>
+          <a
+            href={`${BASE_URL}${solution.CompanyProfile.certificate}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center text-sm text-blue-600 hover:underline"
+          >
+            <Award className="mr-1 h-4 w-4" />
+            View Certificate
+          </a>
+        </CardFooter>
+      )}
     </Card>
   );
-  
+
   SolutionCard.propTypes = {
     solution: PropTypes.shape({
       id: PropTypes.number.isRequired,
@@ -185,7 +187,7 @@ const SolarSolutionComparison = () => {
       solarPanelType: PropTypes.string.isRequired,
       powerOutput: PropTypes.number.isRequired,
       efficiency: PropTypes.number.isRequired,
-      warranty: PropTypes.string.isRequired,
+      warranty: PropTypes.number.isRequired,
       price: PropTypes.number.isRequired,
       CompanyProfile: PropTypes.shape({
         User: PropTypes.shape({
@@ -193,7 +195,7 @@ const SolarSolutionComparison = () => {
             companyName: PropTypes.string.isRequired,
           }).isRequired,
         }).isRequired,
-        certificate: PropTypes.string.isRequired,
+        certificate: PropTypes.string,
       }).isRequired,
     }).isRequired,
   };

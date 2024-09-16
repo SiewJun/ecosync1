@@ -100,19 +100,20 @@ const CompanyPublicProfile = () => {
             <header className="rounded-xl shadow-sm p-4 md:p-8 flex flex-col md:flex-row items-center md:space-x-8 space-y-4 md:space-y-0">
               <Avatar className="h-24 w-24 md:h-32 md:w-32">
                 <AvatarImage
-                  src={`${BASE_URL}${companyData.avatarUrl}`}
+                  src={`${BASE_URL}${companyData.avatarUrl || ""}`}
                   alt="Company Logo"
                 />
                 <AvatarFallback>
-                  {companyData.CompanyDetail.companyName[0]}
+                  {companyData.CompanyDetail?.companyName?.[0] || "C"}
                 </AvatarFallback>
               </Avatar>
               <div className="text-center md:text-left">
                 <h1 className="text-2xl md:text-4xl font-bold mb-2">
-                  {companyData.CompanyDetail.companyName}
+                  {companyData.CompanyDetail?.companyName || "Company Name"}
                 </h1>
                 <p className="text-lg md:text-xl text-gray-600">
-                  {companyData.CompanyProfile.overview}
+                  {companyData.CompanyProfile?.overview ||
+                    "Overview not available"}
                 </p>
               </div>
             </header>
@@ -162,33 +163,37 @@ const CompanyPublicProfile = () => {
                     <div className="flex items-center space-x-3">
                       <Phone className="h-5 w-5 text-gray-400 flex-shrink-0" />
                       <span className="break-all">
-                        {companyData.CompanyDetail.phoneNumber}
+                        {companyData.CompanyDetail?.phoneNumber || "N/A"}
                       </span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <MapPin className="h-5 w-5 text-gray-400 flex-shrink-0" />
                       <span className="break-words">
-                        {companyData.CompanyDetail.address}
+                        {companyData.CompanyDetail?.address || "N/A"}
                       </span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <ExternalLink className="h-5 w-5 text-gray-400 flex-shrink-0" />
                       <a
-                        href={`https://${companyData.CompanyDetail.website}`}
+                        href={`https://${
+                          companyData.CompanyDetail?.website || ""
+                        }`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline break-all"
                       >
-                        {companyData.CompanyDetail.website}
+                        {companyData.CompanyDetail?.website || "N/A"}
                       </a>
                     </div>
                     <div className="flex items-center space-x-3">
                       <Calendar className="h-5 w-5 text-gray-400 flex-shrink-0" />
                       <span>
                         Joined on:{" "}
-                        {new Date(
-                          companyData.CompanyProfile.createdAt
-                        ).toLocaleDateString()}
+                        {companyData.CompanyProfile?.createdAt
+                          ? new Date(
+                              companyData.CompanyProfile.createdAt
+                            ).toLocaleDateString()
+                          : "N/A"}
                       </span>
                     </div>
                   </div>
@@ -197,7 +202,8 @@ const CompanyPublicProfile = () => {
                       About Us
                     </h2>
                     <p className="text-gray-600 leading-relaxed">
-                      {companyData.CompanyProfile.description}
+                      {companyData.CompanyProfile?.description ||
+                        "Description not available"}
                     </p>
                   </div>
                 </div>
@@ -216,7 +222,9 @@ const CompanyPublicProfile = () => {
                     <DialogContent className="w-full max-w-3xl">
                       <DialogTitle>Business License</DialogTitle>
                       <object
-                        data={`${BASE_URL}${companyData.CompanyDetail.businessLicense}`}
+                        data={`${BASE_URL}${
+                          companyData.CompanyDetail?.businessLicense || ""
+                        }`}
                         type="application/pdf"
                         width="100%"
                         height="600px"
@@ -224,7 +232,10 @@ const CompanyPublicProfile = () => {
                         <p>
                           Your browser does not support PDFs.{" "}
                           <a
-                            href={`${BASE_URL}${companyData.CompanyDetail.businessLicense}`}
+                            className="underline text-blue-500"
+                            href={`${BASE_URL}${
+                              companyData.CompanyDetail?.businessLicense || ""
+                            }`}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
@@ -234,37 +245,42 @@ const CompanyPublicProfile = () => {
                       </object>
                     </DialogContent>
                   </Dialog>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full sm:w-auto flex items-center justify-center space-x-2"
-                      >
-                        <FileText className="h-5 w-5" />
-                        <span>View Certifications</span>
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="w-full max-w-3xl">
-                      <DialogTitle>Certifications</DialogTitle>
-                      <object
-                        data={`${BASE_URL}${companyData.CompanyProfile.certificate}`}
-                        type="application/pdf"
-                        width="100%"
-                        height="600px"
-                      >
-                        <p>
-                          Your browser does not support PDFs.{" "}
-                          <a
-                            href={`${BASE_URL}${companyData.CompanyProfile.certificate}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            Download the PDF
-                          </a>
-                        </p>
-                      </object>
-                    </DialogContent>
-                  </Dialog>
+                  {companyData.CompanyProfile?.certificate ? (
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full sm:w-auto flex items-center justify-center space-x-2"
+                        >
+                          <FileText className="h-5 w-5" />
+                          <span>View Certifications</span>
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="w-full max-w-3xl">
+                        <DialogTitle>Certifications</DialogTitle>
+                        <object
+                          data={`${BASE_URL}${companyData.CompanyProfile.certificate}`}
+                          type="application/pdf"
+                          width="100%"
+                          height="600px"
+                        >
+                          <p>
+                            Your browser does not support PDFs.{" "}
+                            <a
+                              className="underline text-blue-500"
+                              href={`${BASE_URL}${companyData.CompanyProfile.certificate}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Download the PDF
+                            </a>
+                          </p>
+                        </object>
+                      </DialogContent>
+                    </Dialog>
+                  ) : (
+                    <p>No certifications provided.</p>
+                  )}
                 </div>
               </TabsContent>
 
@@ -273,17 +289,19 @@ const CompanyPublicProfile = () => {
                   Our Services
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {companyData.CompanyProfile.services
-                    .split(",")
-                    .map((service, index) => (
-                      <Badge
-                        key={index}
-                        variant="secondary"
-                        className="text-base md:text-lg py-2 px-4 bg-blue-100 text-blue-800 justify-center"
-                      >
-                        {service.trim()}
-                      </Badge>
-                    ))}
+                  {companyData.CompanyProfile?.services
+                    ? companyData.CompanyProfile.services
+                        .split(",")
+                        .map((service, index) => (
+                          <Badge
+                            key={index}
+                            variant="secondary"
+                            className="text-base md:text-lg py-2 px-4 bg-blue-100 text-blue-800 justify-center"
+                          >
+                            {service.trim()}
+                          </Badge>
+                        ))
+                    : "No services available"}
                 </div>
               </TabsContent>
 
@@ -292,16 +310,18 @@ const CompanyPublicProfile = () => {
                   Company Gallery
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {companyData.CompanyProfile.CompanyGalleries.map(
-                    (gallery) => (
-                      <img
-                        key={gallery.id}
-                        src={`${BASE_URL}${gallery.imageUrl}`}
-                        alt="Gallery"
-                        className="rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 object-cover h-48 w-full"
-                      />
-                    )
-                  )}
+                  {companyData.CompanyProfile?.CompanyGalleries?.length > 0
+                    ? companyData.CompanyProfile.CompanyGalleries.map(
+                        (gallery) => (
+                          <img
+                            key={gallery.id}
+                            src={`${BASE_URL}${gallery.imageUrl}`}
+                            alt="Gallery"
+                            className="rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 object-cover h-48 w-full"
+                          />
+                        )
+                      )
+                    : "No gallery images available"}
                 </div>
               </TabsContent>
 
@@ -310,39 +330,42 @@ const CompanyPublicProfile = () => {
                   Solar Solutions
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {companyData.CompanyProfile.SolarSolutions.map((solution) => (
-                    <Card key={solution.id} className="overflow-hidden">
-                      <img
-                        src={`${BASE_URL}${solution.solutionPic}`}
-                        alt={solution.solutionName}
-                        className="w-full h-48 object-cover"
-                      />
-                      <CardContent className="p-4">
-                        <h3 className="text-lg md:text-xl font-semibold mb-2">
-                          {solution.solutionName}
-                        </h3>
-                        <p className="text-gray-600 mb-2">
-                          Type: {solution.solarPanelType}
-                        </p>
-                        <p className="text-gray-600 mb-2">
-                          Power Output: {solution.powerOutput}W
-                        </p>
-                        <p className="text-gray-600 mb-2">
-                          Efficiency: {solution.efficiency}%
-                        </p>
-                        <p className="text-gray-600 mb-2">
-                          Warranty: {solution.warranty} years
-                        </p>
-                        <p className="text-xl font-bold text-green-600 mt-4">
-                          ${solution.price}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  ))}
+                  {companyData.CompanyProfile?.SolarSolutions?.length > 0
+                    ? companyData.CompanyProfile.SolarSolutions.map(
+                        (solution) => (
+                          <Card key={solution.id} className="overflow-hidden">
+                            <img
+                              src={`${BASE_URL}${solution.solutionPic}`}
+                              alt={solution.solutionName}
+                              className="w-full h-48 object-cover"
+                            />
+                            <CardContent className="p-4">
+                              <h3 className="text-lg md:text-xl font-semibold mb-2">
+                                {solution.solutionName}
+                              </h3>
+                              <p className="text-gray-600 mb-2">
+                                Type: {solution.solarPanelType}
+                              </p>
+                              <p className="text-gray-600 mb-2">
+                                Power Output: {solution.powerOutput}W
+                              </p>
+                              <p className="text-gray-600 mb-2">
+                                Efficiency: {solution.efficiency}%
+                              </p>
+                              <p className="text-gray-600 mb-2">
+                                Warranty: {solution.warranty} years
+                              </p>
+                              <p className="text-xl font-bold text-green-600 mt-4">
+                                ${solution.price}
+                              </p>
+                            </CardContent>
+                          </Card>
+                        )
+                      )
+                    : "No solar solutions available"}
                 </div>
               </TabsContent>
             </Tabs>
-            
           </>
         )}
       </div>

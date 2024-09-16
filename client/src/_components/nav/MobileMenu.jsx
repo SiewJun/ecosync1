@@ -47,31 +47,31 @@ const renderDashboardLinks = (user) => {
     case "CONSUMER":
       return (
         <>
-          <Link to="consumer-dashboard/consumer-profile">
+          <Link to="/consumer-dashboard/consumer-profile">
             <li className={linkClasses}>
               <User className="inline-block mr-2" />
               Profile
             </li>
           </Link>
-          <Link to="consumer-dashboard/chat">
+          <Link to="/consumer-dashboard/chat">
             <li className={linkClasses}>
               <MessageSquare className="inline-block mr-2" />
               Chat
             </li>
           </Link>
-          <Link to="consumer-dashboard/quotation">
+          <Link to="/consumer-dashboard/quotation">
             <li className={linkClasses}>
               <FileText className="inline-block mr-2" />
               Quotation
             </li>
           </Link>
-          <Link to="consumer-dashboard/order">
+          <Link to="/consumer-dashboard/order">
             <li className={linkClasses}>
               <ShoppingCart className="inline-block mr-2" />
               Order
             </li>
           </Link>
-          <Link to="consumer-dashboard/invoice">
+          <Link to="/consumer-dashboard/invoice">
             <li className={linkClasses}>
               <ReceiptText className="inline-block mr-2" />
               Invoice
