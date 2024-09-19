@@ -13,6 +13,7 @@ import {
 import UserDetailsForm from "@/_components/services/UserDetailsForm";
 import { loadGoogleMaps, geocodeAddress } from "@/utils/googleMaps";
 import NavBar from "@/_components/nav/NavBar";
+import PropTypes from 'prop-types';
 
 const SolarEstimation = () => {
   const [step, setStep] = useState(1);
@@ -218,6 +219,7 @@ const SolarEstimation = () => {
   );
 };
 
+// eslint-disable-next-line no-unused-vars
 const StepIndicator = ({ currentStep, totalSteps, steps }) => (
   <div className="flex justify-between items-center mb-8">
     {steps.map((s, index) => (
@@ -262,5 +264,30 @@ const InfoCard = ({ title, value, unit }) => (
     </CardContent>
   </Card>
 );
+
+StepIndicator.propTypes = {
+  currentStep: PropTypes.number.isRequired,
+  totalSteps: PropTypes.number.isRequired,
+  steps: PropTypes.arrayOf(
+    PropTypes.shape({
+      title: PropTypes.string.isRequired,
+      icon: PropTypes.element.isRequired,
+    })
+  ).isRequired,
+};
+
+InfoCard.propTypes = {
+  title: PropTypes.string.isRequired,
+  value: PropTypes.number.isRequired,
+  unit: PropTypes.string.isRequired,
+};
+
+SavingsCard.propTypes = {
+  title: PropTypes.string.isRequired,
+  oldValue: PropTypes.number,
+  newValue: PropTypes.number,
+  value: PropTypes.number,
+  unit: PropTypes.string.isRequired,
+};
 
 export default SolarEstimation;
