@@ -1,31 +1,35 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sun, MapPin, Home, DollarSign, ChevronRight, ChevronLeft } from "lucide-react";
+import {
+  Sun,
+  MapPin,
+  Home,
+  DollarSign,
+  ChevronRight,
+  ChevronLeft,
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import AddressForm from "@/_components/services/AddressForm";
 import MapComponent from "@/_components/services/MapComponent";
-import {
-  calculatePanels,
-  calculateSavings,
-} from "@/_components/services/SolarCalculator";
+import { calculatePanels, calculateSavings } from "@/utils/SolarCalculator";
 import UserDetailsForm from "@/_components/services/UserDetailsForm";
 import { loadGoogleMaps, geocodeAddress } from "@/utils/googleMaps";
 import NavBar from "@/_components/nav/NavBar";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
 const SolarEstimation = () => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    salutation: '',
-    name: '',
-    email: '',
-    phone: '',
-    avgElectricityBill: '',
-    address: '',
-    propertyType: '',
-    state: '',
+    salutation: "",
+    name: "",
+    email: "",
+    phone: "",
+    avgElectricityBill: "",
+    address: "",
+    propertyType: "",
+    state: "",
   });
   const [location, setLocation] = useState(null);
   const [panelCount, setPanelCount] = useState(0);
@@ -93,10 +97,15 @@ const SolarEstimation = () => {
   const renderStepContent = () => {
     switch (step) {
       case 1:
-        return <UserDetailsForm onSubmit={handleFormSubmit} initialData={formData} />;
+        return (
+          <UserDetailsForm onSubmit={handleFormSubmit} initialData={formData} />
+        );
       case 2:
         return (
-          <AddressForm onAddressSelect={handleAddressSelect} initialAddress={formData.address} />
+          <AddressForm
+            onAddressSelect={handleAddressSelect}
+            initialAddress={formData.address}
+          />
         );
       case 3:
         return (
@@ -109,7 +118,8 @@ const SolarEstimation = () => {
         return (
           <div className="text-center">
             <p className="text-2xl font-semibold mb-4">
-              Estimated Panels: <span className="text-green-500">{panelCount}</span>
+              Estimated Panels:{" "}
+              <span className="text-green-500">{panelCount}</span>
             </p>
             <Button
               onClick={handleCalculateSavings}
@@ -139,12 +149,12 @@ const SolarEstimation = () => {
             <div className="grid grid-cols-2 gap-4">
               <InfoCard
                 title="Recommended System"
-                value={savings.recommendedKWp}
+                value={String(savings.recommendedKWp)} // Ensure value is a string
                 unit="kWp"
               />
               <InfoCard
                 title="Panels Needed"
-                value={savings.panelsForRecommendedKWp}
+                value={String(savings.panelsForRecommendedKWp)} // Ensure value is a string
                 unit="panels"
               />
             </div>
@@ -175,7 +185,11 @@ const SolarEstimation = () => {
           Solar Panel Installation Estimator
         </h1>
 
-        <StepIndicator currentStep={step} totalSteps={steps.length} steps={steps} />
+        <StepIndicator
+          currentStep={step}
+          totalSteps={steps.length}
+          steps={steps}
+        />
 
         {error && (
           <Alert variant="destructive" className="mb-6">
@@ -229,9 +243,11 @@ const StepIndicator = ({ currentStep, totalSteps, steps }) => (
           index < currentStep ? "text-green-500" : "text-gray-400"
         }`}
       >
-        <div className={`rounded-full p-2 ${
-          index < currentStep ? "bg-green-100" : "bg-gray-100"
-        }`}>
+        <div
+          className={`rounded-full p-2 ${
+            index < currentStep ? "bg-green-100" : "bg-gray-100"
+          }`}
+        >
           {s.icon}
         </div>
         <span className="text-xs mt-1">{s.title}</span>
@@ -246,11 +262,20 @@ const SavingsCard = ({ title, oldValue, newValue, value, unit }) => (
       <h3 className="text-lg font-semibold mb-2">{title}</h3>
       {oldValue && newValue ? (
         <div className="flex justify-between items-baseline">
-          <span className="text-gray-500 line-through">{unit}{oldValue}</span>
-          <span className="text-2xl font-bold text-green-500">{unit}{newValue}</span>
+          <span className="text-gray-500 line-through">
+            {unit}
+            {oldValue}
+          </span>
+          <span className="text-2xl font-bold text-green-500">
+            {unit}
+            {newValue}
+          </span>
         </div>
       ) : (
-        <span className="text-2xl font-bold text-green-500">{unit}{value}</span>
+        <span className="text-2xl font-bold text-green-500">
+          {unit}
+          {value}
+        </span>
       )}
     </CardContent>
   </Card>
@@ -260,7 +285,9 @@ const InfoCard = ({ title, value, unit }) => (
   <Card>
     <CardContent className="p-4">
       <h3 className="text-lg font-semibold mb-2">{title}</h3>
-      <span className="text-2xl font-bold">{value} <span className="text-sm text-gray-500">{unit}</span></span>
+      <span className="text-2xl font-bold">
+        {value} <span className="text-sm text-gray-500">{unit}</span>
+      </span>
     </CardContent>
   </Card>
 );
@@ -278,15 +305,15 @@ StepIndicator.propTypes = {
 
 InfoCard.propTypes = {
   title: PropTypes.string.isRequired,
-  value: PropTypes.number.isRequired,
+  value: PropTypes.string.isRequired,
   unit: PropTypes.string.isRequired,
 };
 
 SavingsCard.propTypes = {
   title: PropTypes.string.isRequired,
-  oldValue: PropTypes.number,
-  newValue: PropTypes.number,
-  value: PropTypes.number,
+  oldValue: PropTypes.string,
+  newValue: PropTypes.string,
+  value: PropTypes.string,
   unit: PropTypes.string.isRequired,
 };
 
