@@ -96,16 +96,19 @@ function NavBar() {
                       </a>
                     </NavigationMenuLink>
                   </li>
+                  <ListItem href="/solar-estimation" title="Get Estimate">
+                    Estimate the savings of installing solar panels on your
+                    property, including the recommended solar system size.{" "}
+                  </ListItem>
                   <ListItem href="/installers" title="Search Solar Installers">
                     Find reliable and experienced solar installers in your area.
                   </ListItem>
-                  <ListItem href="/solar-solutions" title="Search/Compare Solar Solutions">
+                  <ListItem
+                    href="/solar-solutions"
+                    title="Search/Compare Solar Solutions"
+                  >
                     Discover a wide range of solar solutions to fit your needs
                     and budget.
-                  </ListItem>
-                  <ListItem href="/" title="Solar Incentives for Residential">
-                    Explore available solar incentives and rebates to maximize
-                    your savings.
                   </ListItem>
                 </ul>
               </NavigationMenuContent>
