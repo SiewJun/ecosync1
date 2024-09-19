@@ -187,6 +187,11 @@ const MobileMenu = ({ user }) => {
                       <Link to="/about">About Ecosync</Link>
                     </li>
                     <li className="py-2 px-4 rounded-md text-muted-foreground hover:text-primary-foreground hover:bg-primary transition-colors">
+                      <Link to="/solar-estimation">
+                        Get Estimate
+                      </Link>
+                    </li>
+                    <li className="py-2 px-4 rounded-md text-muted-foreground hover:text-primary-foreground hover:bg-primary transition-colors">
                       <Link to="/installers">
                         Search Solar Installers
                       </Link>
@@ -194,11 +199,6 @@ const MobileMenu = ({ user }) => {
                     <li className="py-2 px-4 rounded-md text-muted-foreground hover:text-primary-foreground hover:bg-primary transition-colors">
                       <Link to="/solar-solutions">
                         Search/Compare Solar Solutions
-                      </Link>
-                    </li>
-                    <li className="py-2 px-4 rounded-md text-muted-foreground hover:text-primary-foreground hover:bg-primary transition-colors">
-                      <Link to="/solar-incentives">
-                        Solar Incentives for Residential
                       </Link>
                     </li>
                   </ul>
