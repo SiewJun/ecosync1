@@ -5,8 +5,9 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { MapPin } from "lucide-react";
 import { loadGoogleMaps } from '../../utils/googleMaps';
 
-function AddressForm({ onAddressSelect }) {
+function AddressForm({ onAddressSelect, initialAddress }) {
   const addressInput = useRef(null);
+  const [address, setAddress] = useState(initialAddress);
   const [mapsLoaded, setMapsLoaded] = useState(false);
   const autocompleteRef = useRef(null);
 
@@ -61,6 +62,8 @@ function AddressForm({ onAddressSelect }) {
           <Input
             ref={addressInput}
             type="text"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
             placeholder="Start typing your address..."
             className="pl-10"
           />
@@ -73,6 +76,7 @@ function AddressForm({ onAddressSelect }) {
 
 AddressForm.propTypes = {
   onAddressSelect: PropTypes.func.isRequired,
+  initialAddress: PropTypes.string, // Add this line to validate initialAddress prop
 };
 
 export default AddressForm;

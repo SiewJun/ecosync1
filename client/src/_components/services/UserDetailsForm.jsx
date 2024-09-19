@@ -9,37 +9,28 @@ import { Label } from "@/components/ui/label";
 import { User, Mail, Phone, Home, Building, DollarSign } from "lucide-react";
 import { loadGoogleMaps } from '@/utils/googleMaps';
 
-const UserDetailsForm = ({ onSubmit }) => {
-  const [formData, setFormData] = useState({
-    salutation: '',
-    name: '',
-    email: '',
-    phone: '',
-    avgElectricityBill: '',
-    address: '',
-    propertyType: '',
-    state: '',
-  });
+const UserDetailsForm = ({ onSubmit, initialData }) => {
+  const [formData, setFormData] = useState(initialData);
 
   const addressInputRef = useRef(null);
   const autocompleteRef = useRef(null);
 
   useEffect(() => {
+    const initializeAutocomplete = () => {
+      if (window.google && addressInputRef.current) {
+        autocompleteRef.current = new window.google.maps.places.Autocomplete(addressInputRef.current, {
+          componentRestrictions: { country: 'MY' },
+          fields: ['address_components', 'formatted_address', 'geometry'],
+        });
+  
+        autocompleteRef.current.addListener('place_changed', handlePlaceSelect);
+      }
+    };
+  
     loadGoogleMaps(() => {
       initializeAutocomplete();
     });
   }, []);
-
-  const initializeAutocomplete = () => {
-    if (window.google && addressInputRef.current) {
-      autocompleteRef.current = new window.google.maps.places.Autocomplete(addressInputRef.current, {
-        componentRestrictions: { country: 'MY' },
-        fields: ['address_components', 'formatted_address', 'geometry'],
-      });
-
-      autocompleteRef.current.addListener('place_changed', handlePlaceSelect);
-    }
-  };
 
   const handlePlaceSelect = () => {
     const place = autocompleteRef.current.getPlace();
@@ -262,6 +253,16 @@ const UserDetailsForm = ({ onSubmit }) => {
 
 UserDetailsForm.propTypes = {
   onSubmit: PropTypes.func.isRequired,
+  initialData: PropTypes.shape({
+    salutation: PropTypes.string,
+    name: PropTypes.string,
+    email: PropTypes.string,
+    phone: PropTypes.string,
+    avgElectricityBill: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    address: PropTypes.string,
+    propertyType: PropTypes.string,
+    state: PropTypes.string,
+  }).isRequired,
 };
 
 export default UserDetailsForm;

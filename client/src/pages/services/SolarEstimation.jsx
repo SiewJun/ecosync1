@@ -1,10 +1,9 @@
 import { useState } from "react";
-import PropTypes from "prop-types";
 import { motion, AnimatePresence } from "framer-motion";
+import { Sun, MapPin, Home, DollarSign, ChevronRight, ChevronLeft } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Sun, MapPin, Home, DollarSign, AlertTriangle } from "lucide-react";
 import AddressForm from "@/_components/services/AddressForm";
 import MapComponent from "@/_components/services/MapComponent";
 import {
@@ -17,11 +16,28 @@ import NavBar from "@/_components/nav/NavBar";
 
 const SolarEstimation = () => {
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState(null);
+  const [formData, setFormData] = useState({
+    salutation: '',
+    name: '',
+    email: '',
+    phone: '',
+    avgElectricityBill: '',
+    address: '',
+    propertyType: '',
+    state: '',
+  });
   const [location, setLocation] = useState(null);
   const [panelCount, setPanelCount] = useState(0);
   const [savings, setSavings] = useState(null);
   const [error, setError] = useState(null);
+
+  const steps = [
+    { title: "Your Details", icon: <Sun className="w-6 h-6" /> },
+    { title: "Confirm Address", icon: <MapPin className="w-6 h-6" /> },
+    { title: "Map Your Roof", icon: <Home className="w-6 h-6" /> },
+    { title: "Panel Estimate", icon: <Sun className="w-6 h-6" /> },
+    { title: "Solar Savings", icon: <DollarSign className="w-6 h-6" /> },
+  ];
 
   const handleFormSubmit = async (data) => {
     setFormData(data);
@@ -73,171 +89,178 @@ const SolarEstimation = () => {
     }
   };
 
-  const StepIndicator = ({ currentStep, totalSteps }) => (
-    <div className="flex justify-center items-center space-x-2 mb-8">
-      {[...Array(totalSteps)].map((_, index) => (
-        <div
-          key={index}
-          className={`w-3 h-3 rounded-full ${
-            index < currentStep ? "bg-green-500" : "bg-gray-300"
-          }`}
-        />
-      ))}
-    </div>
-  );
-
-  StepIndicator.propTypes = {
-    currentStep: PropTypes.number.isRequired,
-    totalSteps: PropTypes.number.isRequired,
+  const renderStepContent = () => {
+    switch (step) {
+      case 1:
+        return <UserDetailsForm onSubmit={handleFormSubmit} initialData={formData} />;
+      case 2:
+        return (
+          <AddressForm onAddressSelect={handleAddressSelect} initialAddress={formData.address} />
+        );
+      case 3:
+        return (
+          <MapComponent
+            center={location}
+            onPolygonComplete={handlePolygonComplete}
+          />
+        );
+      case 4:
+        return (
+          <div className="text-center">
+            <p className="text-2xl font-semibold mb-4">
+              Estimated Panels: <span className="text-green-500">{panelCount}</span>
+            </p>
+            <Button
+              onClick={handleCalculateSavings}
+              className="w-full max-w-md"
+              size="lg"
+            >
+              Calculate Solar Impact
+            </Button>
+          </div>
+        );
+      case 5:
+        return (
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              <SavingsCard
+                title="Monthly Savings"
+                oldValue={savings.oldBill}
+                newValue={savings.newBill}
+                unit="RM"
+              />
+              <SavingsCard
+                title="Annual Savings"
+                value={savings.annualSavings}
+                unit="RM"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <InfoCard
+                title="Recommended System"
+                value={savings.recommendedKWp}
+                unit="kWp"
+              />
+              <InfoCard
+                title="Panels Needed"
+                value={savings.panelsForRecommendedKWp}
+                unit="panels"
+              />
+            </div>
+            <Alert
+              className="mt-6"
+              variant={savings.coversFullBill ? "success" : "info"}
+            >
+              <AlertDescription>
+                {savings.coversFullBill
+                  ? "Your solar installation will cover your entire electricity bill!"
+                  : `Your solar installation will cover ${Math.round(
+                      (savings.newBill / savings.oldBill) * 100
+                    )}% of your bill.`}
+              </AlertDescription>
+            </Alert>
+          </div>
+        );
+      default:
+        return null;
+    }
   };
 
   return (
-    <>
+    <div className="min-h-screen">
       <NavBar />
-      <div className="container mx-auto px-4 py-8 max-w-3xl">
-        <h1 className="text-4xl font-bold mb-8 text-center text-gray-800">
+      <div className="container mx-auto px-4 py-12 max-w-4xl">
+        <h1 className="text-4xl font-bold mb-8 text-center">
           Solar Panel Installation Estimator
         </h1>
 
-        <StepIndicator currentStep={step} totalSteps={5} />
+        <StepIndicator currentStep={step} totalSteps={steps.length} steps={steps} />
 
         {error && (
           <Alert variant="destructive" className="mb-6">
-            <AlertTriangle className="h-4 w-4" />
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={step}
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -50 }}
-            transition={{ duration: 0.5 }}
+        <Card className="overflow-hidden shadow-lg">
+          <CardContent className="p-8">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={step}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                {renderStepContent()}
+              </motion.div>
+            </AnimatePresence>
+          </CardContent>
+        </Card>
+
+        <div className="flex justify-between mt-8">
+          <Button
+            onClick={() => setStep((prev) => Math.max(1, prev - 1))}
+            disabled={step === 1}
+            variant="outline"
           >
-            {step === 1 && <UserDetailsForm onSubmit={handleFormSubmit} />}
-
-            {step === 2 && (
-              <Card>
-                <CardContent className="p-6">
-                  <h2 className="text-2xl font-semibold mb-4 flex items-center">
-                    <MapPin className="mr-2" /> Confirm Your Address
-                  </h2>
-                  <AddressForm onAddressSelect={handleAddressSelect} />
-                </CardContent>
-              </Card>
-            )}
-
-            {step === 3 && location && (
-              <Card>
-                <CardContent className="p-6">
-                  <h2 className="text-2xl font-semibold mb-4 flex items-center">
-                    <Home className="mr-2" /> Map Your Roof
-                  </h2>
-                  <p className="text-gray-600 mb-4">
-                    Draw the outline of your roof on the map below.
-                  </p>
-                  <MapComponent
-                    center={location}
-                    onPolygonComplete={handlePolygonComplete}
-                  />
-                </CardContent>
-              </Card>
-            )}
-
-            {step === 4 && (
-              <Card>
-                <CardContent className="p-6">
-                  <h2 className="text-2xl font-semibold mb-4 flex items-center">
-                    <Sun className="mr-2" /> Solar Panel Estimate
-                  </h2>
-                  <p className="text-lg mb-4">
-                    Estimated Panels: <strong>{panelCount}</strong>
-                  </p>
-                  <Button
-                    onClick={handleCalculateSavings}
-                    className="w-full"
-                    size="lg"
-                  >
-                    Calculate Solar Impact
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
-
-            {step === 5 && savings && (
-              <Card>
-                <CardContent className="p-6">
-                  <h2 className="text-2xl font-semibold mb-6 flex items-center">
-                    <DollarSign className="mr-2" /> Your Solar Savings
-                  </h2>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Old Monthly Bill:</span>
-                      <span className="text-xl font-semibold">
-                        RM {savings.oldBill}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-600">New Monthly Bill:</span>
-                      <span className="text-xl font-semibold text-green-500">
-                        RM {savings.newBill}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Annual Savings:</span>
-                      <span className="text-xl font-semibold text-green-500">
-                        RM {savings.annualSavings}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Percentage Saved:</span>
-                      <span className="text-xl font-semibold">
-                        {savings.percentageSaved}%
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Recommended kWp:</span>
-                      <span className="text-xl font-semibold">
-                        {savings.recommendedKWp} kWp
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-600">
-                        Panels for Recommended kWp:
-                      </span>
-                      <span className="text-xl font-semibold">
-                        {savings.panelsForRecommendedKWp}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Max Panel Count:</span>
-                      <span className="text-xl font-semibold">
-                        {savings.maxPanelCount}
-                      </span>
-                    </div>
-                  </div>
-                  <Alert
-                    className="mt-6"
-                    variant={savings.coversFullBill ? "success" : "info"}
-                  >
-                    <AlertDescription>
-                      {savings.coversFullBill
-                        ? "Your solar installation will cover your entire electricity bill!"
-                        : `Your solar installation will cover ${Math.round(
-                            (savings.newBill / savings.oldBill) * 100
-                          )}% of your bill.`}
-                    </AlertDescription>
-                  </Alert>
-                </CardContent>
-              </Card>
-            )}
-          </motion.div>
-        </AnimatePresence>
+            <ChevronLeft className="mr-2" /> Back
+          </Button>
+          <Button
+            onClick={() => setStep((prev) => Math.min(steps.length, prev + 1))}
+            disabled={step === steps.length}
+          >
+            Next <ChevronRight className="ml-2" />
+          </Button>
+        </div>
       </div>
-    </>
+    </div>
   );
 };
+
+const StepIndicator = ({ currentStep, totalSteps, steps }) => (
+  <div className="flex justify-between items-center mb-8">
+    {steps.map((s, index) => (
+      <div
+        key={index}
+        className={`flex flex-col items-center ${
+          index < currentStep ? "text-green-500" : "text-gray-400"
+        }`}
+      >
+        <div className={`rounded-full p-2 ${
+          index < currentStep ? "bg-green-100" : "bg-gray-100"
+        }`}>
+          {s.icon}
+        </div>
+        <span className="text-xs mt-1">{s.title}</span>
+      </div>
+    ))}
+  </div>
+);
+
+const SavingsCard = ({ title, oldValue, newValue, value, unit }) => (
+  <Card>
+    <CardContent className="p-4">
+      <h3 className="text-lg font-semibold mb-2">{title}</h3>
+      {oldValue && newValue ? (
+        <div className="flex justify-between items-baseline">
+          <span className="text-gray-500 line-through">{unit}{oldValue}</span>
+          <span className="text-2xl font-bold text-green-500">{unit}{newValue}</span>
+        </div>
+      ) : (
+        <span className="text-2xl font-bold text-green-500">{unit}{value}</span>
+      )}
+    </CardContent>
+  </Card>
+);
+
+const InfoCard = ({ title, value, unit }) => (
+  <Card>
+    <CardContent className="p-4">
+      <h3 className="text-lg font-semibold mb-2">{title}</h3>
+      <span className="text-2xl font-bold">{value} <span className="text-sm text-gray-500">{unit}</span></span>
+    </CardContent>
+  </Card>
+);
 
 export default SolarEstimation;

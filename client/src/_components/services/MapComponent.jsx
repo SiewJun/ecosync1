@@ -75,7 +75,7 @@ function MapComponent({ center, onPolygonComplete }) {
         <div ref={mapRef} className="w-full h-[500px] rounded-md overflow-hidden" />
         <div className="mt-4">
           <Button variant="outline" onClick={resetMap}>
-            Reset Map
+            Clear Map Annotations
           </Button>
         </div>
       </CardContent>
