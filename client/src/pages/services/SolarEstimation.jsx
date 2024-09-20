@@ -190,7 +190,7 @@ const SolarEstimation = () => {
       case 5:
         return (
           <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <SavingsCard
                 title="Monthly Savings"
                 oldValue={savings.oldBill}
@@ -203,7 +203,7 @@ const SolarEstimation = () => {
                 unit="RM"
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InfoCard
                 title="Recommended System"
                 value={String(savings.recommendedKWp)}
@@ -381,8 +381,8 @@ const NearbyCompanies = ({ companies, isLoading }) => (
               className="rounded-lg shadow-md overflow-hidden bg-secondary"
             >
               <div className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <h4 className="text-xl font-semibold">
+                <div className="flex flex-col sm:flex-row justify-between items-start mb-2">
+                  <h4 className="text-xl font-semibold mb-2 sm:mb-0">
                     {company.CompanyDetail.companyName}
                   </h4>
                   <Badge variant="secondary" className="text-sm">
@@ -391,15 +391,17 @@ const NearbyCompanies = ({ companies, isLoading }) => (
                 </div>
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center">
-                    <MapPin className="w-4 h-4 mr-2" />
-                    <p>{company.CompanyDetail.address}</p>
+                    <MapPin className="w-4 h-4 mr-2 flex-shrink-0" />
+                    <p className="break-words">
+                      {company.CompanyDetail.address}
+                    </p>
                   </div>
                   <div className="flex items-center">
-                    <Phone className="w-4 h-4 mr-2" />
+                    <Phone className="w-4 h-4 mr-2 flex-shrink-0" />
                     <p>{company.CompanyDetail.phoneNumber}</p>
                   </div>
                   <div className="flex items-center">
-                    <Globe className="w-4 h-4 mr-2" />
+                    <Globe className="w-4 h-4 mr-2 flex-shrink-0" />
                     <a
                       href={
                         company.CompanyDetail.website.startsWith("http")
@@ -408,26 +410,28 @@ const NearbyCompanies = ({ companies, isLoading }) => (
                       }
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-500 hover:underline"
+                      className="text-blue-500 hover:underline break-words"
                     >
                       {company.CompanyDetail.website}
                     </a>
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col md:flex-row px-4 py-3 sm:px-6 justify-between">
-                <Button className="w-full" variant="default">
-                  Request Quotation <ChevronRight className="ml-2 w-4 h-4" />
+              <div className="flex flex-col sm:flex-row px-4 py-3 sm:px-6 gap-2">
+                <Button className="w-full sm:w-1/2" variant="default">
+                  Request Quotation
+                  <ChevronRight className="ml-2 w-4 h-4" />
                 </Button>
                 <a
                   href={`/installers/companypublicprofile/${company.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  className="flex items-center"
+                  className="w-full sm:w-1/2"
                 >
                   <Button className="w-full" variant="outline">
-                    View Profile <ChevronRight className="ml-2 w-4 h-4" />
+                    View Profile
+                    <ChevronRight className="ml-2 w-4 h-4" />
                   </Button>
                 </a>
               </div>
