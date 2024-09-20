@@ -28,7 +28,9 @@ const SearchSolarInstallers = () => {
   useEffect(() => {
     const fetchCompanyDetails = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/company-services/company-details");
+        const response = await axios.get(
+          "http://localhost:5000/api/company-services/company-details"
+        );
         setCompanies(response.data);
         setFilteredCompanies(response.data);
         setLoading(false);
@@ -42,9 +44,14 @@ const SearchSolarInstallers = () => {
   }, []);
 
   useEffect(() => {
-    const results = companies.filter(company =>
-      company.CompanyDetail.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      company.CompanyProfile.overview.toLowerCase().includes(searchTerm.toLowerCase())
+    const results = companies.filter(
+      (company) =>
+        company.CompanyDetail.companyName
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        company.CompanyProfile.overview
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
     );
     setFilteredCompanies(results);
     setCurrentPage(1);
@@ -93,7 +100,7 @@ const SearchSolarInstallers = () => {
     <div className="min-h-screen">
       <NavBar />
       <div className="container mx-auto my-8">
-      <Breadcrumb>
+        <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink href="/">Home</BreadcrumbLink>
@@ -101,7 +108,7 @@ const SearchSolarInstallers = () => {
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbPage>Search Solar Installers</BreadcrumbPage>
-              </BreadcrumbItem>
+            </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
       </div>
@@ -115,7 +122,11 @@ const SearchSolarInstallers = () => {
               onChange={handleSearch}
               className="w-full sm:w-auto text-sm py-1"
             />
-            <Button variant="outline" size="sm" className="w-full sm:w-auto px-3">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full sm:w-auto px-3"
+            >
               <Search className="h-4 w-4 mr-1" />
               Search
             </Button>
