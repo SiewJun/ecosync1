@@ -29,7 +29,6 @@ import UserDetailsForm from "@/_components/services/UserDetailsForm";
 import { loadGoogleMaps, geocodeAddress } from "@/utils/googleMaps";
 import NavBar from "@/_components/nav/NavBar";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
 
 const SolarEstimation = () => {
   const [step, setStep] = useState(1);
@@ -420,15 +419,17 @@ const NearbyCompanies = ({ companies, isLoading }) => (
                 <Button className="w-full" variant="default">
                   Request Quotation <ChevronRight className="ml-2 w-4 h-4" />
                 </Button>
-                <Link
-                  to={`/installers/companypublicprofile/${company.id}`}
+                <a
+                  href={`/installers/companypublicprofile/${company.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
                   className="flex items-center"
                 >
                   <Button className="w-full" variant="outline">
                     View Profile <ChevronRight className="ml-2 w-4 h-4" />
                   </Button>
-                </Link>
+                </a>
               </div>
             </motion.li>
           ))}
