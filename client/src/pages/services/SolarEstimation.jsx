@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Sun,
@@ -7,6 +7,8 @@ import {
   DollarSign,
   ChevronRight,
   ChevronLeft,
+  Phone,
+  Globe,
 } from "lucide-react";
 import {
   Breadcrumb,
@@ -16,9 +18,10 @@ import {
   BreadcrumbSeparator,
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
 import AddressForm from "@/_components/services/AddressForm";
 import MapComponent from "@/_components/services/MapComponent";
 import { calculatePanels, calculateSavings } from "@/utils/SolarCalculator";
@@ -26,6 +29,7 @@ import UserDetailsForm from "@/_components/services/UserDetailsForm";
 import { loadGoogleMaps, geocodeAddress } from "@/utils/googleMaps";
 import NavBar from "@/_components/nav/NavBar";
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 
 const SolarEstimation = () => {
   const [step, setStep] = useState(1);
@@ -45,6 +49,35 @@ const SolarEstimation = () => {
   const [error, setError] = useState(null);
   const [isAddressConfirmed, setIsAddressConfirmed] = useState(false);
   const [isRoofMapped, setIsRoofMapped] = useState(false);
+  const [nearbyCompanies, setNearbyCompanies] = useState([]);
+  const [isLoadingCompanies, setIsLoadingCompanies] = useState(false);
+
+  useEffect(() => {
+    if (step === 5 && formData.address) {
+      fetchNearbyCompanies();
+    }
+  }, [step, formData.address]);
+
+  const fetchNearbyCompanies = async () => {
+    setIsLoadingCompanies(true);
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/get-estimate/nearby-companies?address=${encodeURIComponent(
+          formData.address
+        )}`
+      );
+      if (!response.ok) throw new Error("Failed to fetch nearby companies");
+      const data = await response.json();
+      setNearbyCompanies(data);
+    } catch (error) {
+      console.error("Error fetching nearby companies:", error);
+      setError(
+        "Failed to fetch nearby solar companies. Please try again later."
+      );
+    } finally {
+      setIsLoadingCompanies(false);
+    }
+  };
 
   const steps = [
     { title: "Your Details", icon: <Sun className="w-6 h-6" /> },
@@ -195,6 +228,10 @@ const SolarEstimation = () => {
                     )}% of your bill.`}
               </AlertDescription>
             </Alert>
+            <NearbyCompanies
+              companies={nearbyCompanies}
+              isLoading={isLoadingCompanies}
+            />
           </div>
         );
       default:
@@ -325,6 +362,99 @@ const InfoCard = ({ title, value, unit }) => (
     </CardContent>
   </Card>
 );
+
+const NearbyCompanies = ({ companies, isLoading }) => (
+  <Card className="overflow-hidden">
+    <CardContent className="p-6">
+      <h3 className="text-2xl font-semibold mb-6">Nearby Solar Companies</h3>
+      {isLoading ? (
+        <div className="flex justify-center items-center h-32">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+      ) : companies.length > 0 ? (
+        <ul className="space-y-6">
+          {companies.map((company, index) => (
+            <motion.li
+              key={company.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: index * 0.1 }}
+              className="rounded-lg shadow-md overflow-hidden bg-secondary"
+            >
+              <div className="p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <h4 className="text-xl font-semibold">
+                    {company.CompanyDetail.companyName}
+                  </h4>
+                  <Badge variant="secondary" className="text-sm">
+                    {company.distance.toFixed(1)} km
+                  </Badge>
+                </div>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center">
+                    <MapPin className="w-4 h-4 mr-2" />
+                    <p>{company.CompanyDetail.address}</p>
+                  </div>
+                  <div className="flex items-center">
+                    <Phone className="w-4 h-4 mr-2" />
+                    <p>{company.CompanyDetail.phoneNumber}</p>
+                  </div>
+                  <div className="flex items-center">
+                    <Globe className="w-4 h-4 mr-2" />
+                    <a
+                      href={
+                        company.CompanyDetail.website.startsWith("http")
+                          ? company.CompanyDetail.website
+                          : `http://${company.CompanyDetail.website}`
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 hover:underline"
+                    >
+                      {company.CompanyDetail.website}
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div className="flex px-4 py-3 sm:px-6 justify-between">
+                <Button className="w-full" variant="default">
+                  Request Quotation <ChevronRight className="ml-2 w-4 h-4" />
+                </Button>
+                <Link
+                  to={`/installers/companypublicprofile/${company.id}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex items-center"
+                >
+                  <Button className="w-full" variant="outline">
+                    View Profile <ChevronRight className="ml-2 w-4 h-4" />
+                  </Button>
+                </Link>
+              </div>
+            </motion.li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-center py-8">No nearby solar companies found.</p>
+      )}
+    </CardContent>
+  </Card>
+);
+
+NearbyCompanies.propTypes = {
+  companies: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      CompanyDetail: PropTypes.shape({
+        companyName: PropTypes.string.isRequired,
+        address: PropTypes.string.isRequired,
+        phoneNumber: PropTypes.string.isRequired,
+        website: PropTypes.string.isRequired,
+      }).isRequired,
+      distance: PropTypes.number.isRequired,
+    })
+  ).isRequired,
+  isLoading: PropTypes.bool.isRequired,
+};
 
 StepIndicator.propTypes = {
   currentStep: PropTypes.number.isRequired,

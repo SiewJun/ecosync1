@@ -12,6 +12,7 @@ const companyServices = require('./routes/companyServices');
 const communication = require('./routes/communication');
 const companyPublicProfile = require('./routes/companyPublicProfile');
 const quotation = require('./routes/quotation');
+const getEstimate = require('./routes/getEstimate');
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.use('/api/company-services', companyServices);
 app.use('/api/communication', communication);
 app.use('/api/companypublic', companyPublicProfile);
 app.use('/api/quotation', quotation);
+app.use('/api/get-estimate', getEstimate);
 // Other middlewares and route setups
 
 app.listen(5000, () => {

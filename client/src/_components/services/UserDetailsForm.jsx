@@ -118,7 +118,6 @@ const UserDetailsForm = ({ onSubmit, initialData }) => {
                 <SelectContent>
                   <SelectItem value="Mr">Mr.</SelectItem>
                   <SelectItem value="Mrs">Mrs.</SelectItem>
-                  <SelectItem value="Ms">Ms.</SelectItem>
                 </SelectContent>
               </Select>
             </div>
