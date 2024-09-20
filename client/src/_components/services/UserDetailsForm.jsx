@@ -119,7 +119,6 @@ const UserDetailsForm = ({ onSubmit, initialData }) => {
                   <SelectItem value="Mr">Mr.</SelectItem>
                   <SelectItem value="Mrs">Mrs.</SelectItem>
                   <SelectItem value="Ms">Ms.</SelectItem>
-                  <SelectItem value="Dr">Dr.</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -308,8 +307,8 @@ const UserDetailsForm = ({ onSubmit, initialData }) => {
                   <SelectItem value="Sarawak">Sarawak</SelectItem>
                   <SelectItem value="Selangor">Selangor</SelectItem>
                   <SelectItem value="Terengganu">Terengganu</SelectItem>
-                  <SelectItem value="Kuala Lumpur">Kuala Lumpur</SelectItem>
-                  <SelectItem value="Labuan">Labuan</SelectItem>
+                  <SelectItem value="Wilayah Persekutuan Kuala Lumpur">Kuala Lumpur</SelectItem>
+                  <SelectItem value="Wilayah Persekutuan Labuan">Labuan</SelectItem>
                   <SelectItem value="Putrajaya">Putrajaya</SelectItem>
                 </SelectContent>
               </Select>

@@ -292,12 +292,16 @@ const QuotationDrawer = ({
                     Negeri Sembilan
                   </SelectItem>
                   <SelectItem value="Pahang">Pahang</SelectItem>
-                  <SelectItem value="Penang">Penang</SelectItem>
                   <SelectItem value="Perak">Perak</SelectItem>
                   <SelectItem value="Perlis">Perlis</SelectItem>
+                  <SelectItem value="Pulau Pinang">Pulau Pinang</SelectItem>
                   <SelectItem value="Sabah">Sabah</SelectItem>
                   <SelectItem value="Sarawak">Sarawak</SelectItem>
                   <SelectItem value="Selangor">Selangor</SelectItem>
+                  <SelectItem value="Terengganu">Terengganu</SelectItem>
+                  <SelectItem value="Wilayah Persekutuan Kuala Lumpur">Kuala Lumpur</SelectItem>
+                  <SelectItem value="Wilayah Persekutuan Labuan">Labuan</SelectItem>
+                  <SelectItem value="Putrajaya">Putrajaya</SelectItem>
                 </SelectContent>
               </Select>
               {formErrors.state && (

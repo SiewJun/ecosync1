@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,6 +7,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { AlertCircle, ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { loadGoogleMaps } from "../../utils/googleMaps";
 
 const EditForm = () => {
   const [user, setUser] = useState(null);
@@ -24,6 +25,7 @@ const EditForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const BASE_URL = "http://localhost:5000/";
+  const addressInputRef = useRef(null);
 
   useEffect(() => {
     // Fetch current user and company details to populate form
@@ -50,6 +52,26 @@ const EditForm = () => {
       }
     };
     fetchDetails();
+  }, []);
+
+  useEffect(() => {
+    loadGoogleMaps(() => {
+      if (addressInputRef.current) {
+        const autocomplete = new window.google.maps.places.Autocomplete(addressInputRef.current, {
+          types: ["address"],
+        });
+
+        autocomplete.addListener("place_changed", () => {
+          const place = autocomplete.getPlace();
+          if (place.formatted_address) {
+            setFormData((prevData) => ({
+              ...prevData,
+              address: place.formatted_address,
+            }));
+          }
+        });
+      }
+    });
   }, []);
 
   const handleChange = (e) => {
@@ -170,6 +192,7 @@ const EditForm = () => {
                     id="address"
                     value={formData.address}
                     onChange={handleChange}
+                    ref={addressInputRef}
                   />
                 </div>
 

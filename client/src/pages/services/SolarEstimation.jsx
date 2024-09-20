@@ -43,6 +43,8 @@ const SolarEstimation = () => {
   const [panelCount, setPanelCount] = useState(0);
   const [savings, setSavings] = useState(null);
   const [error, setError] = useState(null);
+  const [isAddressConfirmed, setIsAddressConfirmed] = useState(false);
+  const [isRoofMapped, setIsRoofMapped] = useState(false);
 
   const steps = [
     { title: "Your Details", icon: <Sun className="w-6 h-6" /> },
@@ -81,13 +83,13 @@ const SolarEstimation = () => {
       lat: place.geometry.location.lat(),
       lng: place.geometry.location.lng(),
     });
-    setStep(3);
+    setIsAddressConfirmed(true);
   };
 
   const handlePolygonComplete = (area) => {
     const panels = calculatePanels(area);
     setPanelCount(panels);
-    setStep(4);
+    setIsRoofMapped(true);
   };
 
   const handleCalculateSavings = () => {
@@ -99,6 +101,21 @@ const SolarEstimation = () => {
       );
       setSavings(calculatedSavings);
       setStep(5);
+    }
+  };
+
+  const canProceedToNextStep = () => {
+    switch (step) {
+      case 1:
+        return Object.values(formData).every((value) => value !== "");
+      case 2:
+        return isAddressConfirmed;
+      case 3:
+        return isRoofMapped;
+      case 4:
+        return true; // User can always proceed from panel estimate to solar savings
+      default:
+        return false;
     }
   };
 
@@ -157,12 +174,12 @@ const SolarEstimation = () => {
             <div className="grid grid-cols-2 gap-4">
               <InfoCard
                 title="Recommended System"
-                value={String(savings.recommendedKWp)} // Ensure value is a string
+                value={String(savings.recommendedKWp)}
                 unit="kWp"
               />
               <InfoCard
                 title="Panels Needed"
-                value={String(savings.panelsForRecommendedKWp)} // Ensure value is a string
+                value={String(savings.panelsForRecommendedKWp)}
                 unit="panels"
               />
             </div>
@@ -240,7 +257,7 @@ const SolarEstimation = () => {
           </Button>
           <Button
             onClick={() => setStep((prev) => Math.min(steps.length, prev + 1))}
-            disabled={step === steps.length}
+            disabled={step === steps.length || !canProceedToNextStep()}
           >
             Next <ChevronRight className="ml-2" />
           </Button>
