@@ -8,6 +8,14 @@ import {
   ChevronRight,
   ChevronLeft,
 } from "lucide-react";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
+} from "@/components/ui/breadcrumb";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -180,11 +188,20 @@ const SolarEstimation = () => {
   return (
     <div className="min-h-screen">
       <NavBar />
+      <div className="container mx-auto my-8">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Get Estimate</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
       <div className="container mx-auto px-4 py-12 max-w-4xl">
-        <h1 className="text-4xl font-bold mb-8 text-center">
-          Solar Panel Installation Estimator
-        </h1>
-
         <StepIndicator
           currentStep={step}
           totalSteps={steps.length}

@@ -6,6 +6,14 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
+} from "@/components/ui/breadcrumb";
 import NavBar from "../nav/NavBar";
 
 const SearchSolarInstallers = () => {
@@ -84,9 +92,22 @@ const SearchSolarInstallers = () => {
   return (
     <div className="min-h-screen">
       <NavBar />
-      <div className="max-w-5xl mx-auto px-2 sm:px-4 py-4 sm:py-6">
+      <div className="container mx-auto my-8">
+      <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Search Solar Installers</BreadcrumbPage>
+              </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6">
         <div className="mb-4 space-y-3">
-          <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2">
+          <div className="sm:ml-10 flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2">
             <Input
               type="text"
               placeholder="Search companies..."
