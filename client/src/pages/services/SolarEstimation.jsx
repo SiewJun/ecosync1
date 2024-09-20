@@ -415,7 +415,7 @@ const NearbyCompanies = ({ companies, isLoading }) => (
                   </div>
                 </div>
               </div>
-              <div className="flex px-4 py-3 sm:px-6 justify-between">
+              <div className="flex flex-col md:flex-row px-4 py-3 sm:px-6 justify-between">
                 <Button className="w-full" variant="default">
                   Request Quotation <ChevronRight className="ml-2 w-4 h-4" />
                 </Button>
