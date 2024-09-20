@@ -112,7 +112,7 @@ const SearchSolarInstallers = () => {
           </BreadcrumbList>
         </Breadcrumb>
       </div>
-      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6">
+      <div className="container mx-auto px-4 py-12">
         <div className="mb-4 space-y-3">
           <div className="sm:ml-10 flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2">
             <Input

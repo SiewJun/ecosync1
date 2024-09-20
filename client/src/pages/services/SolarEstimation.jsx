@@ -201,7 +201,7 @@ const SolarEstimation = () => {
           </BreadcrumbList>
         </Breadcrumb>
       </div>
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
+      <div className="container mx-auto px-4 py-12">
         <StepIndicator
           currentStep={step}
           totalSteps={steps.length}

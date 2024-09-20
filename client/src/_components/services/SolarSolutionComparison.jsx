@@ -289,13 +289,13 @@ const SolarSolutionComparison = () => {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-              <BreadcrumbPage>Pending Company Applications</BreadcrumbPage>
+              <BreadcrumbPage>Compare Solar Soluions</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
         </div>
         <div>
-          <div className="container mx-auto mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="container mx-auto p-4 sm:p-6 md:p-8 flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="relative w-full md:w-1/3">
               <Input
                 type="text"
@@ -333,7 +333,7 @@ const SolarSolutionComparison = () => {
               </Select>
             </div>
           </div>
-          <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+          <div className="container mx-auto px-4 py-12 p-4 sm:p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
             {currentItems.map((solution) => (
               <SolutionCard key={solution.id} solution={solution} />
             ))}

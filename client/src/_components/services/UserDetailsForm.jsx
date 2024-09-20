@@ -91,7 +91,7 @@ const UserDetailsForm = ({ onSubmit, initialData }) => {
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-lg overflow-hidden">
+    <Card className="w-full max-w-3xl mx-auto shadow-lg rounded-lg overflow-hidden">
       <CardHeader className="bg-primary p-6">
         <CardTitle className="text-3xl font-bold">Personal Details</CardTitle>
       </CardHeader>
