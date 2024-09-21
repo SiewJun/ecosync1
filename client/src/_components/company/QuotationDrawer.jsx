@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { X, Check, Send } from "lucide-react";
 import { motion } from "framer-motion";
+import { loadGoogleMaps } from "../../utils/googleMaps"; // Ensure this utility is available
 
 const QuotationDrawer = ({
   isDrawerOpen,
@@ -42,6 +43,37 @@ const QuotationDrawer = ({
   const [quotationError, setQuotationError] = useState(null);
   const [quotationSuccess, setQuotationSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const addressInputRef = useRef(null);
+
+  useEffect(() => {
+    if (isDrawerOpen) {
+      if (!window.google) {
+        loadGoogleMaps(() => {
+          initializeAutocomplete();
+        });
+      } else {
+        initializeAutocomplete();
+      }
+    }
+  }, [isDrawerOpen]);
+
+  const initializeAutocomplete = () => {
+    if (addressInputRef.current) {
+      const autocomplete = new window.google.maps.places.Autocomplete(addressInputRef.current, {
+        types: ["address"],
+      });
+
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        if (place.formatted_address) {
+          setFormData((prevData) => ({
+            ...prevData,
+            address: place.formatted_address,
+          }));
+        }
+      });
+    }
+  };
 
   const validateForm = () => {
     const errors = {};
@@ -240,6 +272,7 @@ const QuotationDrawer = ({
                 onChange={handleInputChange}
                 placeholder="Your Address"
                 className="w-full"
+                ref={addressInputRef}
               />
               {formErrors.address && (
                 <p className="text-red-500 text-sm mt-1">

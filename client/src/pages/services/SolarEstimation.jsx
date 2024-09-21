@@ -420,7 +420,6 @@ const NearbyCompanies = ({ companies, isLoading }) => (
               <div className="flex flex-col sm:flex-row px-4 py-3 sm:px-6 gap-2">
                 <Button className="w-full sm:w-1/2" variant="default">
                   Request Quotation
-                  <ChevronRight className="ml-2 w-4 h-4" />
                 </Button>
                 <a
                   href={`/installers/companypublicprofile/${company.id}`}
