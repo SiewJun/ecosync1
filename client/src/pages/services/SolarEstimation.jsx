@@ -18,6 +18,14 @@ import {
   BreadcrumbSeparator,
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -50,6 +58,137 @@ const SolarEstimation = () => {
   const [isRoofMapped, setIsRoofMapped] = useState(false);
   const [nearbyCompanies, setNearbyCompanies] = useState([]);
   const [isLoadingCompanies, setIsLoadingCompanies] = useState(false);
+  const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
+  const [authError, setAuthError] = useState(null);
+  const [pendingQuotationCompanyId, setPendingQuotationCompanyId] =
+    useState(null);
+
+  const handleRequestQuotation = async (companyId) => {
+    try {
+      // Fetch user information to check authentication and role
+      const userResponse = await fetch("http://localhost:5000/api/auth/me", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (!userResponse.ok) {
+        // User is not authenticated or token is invalid
+        setPendingQuotationCompanyId(companyId);
+        setIsAuthDialogOpen(true);
+        return;
+      }
+
+      const userData = await userResponse.json();
+
+      if (userData.user.role !== "CONSUMER") {
+        // User is authenticated but not a consumer
+        alert(
+          "Only consumers can request a quotation. Please contact support if you believe this is an error."
+        );
+        return;
+      }
+
+      await submitQuotation(companyId);
+    } catch (error) {
+      console.error("Error submitting quotation:", error);
+      alert(
+        "An error occurred while submitting the quotation. Please try again."
+      );
+    }
+  };
+
+  const submitQuotation = async (companyId) => {
+    try {
+      // Get formData to pass in the quotation request
+      const quotationData = {
+        companyId,
+        salutation: formData.salutation,
+        name: formData.name,
+        email: formData.email,
+        phoneNumber: formData.phone,
+        electricityBill: formData.avgElectricityBill,
+        propertyType: formData.propertyType,
+        address: formData.address,
+        state: formData.state,
+      };
+
+      // Submit the quotation request
+      const response = await fetch(
+        "http://localhost:5000/api/quotation/submit-quotation",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(quotationData),
+        }
+      );
+
+      if (response.ok) {
+        alert("Quotation submitted successfully!");
+      } else {
+        throw new Error("Failed to submit the quotation");
+      }
+    } catch (error) {
+      console.error("Error submitting quotation:", error);
+      throw error;
+    }
+  };
+
+  const handleLogin = async (email, password) => {
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem("token", data.token);
+        setIsAuthDialogOpen(false);
+        setAuthError(null);
+
+        // If there's a pending quotation, submit it
+        if (pendingQuotationCompanyId) {
+          await submitQuotation(pendingQuotationCompanyId);
+          setPendingQuotationCompanyId(null);
+        }
+      } else {
+        setAuthError("Invalid email or password");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setAuthError("An error occurred during login");
+    }
+  };
+
+  const handleRegister = async (username, email, password) => {
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, email, password, role: "CONSUMER" }),
+      });
+
+      if (response.ok) {
+        alert("Registration successful! Please log in.");
+      } else {
+        const errorData = await response.json();
+        setAuthError(errorData.message || "Registration failed");
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      setAuthError("An error occurred during registration");
+    }
+  };
 
   useEffect(() => {
     if (step === 5 && formData.address) {
@@ -230,6 +369,7 @@ const SolarEstimation = () => {
             <NearbyCompanies
               companies={nearbyCompanies}
               isLoading={isLoadingCompanies}
+              handleRequestQuotation={handleRequestQuotation}
             />
           </div>
         );
@@ -299,6 +439,16 @@ const SolarEstimation = () => {
           </Button>
         </div>
       </div>
+      <AuthDialog
+        isOpen={isAuthDialogOpen}
+        onClose={() => {
+          setIsAuthDialogOpen(false);
+          setPendingQuotationCompanyId(null);
+        }}
+        onLogin={handleLogin}
+        onRegister={handleRegister}
+        error={authError}
+      />
     </div>
   );
 };
@@ -362,7 +512,7 @@ const InfoCard = ({ title, value, unit }) => (
   </Card>
 );
 
-const NearbyCompanies = ({ companies, isLoading }) => (
+const NearbyCompanies = ({ companies, isLoading, handleRequestQuotation }) => (
   <Card className="overflow-hidden">
     <CardContent className="p-6">
       <h3 className="text-2xl font-semibold mb-6">Nearby Solar Companies</h3>
@@ -418,7 +568,11 @@ const NearbyCompanies = ({ companies, isLoading }) => (
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row px-4 py-3 sm:px-6 gap-2">
-                <Button className="w-full sm:w-1/2" variant="default">
+                <Button
+                  className="w-full sm:w-1/2"
+                  variant="default"
+                  onClick={() => handleRequestQuotation(company.id)}
+                >
                   Request Quotation
                 </Button>
                 <a
@@ -444,6 +598,109 @@ const NearbyCompanies = ({ companies, isLoading }) => (
   </Card>
 );
 
+const AuthDialog = ({ isOpen, onClose, onLogin, onRegister, error }) => (
+  <Dialog open={isOpen} onOpenChange={onClose}>
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Authentication Required</DialogTitle>
+        <DialogDescription>
+          Please log in or register to request a quotation.
+        </DialogDescription>
+      </DialogHeader>
+      <Tabs defaultValue="login">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="login">Login</TabsTrigger>
+          <TabsTrigger value="register">Register</TabsTrigger>
+        </TabsList>
+        <TabsContent value="login">
+          <LoginForm onSubmit={onLogin} error={error} />
+        </TabsContent>
+        <TabsContent value="register">
+          <RegisterForm onSubmit={onRegister} error={error} />
+        </TabsContent>
+      </Tabs>
+    </DialogContent>
+  </Dialog>
+);
+
+const LoginForm = ({ onSubmit, error }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(email, password);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+      />
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
+      {error && <p className="text-red-500">{error}</p>}
+      <Button type="submit">Login</Button>
+    </form>
+  );
+};
+
+const RegisterForm = ({ onSubmit, error }) => {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(username, email, password);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        placeholder="Username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        required
+      />
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+      />
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
+      {error && <p className="text-red-500">{error}</p>}
+      <Button type="submit">Register</Button>
+    </form>
+  );
+};
+
+AuthDialog.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onLogin: PropTypes.func.isRequired,
+  onRegister: PropTypes.func.isRequired,
+  error: PropTypes.string,
+};
+
 NearbyCompanies.propTypes = {
   companies: PropTypes.arrayOf(
     PropTypes.shape({
@@ -458,6 +715,7 @@ NearbyCompanies.propTypes = {
     })
   ).isRequired,
   isLoading: PropTypes.bool.isRequired,
+  handleRequestQuotation: PropTypes.func.isRequired,
 };
 
 StepIndicator.propTypes = {
@@ -483,6 +741,16 @@ SavingsCard.propTypes = {
   newValue: PropTypes.string,
   value: PropTypes.string,
   unit: PropTypes.string.isRequired,
+};
+
+RegisterForm.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+  error: PropTypes.string,
+};
+
+LoginForm.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+  error: PropTypes.string,
 };
 
 export default SolarEstimation;

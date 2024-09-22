@@ -8,8 +8,14 @@ const authenticateToken = require("../middleware/auth");
 
 router.post("/submit-quotation", authenticateToken, async (req, res) => {
   try {
-    // Extract the authenticated user's consumerId
-    const consumerId = req.user.id; // assuming req.user.id is the consumerId from the token
+    const consumerId = req.user.id;
+
+    // Fetch user information to check their role
+    const user = await User.findByPk(consumerId);
+
+    if (user.role !== "CONSUMER") {
+      return res.status(403).json({ message: "Only consumers can request a quotation." });
+    }
 
     const {
       companyId,
