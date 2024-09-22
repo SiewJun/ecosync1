@@ -37,7 +37,7 @@ import UserDetailsForm from "@/_components/services/UserDetailsForm";
 import { loadGoogleMaps, geocodeAddress } from "@/utils/googleMaps";
 import NavBar from "@/_components/nav/NavBar";
 import PropTypes from "prop-types";
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
 
 const SolarEstimation = () => {
@@ -62,8 +62,8 @@ const SolarEstimation = () => {
   const [isLoadingCompanies, setIsLoadingCompanies] = useState(false);
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const [authError, setAuthError] = useState(null);
-  const [pendingQuotationCompanyId, setPendingQuotationCompanyId] =
-    useState(null);
+  const [activeAuthTab, setActiveAuthTab] = useState("login");
+  const [submittedQuotations, setSubmittedQuotations] = useState([]);
   const { toast } = useToast();
 
   const handleRequestQuotation = async (companyId) => {
@@ -76,7 +76,6 @@ const SolarEstimation = () => {
       });
 
       if (!userResponse.ok) {
-        setPendingQuotationCompanyId(companyId);
         setIsAuthDialogOpen(true);
         return;
       }
@@ -94,6 +93,7 @@ const SolarEstimation = () => {
       }
 
       await submitQuotation(companyId);
+      setSubmittedQuotations([...submittedQuotations, companyId]); // Mark quotation as submitted
     } catch (error) {
       console.error("Error submitting quotation:", error);
       toast({
@@ -160,11 +160,6 @@ const SolarEstimation = () => {
         localStorage.setItem("token", data.token);
         setIsAuthDialogOpen(false);
         setAuthError(null);
-
-        if (pendingQuotationCompanyId) {
-          await submitQuotation(pendingQuotationCompanyId);
-          setPendingQuotationCompanyId(null);
-        }
       } else {
         setAuthError("Invalid email or password");
       }
@@ -189,6 +184,7 @@ const SolarEstimation = () => {
           title: "Registration Successful",
           description: "Please log in to continue.",
         });
+        setActiveAuthTab("login"); // Switch to login tab after successful registration
       } else {
         const errorData = await response.json();
         setAuthError(errorData.message || "Registration failed");
@@ -379,6 +375,7 @@ const SolarEstimation = () => {
               companies={nearbyCompanies}
               isLoading={isLoadingCompanies}
               handleRequestQuotation={handleRequestQuotation}
+              submittedQuotations={submittedQuotations}
             />
           </div>
         );
@@ -456,11 +453,12 @@ const SolarEstimation = () => {
         isOpen={isAuthDialogOpen}
         onClose={() => {
           setIsAuthDialogOpen(false);
-          setPendingQuotationCompanyId(null);
         }}
         onLogin={handleLogin}
         onRegister={handleRegister}
         error={authError}
+        activeTab={activeAuthTab}
+        setActiveTab={setActiveAuthTab}
       />
     </div>
   );
@@ -525,11 +523,16 @@ const InfoCard = ({ title, value, unit }) => (
   </Card>
 );
 
-const NearbyCompanies = ({ companies, isLoading, handleRequestQuotation }) => (
+const NearbyCompanies = ({
+  companies,
+  isLoading,
+  handleRequestQuotation,
+  submittedQuotations,
+}) => (
   <Card className="overflow-hidden shadow-lg rounded-lg">
     <CardContent className="p-8">
       <h3 className="text-2xl font-semibold mb-8 text-gray-500">
-        Nearby Solar Companies
+        Suggested Nearby Solar Companies
       </h3>
       {isLoading ? (
         <div className="flex justify-center items-center h-32">
@@ -550,10 +553,7 @@ const NearbyCompanies = ({ companies, isLoading, handleRequestQuotation }) => (
                   <h4 className="text-xl font-semibold mb-2 sm:mb-0">
                     {company.CompanyDetail.companyName}
                   </h4>
-                  <Badge
-                    variant="outline"
-                    className="text-sm px-3 py-1"
-                  >
+                  <Badge variant="outline" className="text-sm px-3 py-1">
                     {company.distance.toFixed(1)} km
                   </Badge>
                 </div>
@@ -589,8 +589,11 @@ const NearbyCompanies = ({ companies, isLoading, handleRequestQuotation }) => (
                 <Button
                   className="w-full sm:w-1/2 transition-colors duration-300"
                   onClick={() => handleRequestQuotation(company.id)}
+                  disabled={submittedQuotations.includes(company.id)}
                 >
-                  Request Quotation
+                  {submittedQuotations.includes(company.id)
+                    ? "Quotation Requested"
+                    : "Request Quotation"}
                 </Button>
                 <a
                   href={`/installers/companypublicprofile/${company.id}`}
@@ -599,7 +602,10 @@ const NearbyCompanies = ({ companies, isLoading, handleRequestQuotation }) => (
                   onClick={(e) => e.stopPropagation()}
                   className="w-full sm:w-1/2"
                 >
-                  <Button variant="outline" className="w-full transition-colors duration-300">
+                  <Button
+                    variant="outline"
+                    className="w-full transition-colors duration-300"
+                  >
                     View Profile
                     <ChevronRight className="ml-2 w-4 h-4" />
                   </Button>
@@ -617,7 +623,15 @@ const NearbyCompanies = ({ companies, isLoading, handleRequestQuotation }) => (
   </Card>
 );
 
-const AuthDialog = ({ isOpen, onClose, onLogin, onRegister, error }) => (
+const AuthDialog = ({
+  isOpen,
+  onClose,
+  onLogin,
+  onRegister,
+  error,
+  activeTab,
+  setActiveTab,
+}) => (
   <Dialog open={isOpen} onOpenChange={onClose}>
     <DialogContent className="sm:max-w-[425px] rounded-lg shadow-xl">
       <DialogHeader>
@@ -628,14 +642,10 @@ const AuthDialog = ({ isOpen, onClose, onLogin, onRegister, error }) => (
           Please log in or register to request a quotation.
         </DialogDescription>
       </DialogHeader>
-      <Tabs defaultValue="login" className="mt-6">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
         <TabsList className="grid w-full grid-cols-2 mb-6">
-          <TabsTrigger value="login">
-            Login
-          </TabsTrigger>
-          <TabsTrigger value="register">
-            Register
-          </TabsTrigger>
+          <TabsTrigger value="login">Login</TabsTrigger>
+          <TabsTrigger value="register">Register</TabsTrigger>
         </TabsList>
         <TabsContent value="login">
           <LoginForm onSubmit={onLogin} error={error} />
@@ -660,10 +670,7 @@ const LoginForm = ({ onSubmit, error }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label
-          htmlFor="email"
-          className="block text-sm font-medium"
-        >
+        <label htmlFor="email" className="block text-sm font-medium">
           Email
         </label>
         <input
@@ -677,10 +684,7 @@ const LoginForm = ({ onSubmit, error }) => {
         />
       </div>
       <div>
-        <label
-          htmlFor="password"
-          className="block text-sm font-medium"
-        >
+        <label htmlFor="password" className="block text-sm font-medium">
           Password
         </label>
         <input
@@ -694,10 +698,7 @@ const LoginForm = ({ onSubmit, error }) => {
         />
       </div>
       {error && <p className="text-red-500 text-sm">{error}</p>}
-      <Button
-        type="submit"
-        className="w-full transition-colors duration-300"
-      >
+      <Button type="submit" className="w-full transition-colors duration-300">
         Login
       </Button>
     </form>
@@ -717,10 +718,7 @@ const RegisterForm = ({ onSubmit, error }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label
-          htmlFor="username"
-          className="block text-sm font-medium"
-        >
+        <label htmlFor="username" className="block text-sm font-medium">
           Username
         </label>
         <input
@@ -734,10 +732,7 @@ const RegisterForm = ({ onSubmit, error }) => {
         />
       </div>
       <div>
-        <label
-          htmlFor="email"
-          className="block text-sm font-medium"
-        >
+        <label htmlFor="email" className="block text-sm font-medium">
           Email
         </label>
         <input
@@ -751,10 +746,7 @@ const RegisterForm = ({ onSubmit, error }) => {
         />
       </div>
       <div>
-        <label
-          htmlFor="password"
-          className="block text-sm font-medium"
-        >
+        <label htmlFor="password" className="block text-sm font-medium">
           Password
         </label>
         <input
@@ -768,10 +760,7 @@ const RegisterForm = ({ onSubmit, error }) => {
         />
       </div>
       {error && <p className="text-red-500 text-sm">{error}</p>}
-      <Button
-        type="submit"
-        className="w-full transition-colors duration-300"
-      >
+      <Button type="submit" className="w-full transition-colors duration-300">
         Register
       </Button>
     </form>
@@ -784,6 +773,8 @@ AuthDialog.propTypes = {
   onLogin: PropTypes.func.isRequired,
   onRegister: PropTypes.func.isRequired,
   error: PropTypes.string,
+  activeTab: PropTypes.string.isRequired,
+  setActiveTab: PropTypes.func.isRequired,
 };
 
 NearbyCompanies.propTypes = {
@@ -801,6 +792,7 @@ NearbyCompanies.propTypes = {
   ).isRequired,
   isLoading: PropTypes.bool.isRequired,
   handleRequestQuotation: PropTypes.func.isRequired,
+  submittedQuotations: PropTypes.arrayOf(PropTypes.number).isRequired,
 };
 
 StepIndicator.propTypes = {
