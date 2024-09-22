@@ -54,7 +54,7 @@ function AddressForm({ onAddressSelect, initialAddress }) {
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           <MapPin className="w-5 h-5" />
-          <span>Enter Your Address</span>
+          <span>Confirm Your Address</span>
         </CardTitle>
       </CardHeader>
       <CardContent>
