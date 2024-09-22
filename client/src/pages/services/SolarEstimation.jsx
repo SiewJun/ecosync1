@@ -37,6 +37,8 @@ import UserDetailsForm from "@/_components/services/UserDetailsForm";
 import { loadGoogleMaps, geocodeAddress } from "@/utils/googleMaps";
 import NavBar from "@/_components/nav/NavBar";
 import PropTypes from "prop-types";
+import { Toaster } from "@/components/ui/toaster"
+import { useToast } from "@/hooks/use-toast";
 
 const SolarEstimation = () => {
   const [step, setStep] = useState(1);
@@ -62,10 +64,10 @@ const SolarEstimation = () => {
   const [authError, setAuthError] = useState(null);
   const [pendingQuotationCompanyId, setPendingQuotationCompanyId] =
     useState(null);
+  const { toast } = useToast();
 
   const handleRequestQuotation = async (companyId) => {
     try {
-      // Fetch user information to check authentication and role
       const userResponse = await fetch("http://localhost:5000/api/auth/me", {
         method: "GET",
         headers: {
@@ -74,7 +76,6 @@ const SolarEstimation = () => {
       });
 
       if (!userResponse.ok) {
-        // User is not authenticated or token is invalid
         setPendingQuotationCompanyId(companyId);
         setIsAuthDialogOpen(true);
         return;
@@ -83,25 +84,29 @@ const SolarEstimation = () => {
       const userData = await userResponse.json();
 
       if (userData.user.role !== "CONSUMER") {
-        // User is authenticated but not a consumer
-        alert(
-          "Only consumers can request a quotation. Please contact support if you believe this is an error."
-        );
+        toast({
+          title: "Permission Denied",
+          description:
+            "Only consumers can request a quotation. Please contact support if you believe this is an error.",
+          variant: "destructive",
+        });
         return;
       }
 
       await submitQuotation(companyId);
     } catch (error) {
       console.error("Error submitting quotation:", error);
-      alert(
-        "An error occurred while submitting the quotation. Please try again."
-      );
+      toast({
+        title: "Error",
+        description:
+          "An error occurred while submitting the quotation. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
   const submitQuotation = async (companyId) => {
     try {
-      // Get formData to pass in the quotation request
       const quotationData = {
         companyId,
         salutation: formData.salutation,
@@ -114,7 +119,6 @@ const SolarEstimation = () => {
         state: formData.state,
       };
 
-      // Submit the quotation request
       const response = await fetch(
         "http://localhost:5000/api/quotation/submit-quotation",
         {
@@ -128,7 +132,10 @@ const SolarEstimation = () => {
       );
 
       if (response.ok) {
-        alert("Quotation submitted successfully!");
+        toast({
+          title: "Success",
+          description: "Quotation submitted successfully!",
+        });
       } else {
         throw new Error("Failed to submit the quotation");
       }
@@ -154,7 +161,6 @@ const SolarEstimation = () => {
         setIsAuthDialogOpen(false);
         setAuthError(null);
 
-        // If there's a pending quotation, submit it
         if (pendingQuotationCompanyId) {
           await submitQuotation(pendingQuotationCompanyId);
           setPendingQuotationCompanyId(null);
@@ -179,7 +185,10 @@ const SolarEstimation = () => {
       });
 
       if (response.ok) {
-        alert("Registration successful! Please log in.");
+        toast({
+          title: "Registration Successful",
+          description: "Please log in to continue.",
+        });
       } else {
         const errorData = await response.json();
         setAuthError(errorData.message || "Registration failed");
@@ -428,17 +437,21 @@ const SolarEstimation = () => {
             onClick={() => setStep((prev) => Math.max(1, prev - 1))}
             disabled={step === 1}
             variant="outline"
+            className="px-6 py-2"
           >
             <ChevronLeft className="mr-2" /> Back
           </Button>
           <Button
             onClick={() => setStep((prev) => Math.min(steps.length, prev + 1))}
             disabled={step === steps.length || !canProceedToNextStep()}
+            className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white"
           >
-            Next <ChevronRight className="ml-2" />
+            {step === steps.length ? "Finish" : "Next"}{" "}
+            <ChevronRight className="ml-2" />
           </Button>
         </div>
       </div>
+      <Toaster />
       <AuthDialog
         isOpen={isAuthDialogOpen}
         onClose={() => {
@@ -455,7 +468,7 @@ const SolarEstimation = () => {
 
 // eslint-disable-next-line no-unused-vars
 const StepIndicator = ({ currentStep, totalSteps, steps }) => (
-  <div className="flex justify-between items-center mb-8">
+  <div className="flex justify-between items-center mb-12">
     {steps.map((s, index) => (
       <div
         key={index}
@@ -464,35 +477,35 @@ const StepIndicator = ({ currentStep, totalSteps, steps }) => (
         }`}
       >
         <div
-          className={`rounded-full p-2 ${
+          className={`rounded-full p-3 ${
             index < currentStep ? "bg-green-100" : "bg-gray-100"
           }`}
         >
           {s.icon}
         </div>
-        <span className="text-xs mt-1">{s.title}</span>
+        <span className="text-sm mt-2 font-medium">{s.title}</span>
       </div>
     ))}
   </div>
 );
 
 const SavingsCard = ({ title, oldValue, newValue, value, unit }) => (
-  <Card>
-    <CardContent className="p-4">
-      <h3 className="text-lg font-semibold mb-2">{title}</h3>
+  <Card className="shadow-lg rounded-lg overflow-hidden">
+    <CardContent className="p-6">
+      <h3 className="text-xl font-semibold mb-4 text-gray-500">{title}</h3>
       {oldValue && newValue ? (
         <div className="flex justify-between items-baseline">
-          <span className="text-gray-500 line-through">
+          <span className="text-gray-500 line-through text-lg">
             {unit}
             {oldValue}
           </span>
-          <span className="text-2xl font-bold text-green-500">
+          <span className="text-3xl font-bold text-green-500">
             {unit}
             {newValue}
           </span>
         </div>
       ) : (
-        <span className="text-2xl font-bold text-green-500">
+        <span className="text-3xl font-bold text-green-500">
           {unit}
           {value}
         </span>
@@ -502,56 +515,61 @@ const SavingsCard = ({ title, oldValue, newValue, value, unit }) => (
 );
 
 const InfoCard = ({ title, value, unit }) => (
-  <Card>
-    <CardContent className="p-4">
-      <h3 className="text-lg font-semibold mb-2">{title}</h3>
-      <span className="text-2xl font-bold">
-        {value} <span className="text-sm text-gray-500">{unit}</span>
+  <Card className="shadow-lg rounded-lg overflow-hidden">
+    <CardContent className="p-6">
+      <h3 className="text-xl font-semibold mb-4 text-gray-500">{title}</h3>
+      <span className="text-3xl font-bold text-blue-600">
+        {value} <span className="text-lg text-gray-500">{unit}</span>
       </span>
     </CardContent>
   </Card>
 );
 
 const NearbyCompanies = ({ companies, isLoading, handleRequestQuotation }) => (
-  <Card className="overflow-hidden">
-    <CardContent className="p-6">
-      <h3 className="text-2xl font-semibold mb-6">Nearby Solar Companies</h3>
+  <Card className="overflow-hidden shadow-lg rounded-lg">
+    <CardContent className="p-8">
+      <h3 className="text-2xl font-semibold mb-8 text-gray-500">
+        Nearby Solar Companies
+      </h3>
       {isLoading ? (
         <div className="flex justify-center items-center h-32">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
         </div>
       ) : companies.length > 0 ? (
-        <ul className="space-y-6">
+        <ul className="space-y-8">
           {companies.map((company, index) => (
             <motion.li
               key={company.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
-              className="rounded-lg shadow-md overflow-hidden bg-secondary"
+              className="rounded-lg shadow-md overflow-hidden bg-secondary hover:shadow-lg transition-shadow duration-300"
             >
-              <div className="p-4">
-                <div className="flex flex-col sm:flex-row justify-between items-start mb-2">
+              <div className="p-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start mb-4">
                   <h4 className="text-xl font-semibold mb-2 sm:mb-0">
                     {company.CompanyDetail.companyName}
                   </h4>
-                  <Badge variant="secondary" className="text-sm">
+                  <Badge
+                    variant="outline"
+                    className="text-sm px-3 py-1"
+                  >
                     {company.distance.toFixed(1)} km
                   </Badge>
                 </div>
-                <div className="space-y-2 text-sm">
+                <div className="space-y-3 text-sm text-secondary-foreground">
                   <div className="flex items-center">
-                    <MapPin className="w-4 h-4 mr-2 flex-shrink-0" />
+                    <MapPin className="w-5 h-5 mr-3 text-gray-400 flex-shrink-0" />
                     <p className="break-words">
                       {company.CompanyDetail.address}
                     </p>
                   </div>
                   <div className="flex items-center">
-                    <Phone className="w-4 h-4 mr-2 flex-shrink-0" />
+                    <Phone className="w-5 h-5 mr-3 text-gray-400 flex-shrink-0" />
                     <p>{company.CompanyDetail.phoneNumber}</p>
                   </div>
                   <div className="flex items-center">
-                    <Globe className="w-4 h-4 mr-2 flex-shrink-0" />
+                    <Globe className="w-5 h-5 mr-3 text-gray-400 flex-shrink-0" />
                     <a
                       href={
                         company.CompanyDetail.website.startsWith("http")
@@ -567,10 +585,9 @@ const NearbyCompanies = ({ companies, isLoading, handleRequestQuotation }) => (
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col sm:flex-row px-4 py-3 sm:px-6 gap-2">
+              <div className="flex flex-col sm:flex-row px-6 py-4 gap-3">
                 <Button
-                  className="w-full sm:w-1/2"
-                  variant="default"
+                  className="w-full sm:w-1/2 transition-colors duration-300"
                   onClick={() => handleRequestQuotation(company.id)}
                 >
                   Request Quotation
@@ -582,7 +599,7 @@ const NearbyCompanies = ({ companies, isLoading, handleRequestQuotation }) => (
                   onClick={(e) => e.stopPropagation()}
                   className="w-full sm:w-1/2"
                 >
-                  <Button className="w-full" variant="outline">
+                  <Button variant="outline" className="w-full transition-colors duration-300">
                     View Profile
                     <ChevronRight className="ml-2 w-4 h-4" />
                   </Button>
@@ -592,7 +609,9 @@ const NearbyCompanies = ({ companies, isLoading, handleRequestQuotation }) => (
           ))}
         </ul>
       ) : (
-        <p className="text-center py-8">No nearby solar companies found.</p>
+        <p className="text-center py-8 text-gray-600">
+          No nearby solar companies found.
+        </p>
       )}
     </CardContent>
   </Card>
@@ -600,17 +619,23 @@ const NearbyCompanies = ({ companies, isLoading, handleRequestQuotation }) => (
 
 const AuthDialog = ({ isOpen, onClose, onLogin, onRegister, error }) => (
   <Dialog open={isOpen} onOpenChange={onClose}>
-    <DialogContent>
+    <DialogContent className="sm:max-w-[425px] rounded-lg shadow-xl">
       <DialogHeader>
-        <DialogTitle>Authentication Required</DialogTitle>
-        <DialogDescription>
+        <DialogTitle className="text-2xl font-semibold">
+          Authentication Required
+        </DialogTitle>
+        <DialogDescription className="text-gray-500">
           Please log in or register to request a quotation.
         </DialogDescription>
       </DialogHeader>
-      <Tabs defaultValue="login">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="login">Login</TabsTrigger>
-          <TabsTrigger value="register">Register</TabsTrigger>
+      <Tabs defaultValue="login" className="mt-6">
+        <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsTrigger value="login">
+            Login
+          </TabsTrigger>
+          <TabsTrigger value="register">
+            Register
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="login">
           <LoginForm onSubmit={onLogin} error={error} />
@@ -633,23 +658,48 @@ const LoginForm = ({ onSubmit, error }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
-      {error && <p className="text-red-500">{error}</p>}
-      <Button type="submit">Login</Button>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label
+          htmlFor="email"
+          className="block text-sm font-medium"
+        >
+          Email
+        </label>
+        <input
+          type="email"
+          id="email"
+          placeholder="Enter your email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          className="mt-1 block w-full px-3 py-2 text-black rounded-md shadow-sm focus:outline-none"
+        />
+      </div>
+      <div>
+        <label
+          htmlFor="password"
+          className="block text-sm font-medium"
+        >
+          Password
+        </label>
+        <input
+          type="password"
+          id="password"
+          placeholder="Enter your password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          className="mt-1 block w-full px-3 py-2 text-black rounded-md shadow-sm focus:outline-none"
+        />
+      </div>
+      {error && <p className="text-red-500 text-sm">{error}</p>}
+      <Button
+        type="submit"
+        className="w-full transition-colors duration-300"
+      >
+        Login
+      </Button>
     </form>
   );
 };
@@ -665,30 +715,65 @@ const RegisterForm = ({ onSubmit, error }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        required
-      />
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
-      {error && <p className="text-red-500">{error}</p>}
-      <Button type="submit">Register</Button>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label
+          htmlFor="username"
+          className="block text-sm font-medium"
+        >
+          Username
+        </label>
+        <input
+          type="text"
+          id="username"
+          placeholder="Choose a username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+          className="mt-1 block w-full px-3 py-2 text-black rounded-md shadow-sm focus:outline-none"
+        />
+      </div>
+      <div>
+        <label
+          htmlFor="email"
+          className="block text-sm font-medium"
+        >
+          Email
+        </label>
+        <input
+          type="email"
+          id="email"
+          placeholder="Enter your email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          className="mt-1 block w-full px-3 py-2 text-black rounded-md shadow-sm focus:outline-none"
+        />
+      </div>
+      <div>
+        <label
+          htmlFor="password"
+          className="block text-sm font-medium"
+        >
+          Password
+        </label>
+        <input
+          type="password"
+          id="password"
+          placeholder="Choose a password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          className="mt-1 block w-full px-3 py-2 text-black rounded-md shadow-sm focus:outline-none"
+        />
+      </div>
+      {error && <p className="text-red-500 text-sm">{error}</p>}
+      <Button
+        type="submit"
+        className="w-full transition-colors duration-300"
+      >
+        Register
+      </Button>
     </form>
   );
 };
