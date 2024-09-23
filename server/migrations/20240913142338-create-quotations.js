@@ -61,6 +61,15 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
+      status: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        defaultValue: 'REQUESTED' // New status field
+      },
+      quotationDocumentUrl: {
+        type: Sequelize.STRING,
+        allowNull: true, // New field for drafted document
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

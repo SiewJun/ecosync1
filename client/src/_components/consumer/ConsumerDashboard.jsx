@@ -21,6 +21,7 @@ import ConsumerProfile from "./ConsumerProfile";
 import ConsumerEditProfileForm from "./ConsumerEditProfileForm";
 import Chat from "../communication/Chat";
 import ChatList from "../communication/ChatLIst";
+import ConsumerQuotation from "./ConsumerQuotation";
 
 const ConsumerDashboard = () => {
   const [user, setUser] = useState(null);
@@ -99,9 +100,9 @@ const ConsumerDashboard = () => {
                 Chat
               </Link>
               <Link
-                to="/consumer-dashboard/company-profile"
+                to="/consumer-dashboard/consumer-quotation"
                 className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
-                  "/consumer-dashboard/company-profile"
+                  "/consumer-dashboard/consumer-quotation"
                 )}`}
               >
                 <FileText className="h-4 w-4" />
@@ -194,9 +195,9 @@ const ConsumerDashboard = () => {
                   Chat
                 </Link>
                 <Link
-                  to="/consumer-dashboard/company-chat"
+                  to="/consumer-dashboard/consumer-quotation"
                   className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
-                    "/consumer-dashboard/company-chat"
+                    "/consumer-dashboard/consumer-quotation"
                   )}`}
                 >
                   <FileText className="h-4 w-4" />
@@ -242,6 +243,7 @@ const ConsumerDashboard = () => {
             <Route path="consumer-profile/consumer-edit-profile" element={<ConsumerEditProfileForm />} />
             <Route path="chat" element={<ChatList />} />
             <Route path="chat/:companyId" element={<Chat />} />
+            <Route path="consumer-quotation" element={<ConsumerQuotation />} />
           </Routes>
         </main>
       </div>

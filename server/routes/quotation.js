@@ -6,7 +6,8 @@ const {
   Quotation,
   Chat,
   Message,
-  Attachment,
+  CompanyDetail,
+  CompanyProfile,
 } = require("../models");
 const authenticateToken = require("../middleware/auth");
 
@@ -73,6 +74,44 @@ router.post("/submit-quotation", authenticateToken, async (req, res) => {
   } catch (error) {
     console.error("Error submitting quotation:", error);
     res.status(500).json({ error: "Failed to submit the quotation request." });
+  }
+});
+
+router.get("/consumer-quotations", authenticateToken, async (req, res) => {
+  const consumerId = req.user.id;
+  const userRole = req.user.role;
+
+  // Check if the role is CONSUMER
+  if (userRole !== "CONSUMER") {
+    return res.status(403).json({ message: "Forbidden: Access is denied" });
+  }
+
+  try {
+    const quotations = await Quotation.findAll({
+      where: { consumerId },
+      include: [
+        {
+          model: User,
+          as: "company",
+          attributes: ["id", "avatarUrl"],
+          include: [
+            {
+              model: CompanyDetail,
+              attributes: ["companyName", "businessLicense"],
+            },
+            {
+              model: CompanyProfile,
+              attributes: ["certificate"],
+            },
+          ],
+        },
+      ],
+    });
+
+    res.json({ quotations });
+  } catch (error) {
+    console.error("Error fetching quotations:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
