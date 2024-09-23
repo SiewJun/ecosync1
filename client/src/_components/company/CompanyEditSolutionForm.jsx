@@ -164,7 +164,7 @@ const UpdateSolutionForm = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="price">Price ($)</Label>
+                  <Label htmlFor="price">Price (RM)</Label>
                   <Input
                     id="price"
                     type="number"

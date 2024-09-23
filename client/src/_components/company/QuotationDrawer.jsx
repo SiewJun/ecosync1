@@ -44,6 +44,7 @@ const QuotationDrawer = ({
   const [quotationSuccess, setQuotationSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const addressInputRef = useRef(null);
+  const autocompleteRef = useRef(null);
 
   useEffect(() => {
     if (isDrawerOpen) {
@@ -55,16 +56,17 @@ const QuotationDrawer = ({
         initializeAutocomplete();
       }
     }
+    setTimeout(() => (document.body.style.pointerEvents = ""), 0);
   }, [isDrawerOpen]);
 
   const initializeAutocomplete = () => {
     if (addressInputRef.current) {
-      const autocomplete = new window.google.maps.places.Autocomplete(addressInputRef.current, {
+      autocompleteRef.current = new window.google.maps.places.Autocomplete(addressInputRef.current, {
         types: ["address"],
       });
 
-      autocomplete.addListener("place_changed", () => {
-        const place = autocomplete.getPlace();
+      autocompleteRef.current.addListener("place_changed", () => {
+        const place = autocompleteRef.current.getPlace();
         if (place.formatted_address) {
           setFormData((prevData) => ({
             ...prevData,
@@ -73,6 +75,12 @@ const QuotationDrawer = ({
         }
       });
     }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    setFormErrors({ ...formErrors, [name]: "" });
   };
 
   const validateForm = () => {
@@ -143,20 +151,38 @@ const QuotationDrawer = ({
     }
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-    setFormErrors({ ...formErrors, [name]: "" });
-  };
-
   const handleSelectChange = (name, value) => {
     setFormData({ ...formData, [name]: value });
     setFormErrors({ ...formErrors, [name]: "" });
   };
 
   return (
-    <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-      <DrawerContent className="w-full h-screen sm:h-auto sm:max-h-[95vh] sm:rounded-t-xl">
+    <Drawer 
+      open={isDrawerOpen} 
+      onOpenChange={(open) => {
+        if (!open) {
+          // Only allow closing if not interacting with autocomplete
+          const activeElement = document.activeElement;
+          if (!activeElement || !activeElement.classList.contains('pac-item')) {
+            setIsDrawerOpen(false);
+          }
+        } else {
+          setIsDrawerOpen(true);
+        }
+      }}
+    >
+      <DrawerContent 
+        className="w-full h-screen sm:h-auto sm:max-h-[95vh] sm:rounded-t-xl"
+        onPointerDownOutside={(e) => {
+          const target = e.target;
+          if (target instanceof Element) {
+            // Prevent closing when clicking on autocomplete items
+            if (target.closest('.pac-container')) {
+              e.preventDefault();
+            }
+          }
+        }}
+      >
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}

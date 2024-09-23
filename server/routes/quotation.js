@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const moment = require("moment");
 const {
   User,
   Quotation,
@@ -52,11 +53,14 @@ router.post("/submit-quotation", authenticateToken, async (req, res) => {
       chat = await Chat.create({ consumerId, companyId });
     }
 
+    // Format the date to a more readable format
+    const formattedDate = moment(newQuotation.createdAt).format('MMMM Do YYYY, h:mm:ss a');
+
     // Send a message in the chat notifying the company about the quotation
     const message = await Message.create({
       chatId: chat.id,
       senderId: consumerId, // The consumer is the sender of the message
-      messageText: `Quotation requested on ${newQuotation.createdAt}`, // Message to the company
+      messageText: `Quotation requested on ${formattedDate}`, // Message to the company
       messageType: 'text',
     });
 
