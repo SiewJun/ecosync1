@@ -131,7 +131,7 @@ const ConsumerQuotation = () => {
             <div className="flex items-center">
               <DollarSign className="h-5 w-5 text-green-500 mr-2" />
               <p className="text-sm font-medium text-gray-500">
-                Avg. Monthly: ${quotation.averageMonthlyElectricityBill}
+                Avg. Monthly: RM{quotation.averageMonthlyElectricityBill}
               </p>
             </div>
             <ChevronRight className="h-5 w-5 text-primary group-hover:transform group-hover:translate-x-1 transition-transform duration-300" />
@@ -357,7 +357,7 @@ const ConsumerQuotation = () => {
                       <div>
                         <p className="text-sm">Average Monthly Bill</p>
                         <p className="text-3xl font-bold text-primary">
-                          ${selectedQuotation.averageMonthlyElectricityBill}
+                          RM{selectedQuotation.averageMonthlyElectricityBill}
                         </p>
                       </div>
                       <DollarSign className="h-12 w-12 text-primary-foreground opacity-50" />
