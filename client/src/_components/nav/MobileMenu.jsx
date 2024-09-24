@@ -59,7 +59,7 @@ const renderDashboardLinks = (user) => {
               Chat
             </li>
           </Link>
-          <Link to="/consumer-dashboard/quotation">
+          <Link to="/consumer-dashboard/consumer-quotation">
             <li className={linkClasses}>
               <FileText className="inline-block mr-2" />
               Quotation

@@ -61,14 +61,14 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
-      status: {
+      quotationStatus: {
         type: Sequelize.STRING,
+        defaultValue: 'PENDING', // Track whether it's a draft or finalized
         allowNull: false,
-        defaultValue: 'REQUESTED' // New status field
       },
-      quotationDocumentUrl: {
-        type: Sequelize.STRING,
-        allowNull: true, // New field for drafted document
+      quotationDraft: {
+        type: Sequelize.TEXT,  // Store the Quill.js JSON or HTML content
+        allowNull: true,       // Initially null until the company drafts the quotation
       },
       createdAt: {
         allowNull: false,

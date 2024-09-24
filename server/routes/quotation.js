@@ -115,4 +115,31 @@ router.get("/consumer-quotations", authenticateToken, async (req, res) => {
   }
 });
 
+// Endpoint to save the draft
+router.post('/quotations/draft', authenticateToken, async (req, res) => {
+  const { quotationId, content } = req.body;
+  const companyId = req.user.id;
+
+  try {
+    // Find the quotation
+    const quotation = await Quotation.findOne({
+      where: { id: quotationId, companyId }
+    });
+
+    if (!quotation) {
+      return res.status(404).json({ message: 'Quotation not found' });
+    }
+
+    // Update the quotation draft
+    quotation.quotationDraft = content;
+    quotation.quotationStatus = 'DRAFT';
+    await quotation.save();
+
+    res.json({ message: 'Quotation draft saved successfully', quotation });
+  } catch (error) {
+    console.error('Error saving quotation draft:', error);
+    res.status(500).json({ message: 'Failed to save draft.' });
+  }
+});
+
 module.exports = router;

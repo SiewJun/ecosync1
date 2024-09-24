@@ -63,6 +63,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    quotationStatus: {
+      type: DataTypes.STRING,
+      defaultValue: 'PENDING', // Track whether it's a draft or finalized
+      allowNull: false,
+    },
+    quotationDraft: {
+      type: DataTypes.TEXT,  // Store the Quill.js JSON or HTML content
+      allowNull: true,       // Initially null until the company drafts the quotation
+    },
   }, {
     sequelize,
     modelName: 'Quotation',

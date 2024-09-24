@@ -158,6 +158,10 @@ const SolarEstimation = () => {
       if (response.ok) {
         const data = await response.json();
         localStorage.setItem("token", data.token);
+        toast({
+          title: "Logged In",
+          description: "You have successfully logged in.",
+        });
         setIsAuthDialogOpen(false);
         setAuthError(null);
       } else {
@@ -616,7 +620,7 @@ const NearbyCompanies = ({
         </ul>
       ) : (
         <p className="text-center py-8 text-gray-600">
-          No nearby solar companies found.
+          No nearby solar companies found. Please try to reach out to the companies.
         </p>
       )}
     </CardContent>

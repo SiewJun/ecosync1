@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageSquare, Building2, Loader2, ShieldCheck, CheckCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const ChatList = () => {
   const [chats, setChats] = useState([]);
@@ -50,6 +51,12 @@ const ChatList = () => {
     return (
       <div className="text-center py-8 text-red-500">
         <p>{error}</p>
+        <Button
+            className="mt-8 bg-red-600 hover:bg-red-700 text-white"
+            onClick={() => window.location.reload()}
+          >
+            Try Again
+        </Button>
       </div>
     );
   }
