@@ -239,11 +239,11 @@ const ConsumerDashboard = () => {
         </header>
         <main className="flex flex-1 flex-col">
           <Routes>
-            <Route path="consumer-profile" element={<ConsumerProfile />} />
-            <Route path="consumer-profile/consumer-edit-profile" element={<ConsumerEditProfileForm />} />
-            <Route path="chat" element={<ChatList />} />
-            <Route path="chat/:companyId" element={<Chat />} />
-            <Route path="consumer-quotation" element={<ConsumerQuotation />} />
+            <Route path="/consumer-profile" element={<ConsumerProfile />} />
+            <Route path="/consumer-profile/consumer-edit-profile" element={<ConsumerEditProfileForm />} />
+            <Route path="/chat" element={<ChatList />} />
+            <Route path="/chat/:companyId" element={<Chat />} />
+            <Route path="/consumer-quotation" element={<ConsumerQuotation />} />
           </Routes>
         </main>
       </div>

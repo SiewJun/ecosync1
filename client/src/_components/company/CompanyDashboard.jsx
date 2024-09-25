@@ -28,6 +28,7 @@ import CompanyEditSolutionForm from "./CompanyEditSolutionForm";
 import ChatListCompany from "../communication/ChatListCompany";
 import ChatCompany from "../communication/ChatCompany";
 import CompanyQuotation from "./CompanyQuotation";
+import QuotationDraft from "../services/QuotationDraft";
 
 const CompanyDashboard = () => {
   const [user, setUser] = useState(null);
@@ -263,14 +264,15 @@ const CompanyDashboard = () => {
               path="company-details/company-edit-details"
               element={<CompanyEditDetailsForm />}
             />
-            <Route path="company-profile" element={<CompanyProfile />} />
-            <Route path="company-profile/company-profile-edit" element={<CompanyProfileEditForm />} />
-            <Route path="company-profile/company-gallery-edit" element={<CompanyGalleryEditForm />} />
-            <Route path="company-profile/company-add-solution" element={<CompanyAddSolutionForm />} />
-            <Route path="company-profile/company-edit-solution/:id" element={<CompanyEditSolutionForm />} />
+            <Route path="/company-profile" element={<CompanyProfile />} />
+            <Route path="/company-profile/company-profile-edit" element={<CompanyProfileEditForm />} />
+            <Route path="/company-profile/company-gallery-edit" element={<CompanyGalleryEditForm />} />
+            <Route path="/company-profile/company-add-solution" element={<CompanyAddSolutionForm />} />
+            <Route path="/company-profile/company-edit-solution/:id" element={<CompanyEditSolutionForm />} />
             <Route path="/company-chat" element={<ChatListCompany />} />
             <Route path="/company-chat/:consumerId" element={<ChatCompany />} />
-            <Route path="company-quotation" element={<CompanyQuotation />} />
+            <Route path="/company-quotation" element={<CompanyQuotation />} />
+            <Route path="/company-quotaton/quotationdraft" element={<QuotationDraft />} />
             {/* Add other routes here */}
           </Routes>
         </main>
