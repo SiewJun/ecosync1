@@ -6,14 +6,20 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { User, FileText, ChevronRight, X, DollarSign } from "lucide-react";
 import axios from "axios";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 
 const CompanyQuotation = () => {
   const [quotations, setQuotations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedQuotation, setSelectedQuotation] = useState(null);
+  const navigate = useNavigate();
 
+  const handleDraftButtonClick = () => {
+    const quotationId = selectedQuotation.id;
+    navigate(`${quotationId}`);
+  };
   useEffect(() => {
     const fetchQuotations = async () => {
       try {
@@ -26,7 +32,7 @@ const CompanyQuotation = () => {
           }
         );
         setQuotations(response.data.quotations);
-      // eslint-disable-next-line no-unused-vars
+        // eslint-disable-next-line no-unused-vars
       } catch (err) {
         setError("Failed to load quotations. Please try again later.");
       } finally {
@@ -44,7 +50,7 @@ const CompanyQuotation = () => {
   const closeDetails = () => {
     setSelectedQuotation(null);
   };
-  
+
   const QuotationCard = ({ quotation }) => (
     <motion.div
       layout
@@ -288,7 +294,8 @@ const CompanyQuotation = () => {
                   </Button>
                   <Button
                     variant="default"
-                    disabled={!!selectedQuotation.quotationDraft}
+                    disabled={!selectedQuotation.quotationDraft}
+                    onClick={handleDraftButtonClick}
                   >
                     {selectedQuotation.quotationDraft
                       ? "View Quotation Draft"

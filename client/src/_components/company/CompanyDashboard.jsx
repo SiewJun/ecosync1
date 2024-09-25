@@ -28,6 +28,7 @@ import CompanyEditSolutionForm from "./CompanyEditSolutionForm";
 import ChatListCompany from "../communication/ChatListCompany";
 import ChatCompany from "../communication/ChatCompany";
 import CompanyQuotation from "./CompanyQuotation";
+import TiptapQuotationEditor from "./TipTapQuotationEditor";
 
 const CompanyDashboard = () => {
   const [user, setUser] = useState(null);
@@ -124,9 +125,7 @@ const CompanyDashboard = () => {
                 to="/company-dashboard/company-chat"
                 className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
                   "/company-dashboard/company-chat"
-                )} ${getLinkClasses(
-                  "/company-dashboard/company-chat/:id"
-                )}`}
+                )} ${getLinkClasses("/company-dashboard/company-chat/:id")}`}
               >
                 <MessageCircle className="h-4 w-4" />
                 Chat
@@ -135,6 +134,8 @@ const CompanyDashboard = () => {
                 to="/company-dashboard/company-quotation"
                 className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
                   "/company-dashboard/company-quotation"
+                )} ${getLinkClasses(
+                  "/company-dashboard/company-quotation/:id"
                 )}`}
               >
                 <FileCheck className="h-4 w-4" />
@@ -207,7 +208,7 @@ const CompanyDashboard = () => {
                 <Link
                   to="/company-dashboard/company-profile"
                   className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
-                    "/company-dashboard/company-profile" 
+                    "/company-dashboard/company-profile"
                   )}`}
                 >
                   <User className="h-4 w-4" />
@@ -226,6 +227,8 @@ const CompanyDashboard = () => {
                   to="/company-dashboard/company-quotation"
                   className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
                     "/company-dashboard/company-quotation"
+                  )} ${getLinkClasses(
+                    "/company-dashboard/company-quotation/:id"
                   )}`}
                 >
                   <FileCheck className="h-4 w-4" />
@@ -264,13 +267,29 @@ const CompanyDashboard = () => {
               element={<CompanyEditDetailsForm />}
             />
             <Route path="/company-profile" element={<CompanyProfile />} />
-            <Route path="/company-profile/company-profile-edit" element={<CompanyProfileEditForm />} />
-            <Route path="/company-profile/company-gallery-edit" element={<CompanyGalleryEditForm />} />
-            <Route path="/company-profile/company-add-solution" element={<CompanyAddSolutionForm />} />
-            <Route path="/company-profile/company-edit-solution/:id" element={<CompanyEditSolutionForm />} />
+            <Route
+              path="/company-profile/company-profile-edit"
+              element={<CompanyProfileEditForm />}
+            />
+            <Route
+              path="/company-profile/company-gallery-edit"
+              element={<CompanyGalleryEditForm />}
+            />
+            <Route
+              path="/company-profile/company-add-solution"
+              element={<CompanyAddSolutionForm />}
+            />
+            <Route
+              path="/company-profile/company-edit-solution/:id"
+              element={<CompanyEditSolutionForm />}
+            />
             <Route path="/company-chat" element={<ChatListCompany />} />
             <Route path="/company-chat/:consumerId" element={<ChatCompany />} />
             <Route path="/company-quotation" element={<CompanyQuotation />} />
+            <Route
+              path="/company-quotation/:id"
+              element={<TiptapQuotationEditor />}
+            />
             {/* Add other routes here */}
           </Routes>
         </main>

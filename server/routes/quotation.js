@@ -151,7 +151,7 @@ router.get("/company-quotations", authenticateToken, async (req, res) => {
 });
 
 // Endpoint to save the draft
-router.post('/:id/draft', authenticateToken, async (req, res) => {
+router.post('/draft/:id', authenticateToken, async (req, res) => {
   const { quotationId, content } = req.body;
   const companyId = req.user.id;
 
