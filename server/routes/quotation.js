@@ -3,6 +3,7 @@ const router = express.Router();
 const moment = require("moment");
 const {
   User,
+  ConsumerProfile,
   Quotation,
   Chat,
   Message,
@@ -102,6 +103,40 @@ router.get("/consumer-quotations", authenticateToken, async (req, res) => {
             {
               model: CompanyProfile,
               attributes: ["certificate"],
+            },
+          ],
+        },
+      ],
+    });
+
+    res.json({ quotations });
+  } catch (error) {
+    console.error("Error fetching quotations:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get("/company-quotations", authenticateToken, async (req, res) => {
+  const companyId = req.user.id;
+  const userRole = req.user.role;
+
+  // Check if the role is CONSUMER
+  if (userRole !== "COMPANY") {
+    return res.status(403).json({ message: "Forbidden: Access is denied" });
+  }
+
+  try {
+    const quotations = await Quotation.findAll({
+      where: { companyId },
+      include: [
+        {
+          model: User,
+          as: "consumer",
+          attributes: ["id", "username", "avatarUrl"],
+          include: [
+            {
+              model: ConsumerProfile,
+              attributes: ["phoneNumber", "address"],
             },
           ],
         },

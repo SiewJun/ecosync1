@@ -113,7 +113,7 @@ const renderDashboardLinks = (user) => {
               Chat
             </li>
           </Link>
-          <Link to="/company-dashboard/quotation">
+          <Link to="/company-dashboard/company-quotation">
             <li className={linkClasses}>
               <FileCheck className="inline-block mr-2" />
               Quotation

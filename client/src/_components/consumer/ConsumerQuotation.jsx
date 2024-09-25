@@ -30,6 +30,7 @@ const ConsumerQuotation = () => {
   const { scrollYProgress } = useScroll({
     target: scrollRef,
     offset: ["start start", "end start"],
+    layoutEffect: false,
   });
 
   const scaleX = useSpring(scrollYProgress, {
@@ -92,7 +93,6 @@ const ConsumerQuotation = () => {
         onClick={() => handleQuotationClick(quotation)}
       >
         <CardContent className="p-6 relative">
-          <div className="absolute top-0 left-0 w-full h-1 group-hover:scale-x-100 transition-transform duration-300"></div>
           <div className="flex items-center justify-between mb-4">
             <Avatar className="w-16 h-16 ring-2 ring-offset-2 ring-primary">
               {quotation.company?.avatarUrl ? (
@@ -169,25 +169,18 @@ const ConsumerQuotation = () => {
       <div className="text-center py-8 text-red-500">
         <p>{error}</p>
         <Button
-            className="mt-8 bg-red-600 hover:bg-red-700 text-white"
-            onClick={() => window.location.reload()}
-          >
-            Try Again
+          className="mt-8 bg-red-600 hover:bg-red-700 text-white"
+          onClick={() => window.location.reload()}
+        >
+          Try Again
         </Button>
       </div>
     );
   }
-  
+
   return (
     <div className="min-h-screen contaienr p-6" ref={scrollRef}>
       <div className="max-w-5xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-12"
-        ></motion.div>
-
         <ScrollArea className="h-[calc(100vh-250px)]">
           <AnimatePresence>
             {quotations.length ? (
@@ -205,15 +198,11 @@ const ConsumerQuotation = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <Card className="shadow-lg">
-                  <CardContent className="flex flex-col items-center justify-center h-96">
-                    <FileText className="h-24 w-24 mb-6" />
-                    <h2 className="text-3xl font-bold mb-2">
-                      No Quotations Yet
-                    </h2>
-                    <p className="text-center text-lg text-gray-500 max-w-md">
-                      Your journey to solar energy starts here. Request your
-                      first quotation and watch this space come to life!
+                <Card className="bg-muted">
+                  <CardContent className="flex flex-col items-center justify-center h-32">
+                    <FileText className="h-8 w-8 text-muted-foreground mb-2" />
+                    <p className="text-center text-sm text-muted-foreground">
+                      No quotations available.
                     </p>
                   </CardContent>
                 </Card>
