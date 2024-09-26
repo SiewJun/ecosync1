@@ -71,7 +71,7 @@ const CompanyQuotation = () => {
               {quotation.consumer?.ConsumerProfile?.avatarUrl ? (
                 <AvatarImage
                   src={`http://localhost:5000/${quotation.consumer.ConsumerProfile.avatarUrl}`}
-                  alt={quotation.consumer.ConsumerProfile.phoneNumber}
+                  alt={quotation.consumer.username}
                 />
               ) : (
                 <AvatarFallback>
@@ -209,7 +209,7 @@ const CompanyQuotation = () => {
               <div className="p-8">
                 <div className="mb-8">
                   <h2 className="text-3xl font-bold mb-2">
-                    {selectedQuotation.consumer?.ConsumerProfile?.phoneNumber}
+                    {selectedQuotation.consumer?.username}
                   </h2>
                   <div
                     className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
@@ -294,12 +294,9 @@ const CompanyQuotation = () => {
                   </Button>
                   <Button
                     variant="default"
-                    disabled={!selectedQuotation.quotationDraft}
                     onClick={handleDraftButtonClick}
                   >
-                    {selectedQuotation.quotationDraft
-                      ? "View Quotation Draft"
-                      : "Draft Quotation"}
+                    Draft Quotation
                   </Button>
                 </div>
               </div>

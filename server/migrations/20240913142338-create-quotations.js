@@ -66,10 +66,6 @@ module.exports = {
         defaultValue: 'PENDING', // Track whether it's a draft or finalized
         allowNull: false,
       },
-      quotationDraft: {
-        type: Sequelize.TEXT,  // Store the Quill.js JSON or HTML content
-        allowNull: true,       // Initially null until the company drafts the quotation
-      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

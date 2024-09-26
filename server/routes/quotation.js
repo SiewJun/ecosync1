@@ -1,10 +1,12 @@
 const express = require("express");
+const { sequelize } = require("../models");
 const router = express.Router();
 const moment = require("moment");
 const {
   User,
   ConsumerProfile,
   Quotation,
+  QuotationVersion,
   Chat,
   Message,
   CompanyDetail,
@@ -20,7 +22,9 @@ router.post("/submit-quotation", authenticateToken, async (req, res) => {
     const user = await User.findByPk(consumerId);
 
     if (user.role !== "CONSUMER") {
-      return res.status(403).json({ message: "Only consumers can request a quotation." });
+      return res
+        .status(403)
+        .json({ message: "Only consumers can request a quotation." });
     }
 
     const {
@@ -32,7 +36,7 @@ router.post("/submit-quotation", authenticateToken, async (req, res) => {
       electricityBill,
       propertyType,
       address,
-      state
+      state,
     } = req.body;
 
     // Create the quotation
@@ -56,21 +60,23 @@ router.post("/submit-quotation", authenticateToken, async (req, res) => {
     }
 
     // Format the date to a more readable format
-    const formattedDate = moment(newQuotation.createdAt).format('MMMM Do YYYY, h:mm:ss a');
+    const formattedDate = moment(newQuotation.createdAt).format(
+      "MMMM Do YYYY, h:mm:ss a"
+    );
 
     // Send a message in the chat notifying the company about the quotation
     const message = await Message.create({
       chatId: chat.id,
       senderId: consumerId, // The consumer is the sender of the message
       messageText: `Quotation requested on ${formattedDate}`, // Message to the company
-      messageType: 'text',
+      messageType: "text",
     });
 
-    res.status(201).json({ 
-      message: "Quotation submitted successfully", 
+    res.status(201).json({
+      message: "Quotation submitted successfully",
       quotation: newQuotation,
       chat,
-      message
+      message,
     });
   } catch (error) {
     console.error("Error submitting quotation:", error);
@@ -150,30 +156,246 @@ router.get("/company-quotations", authenticateToken, async (req, res) => {
   }
 });
 
-// Endpoint to save the draft
-router.post('/draft/:id', authenticateToken, async (req, res) => {
-  const { quotationId, content } = req.body;
-  const companyId = req.user.id;
+router.post("/draft", authenticateToken, async (req, res) => {
+  const userRole = req.user.role;
+
+  if (userRole !== "COMPANY") {
+    return res
+      .status(403)
+      .json({ message: "Only companies can draft quotations." });
+  }
+
+  const {
+    systemSize,
+    panelSpecifications,
+    costBreakdown,
+    estimatedEnergyProduction,
+    savings,
+    paybackPeriod,
+    roi,
+    incentives,
+    rebates,
+    productWarranties,
+    timeline,
+    quotationVersionId,
+    quotationId,
+  } = req.body;
+
+  if (!quotationId) {
+    return res.status(400).json({ message: "Quotation ID is required." });
+  }
+
+  const t = await sequelize.transaction();
 
   try {
-    // Find the quotation
     const quotation = await Quotation.findOne({
-      where: { id: quotationId, companyId }
+      where: { id: quotationId, companyId: req.user.id },
+      transaction: t,
     });
 
     if (!quotation) {
-      return res.status(404).json({ message: 'Quotation not found' });
+      await t.rollback();
+      return res.status(403).json({ message: "Access denied." });
     }
 
-    // Update the quotation draft
-    quotation.quotationDraft = content;
-    quotation.quotationStatus = 'DRAFT';
-    await quotation.save();
+    let quotationVersion;
 
-    res.json({ message: 'Quotation draft saved successfully', quotation });
+    const latestVersion = await QuotationVersion.findOne({
+      where: { quotationId },
+      order: [["versionNumber", "DESC"]],
+      transaction: t,
+    });
+
+    const newVersionNumber = latestVersion
+      ? latestVersion.versionNumber + 1
+      : 1;
+
+    quotationVersion = await QuotationVersion.create(
+      {
+        quotationId,
+        systemSize,
+        panelSpecifications,
+        costBreakdown,
+        estimatedEnergyProduction,
+        savings,
+        paybackPeriod,
+        roi,
+        incentives,
+        rebates,
+        productWarranties,
+        timeline,
+        status: "DRAFT",
+        versionNumber: newVersionNumber,
+      },
+      { transaction: t }
+    );
+
+    await t.commit();
+    res
+      .status(200)
+      .json({
+        message: "Quotation draft saved successfully.",
+        quotationVersion,
+      });
   } catch (error) {
-    console.error('Error saving quotation draft:', error);
-    res.status(500).json({ message: 'Failed to save draft.' });
+    await t.rollback();
+    console.error("Error saving draft:", error);
+    res.status(500).json({ message: "Failed to save quotation draft." });
+  }
+});
+
+router.post("/finalize", authenticateToken, async (req, res) => {
+  const userRole = req.user.role;
+
+  if (userRole !== "COMPANY") {
+    return res
+      .status(403)
+      .json({ message: "Only companies can finalize quotations." });
+  }
+
+  const {
+    systemSize,
+    panelSpecifications,
+    costBreakdown,
+    estimatedEnergyProduction,
+    savings,
+    paybackPeriod,
+    roi,
+    incentives,
+    rebates,
+    productWarranties,
+    timeline,
+    quotationVersionId,
+    quotationId, // Quotation ID must be included
+  } = req.body;
+
+  if (!quotationId) {
+    return res.status(400).json({ message: "Quotation ID is required." });
+  }
+
+  const t = await sequelize.transaction();
+
+  try {
+    // Ensure the company owns the quotation
+    const quotation = await Quotation.findOne({
+      where: { id: quotationId, companyId: req.user.id },
+    });
+
+    if (!quotation) {
+      return res.status(403).json({ message: "Access denied." });
+    }
+
+    if (!quotationVersionId) {
+      return res
+        .status(400)
+        .json({ message: "Quotation draft is required for finalization." });
+    }
+
+    // Check if the quotation draft exists to finalize
+    const quotationVersion = await QuotationVersion.findOne({
+      where: { id: quotationVersionId, quotationId },
+    });
+
+    if (!quotationVersion) {
+      return res.status(404).json({ message: "Quotation draft not found." });
+    }
+
+    const latestVersion = await QuotationVersion.findOne({
+      where: { quotationId },
+      order: [["versionNumber", "DESC"]],
+      transaction: t,
+    });
+
+    const newVersionNumber = latestVersion
+      ? latestVersion.versionNumber + 1
+      : 1;
+
+    // Create a new record for the finalized quotation version
+    const newQuotationVersion = await QuotationVersion.create(
+      {
+        quotationId,
+        systemSize,
+        panelSpecifications,
+        costBreakdown,
+        estimatedEnergyProduction,
+        savings,
+        paybackPeriod,
+        roi,
+        incentives,
+        rebates,
+        productWarranties,
+        timeline,
+        status: "FINALIZED",
+        versionNumber: newVersionNumber,
+      },
+      { transaction: t }
+    );
+
+    // Update the related quotation status to "RECEIVED"
+    await quotation.update(
+      {
+        status: "RECEIVED",
+      },
+      { transaction: t }
+    );
+
+    await t.commit();
+    res
+      .status(200)
+      .json({ message: "Quotation finalized successfully.", newQuotationVersion });
+  } catch (error) {
+    await t.rollback();
+    console.error("Error finalizing quotation:", error);
+    res.status(500).json({ message: "Failed to finalize quotation." });
+  }
+});
+
+// New endpoint to fetch the latest quotation version
+router.get("/latest/:quotationId", authenticateToken, async (req, res) => {
+  const { quotationId } = req.params;
+  const userRole = req.user.role;
+
+  if (!quotationId) {
+    return res.status(400).json({ message: "QuotationId is required." });
+  }
+
+  if (userRole !== "COMPANY") {
+    return res
+      .status(403)
+      .json({ message: "Only companies can access this resource." });
+  }
+
+  try {
+    const quotation = await Quotation.findOne({
+      where: { id: quotationId, companyId: req.user.id },
+    });
+
+    if (!quotation) {
+      return res.status(403).json({ message: "Access denied." });
+    }
+
+    const latestQuotationVersion = await QuotationVersion.findOne({
+      where: { quotationId },
+      order: [["versionNumber", "DESC"]],
+      include: [
+        {
+          model: Quotation,
+          as: "quotation",
+          attributes: ["companyId"],
+        },
+      ],
+    });
+
+    if (!latestQuotationVersion) {
+      return res.status(404).json({ message: "No quotation versions found." });
+    }
+
+    res.status(200).json(latestQuotationVersion);
+  } catch (error) {
+    console.error("Error fetching latest quotation version:", error);
+    res
+      .status(500)
+      .json({ message: "Failed to fetch latest quotation version." });
   }
 });
 

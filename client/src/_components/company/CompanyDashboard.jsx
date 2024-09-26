@@ -28,8 +28,7 @@ import CompanyEditSolutionForm from "./CompanyEditSolutionForm";
 import ChatListCompany from "../communication/ChatListCompany";
 import ChatCompany from "../communication/ChatCompany";
 import CompanyQuotation from "./CompanyQuotation";
-import TiptapQuotationEditor from "./TipTapQuotationEditor";
-
+import QuotationDraft from "./QuotationDraft";
 const CompanyDashboard = () => {
   const [user, setUser] = useState(null);
   const location = useLocation();
@@ -286,10 +285,7 @@ const CompanyDashboard = () => {
             <Route path="/company-chat" element={<ChatListCompany />} />
             <Route path="/company-chat/:consumerId" element={<ChatCompany />} />
             <Route path="/company-quotation" element={<CompanyQuotation />} />
-            <Route
-              path="/company-quotation/:id"
-              element={<TiptapQuotationEditor />}
-            />
+            <Route path="company-quotation/:quotationId" element={<QuotationDraft />} />
             {/* Add other routes here */}
           </Routes>
         </main>

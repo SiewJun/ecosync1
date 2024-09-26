@@ -4,9 +4,12 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Quotation extends Model {
     static associate(models) {
-      // Quotation belongs to a Consumer and a Company (both referencing the 'User' table)
+      // Quotation belongs to a Consumer and a Company
       this.belongsTo(models.User, { as: 'consumer', foreignKey: 'consumerId' });
       this.belongsTo(models.User, { as: 'company', foreignKey: 'companyId' });
+      
+      // Quotation has many versions
+      this.hasMany(models.QuotationVersion, { foreignKey: 'quotationId', as: 'versions' });
     }
   }
 
@@ -15,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Users', // Refers to the 'Users' table
+        model: 'Users',
         key: 'id',
       },
       onUpdate: 'CASCADE',
@@ -25,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Users', // Refers to the 'Users' table
+        model: 'Users',
         key: 'id',
       },
       onUpdate: 'CASCADE',
@@ -65,12 +68,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     quotationStatus: {
       type: DataTypes.STRING,
-      defaultValue: 'PENDING', // Track whether it's a draft or finalized
+      defaultValue: 'PENDING',
       allowNull: false,
-    },
-    quotationDraft: {
-      type: DataTypes.TEXT,  // Store the Quill.js JSON or HTML content
-      allowNull: true,       // Initially null until the company drafts the quotation
     },
   }, {
     sequelize,
