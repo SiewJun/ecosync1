@@ -68,7 +68,7 @@ const ConsumerQuotationView = () => {
 
   return (
     <div className="min-h-screen p-8">
-      <Link to="/consumer-dashboard/consumer-quotation" className="inline-flex items-center text-primary hover:text-secondary mb-8">
+      <Link to="/consumer-dashboard/consumer-quotation" className="inline-flex items-center text-primary hover:text-black  dark:hover:text-white mb-8">
           <ArrowLeftCircle className="mr-2" size={16} />
           Back to Quotations
         </Link>
