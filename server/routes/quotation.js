@@ -112,6 +112,27 @@ router.get("/consumer-quotations", authenticateToken, async (req, res) => {
             },
           ],
         },
+        {
+          model: QuotationVersion,
+          as: "versions",
+          attributes: [
+            "id",
+            "quotationId",
+            "systemSize",
+            "panelSpecifications",
+            "costBreakdown",
+            "estimatedEnergyProduction",
+            "savings",
+            "paybackPeriod",
+            "roi",
+            "incentives",
+            "productWarranties",
+            "timeline",
+            "versionNumber",
+            "status",
+            "createdAt",
+          ],
+        },
       ],
     });
 
@@ -119,6 +140,48 @@ router.get("/consumer-quotations", authenticateToken, async (req, res) => {
   } catch (error) {
     console.error("Error fetching quotations:", error);
     res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get("/consumer-quotations/:versionId", authenticateToken, async (req, res) => {
+  const versionId = req.params.versionId;
+  const userRole = req.user.role;
+
+  // Check if the role is CONSUMER
+  if (userRole !== "CONSUMER") {
+    return res.status(403).json({ message: "Forbidden: Access is denied" });
+  }
+
+  try {
+    const quotationVersion = await QuotationVersion.findByPk(versionId, {
+      include: [
+        {
+          model: Quotation,
+          as: "quotation",
+          include: [
+            {
+              model: User,
+              as: "company",
+              attributes: ["id", "avatarUrl"],
+              include: [
+                {
+                  model: CompanyDetail,
+                  attributes: ["companyName", "businessLicense", "address", "website", "phoneNumber"],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+
+    if (!quotationVersion) {
+      return res.status(404).json({ message: "Quotation version not found" });
+    }
+
+    res.status(200).json(quotationVersion);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to retrieve the quotation version details." });
   }
 });
 
@@ -231,12 +294,10 @@ router.post("/draft", authenticateToken, async (req, res) => {
     );
 
     await t.commit();
-    res
-      .status(200)
-      .json({
-        message: "Quotation draft saved successfully.",
-        quotationVersion,
-      });
+    res.status(200).json({
+      message: "Quotation draft saved successfully.",
+      quotationVersion,
+    });
   } catch (error) {
     await t.rollback();
     console.error("Error saving draft:", error);
@@ -334,7 +395,7 @@ router.post("/finalize", authenticateToken, async (req, res) => {
     // Update the related quotation status to "RECEIVED"
     await quotation.update(
       {
-        status: "RECEIVED",
+        quotationStatus: "RECEIVED",
       },
       { transaction: t }
     );
@@ -342,7 +403,10 @@ router.post("/finalize", authenticateToken, async (req, res) => {
     await t.commit();
     res
       .status(200)
-      .json({ message: "Quotation finalized successfully.", newQuotationVersion });
+      .json({
+        message: "Quotation finalized successfully.",
+        newQuotationVersion,
+      });
   } catch (error) {
     await t.rollback();
     console.error("Error finalizing quotation:", error);

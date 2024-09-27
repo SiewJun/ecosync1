@@ -22,6 +22,7 @@ import ConsumerEditProfileForm from "./ConsumerEditProfileForm";
 import Chat from "../communication/Chat";
 import ChatList from "../communication/ChatLIst";
 import ConsumerQuotation from "./ConsumerQuotation";
+import ConsumerQuotationView from "./ConsumerQuotationView";
 
 const ConsumerDashboard = () => {
   const [user, setUser] = useState(null);
@@ -103,6 +104,8 @@ const ConsumerDashboard = () => {
                 to="/consumer-dashboard/consumer-quotation"
                 className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
                   "/consumer-dashboard/consumer-quotation"
+                )} ${getLinkClasses(
+                  "/consumer-dashboard/consumer-quotation/:id"
                 )}`}
               >
                 <FileText className="h-4 w-4" />
@@ -244,6 +247,7 @@ const ConsumerDashboard = () => {
             <Route path="/chat" element={<ChatList />} />
             <Route path="/chat/:companyId" element={<Chat />} />
             <Route path="/consumer-quotation" element={<ConsumerQuotation />} />
+            <Route path="/consumer-quotation/:versionId" element={<ConsumerQuotationView />} />
           </Routes>
         </main>
       </div>

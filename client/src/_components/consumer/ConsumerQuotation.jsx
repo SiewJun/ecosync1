@@ -18,6 +18,7 @@ import {
   CheckIcon,
 } from "lucide-react";
 import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 
 const ConsumerQuotation = () => {
   const [quotations, setQuotations] = useState([]);
@@ -32,6 +33,7 @@ const ConsumerQuotation = () => {
     offset: ["start start", "end start"],
     layoutEffect: false,
   });
+  const navigate = useNavigate();
 
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
@@ -110,7 +112,7 @@ const ConsumerQuotation = () => {
               className={`px-3 py-1 rounded-full text-sm font-medium transition-colors duration-300 ${
                 quotation.quotationStatus === "PENDING"
                   ? "bg-yellow-100 text-yellow-800 group-hover:bg-yellow-200"
-                  : quotation.quotationStatus === "APPROVED"
+                  : quotation.quotationStatus === "RECEIVED"
                   ? "bg-green-100 text-green-800 group-hover:bg-green-200"
                   : "bg-gray-100 text-gray-800 group-hover:bg-gray-200"
               }`}
@@ -286,7 +288,7 @@ const ConsumerQuotation = () => {
                     className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
                       selectedQuotation.quotationStatus === "PENDING"
                         ? "bg-yellow-100 text-yellow-800"
-                        : selectedQuotation.quotationStatus === "APPROVED"
+                        : selectedQuotation.quotationStatus === "RECEIVED"
                         ? "bg-green-100 text-green-800"
                         : "bg-gray-100 text-gray-800"
                     }`}
@@ -370,7 +372,7 @@ const ConsumerQuotation = () => {
                             <p className="text-sm font-medium text-foreground">
                               Quotation Submitted
                             </p>
-                            <p className="text-sm text-foreground">
+                            <p className="text-sm text-foreground text-gray-500">
                               {new Date(
                                 selectedQuotation.createdAt
                               ).toLocaleString()}
@@ -378,14 +380,14 @@ const ConsumerQuotation = () => {
                           </div>
                         </div>
                       </li>
-                      {selectedQuotation.quotationStatus === "APPROVED" && (
+                      {selectedQuotation.quotationStatus === "RECEIVED" && (
                         <li className="ml-6">
                           <div className="flex items-center">
                             <div className="absolute left-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
                               <CheckIcon className="h-4 w-4 text-white" />
                             </div>
                             <div className="ml-4">
-                              <p className="text-sm font-medium text-gray-900">
+                              <p className="text-sm font-medium">
                                 Quotation Approved
                               </p>
                               <p className="text-sm text-gray-500">
@@ -404,15 +406,29 @@ const ConsumerQuotation = () => {
                 <div className="mt-12">
                   <h3 className="text-xl font-semibold mb-4">Next Steps</h3>
                   <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 shadow-sm">
-                    {selectedQuotation.quotationStatus === "PENDING" ? (
+                    {selectedQuotation.versions &&
+                    selectedQuotation.versions.length > 0 ? (
+                      selectedQuotation.versions.some(
+                        (version) => version.status === "FINALIZED"
+                      ) ? (
+                        <p className="text-gray-700">
+                          Your quotation has been finalized! You can now review
+                          the details and proceed with the next steps in your
+                          solar journey.
+                        </p>
+                      ) : (
+                        <p className="text-gray-700">
+                          Your quotation is currently being drafted. Our team is
+                          working on providing you with the best possible
+                          solution. We&apos;ll notify you once it&apos;s ready
+                          for your review.
+                        </p>
+                      )
+                    ) : selectedQuotation.quotationStatus === "PENDING" ? (
                       <p className="text-gray-700">
                         Our team is currently reviewing your quotation request.
-                        Please wait until we get back to you with more.
-                      </p>
-                    ) : selectedQuotation.quotationStatus === "APPROVED" ? (
-                      <p className="text-gray-700">
-                        Your quotation has been approved! You can now proceed
-                        with the next steps in your solar journey.
+                        Please wait until we get back to you with more
+                        information.
                       </p>
                     ) : (
                       <p className="text-gray-700">
@@ -432,11 +448,28 @@ const ConsumerQuotation = () => {
                   </Button>
                   <Button
                     variant="default"
-                    disabled={!selectedQuotation.quotationDraft}
+                    disabled={
+                      !selectedQuotation.versions ||
+                      selectedQuotation.versions.length === 0
+                    }
+                    onClick={() => {
+                      if (
+                        selectedQuotation.versions &&
+                        selectedQuotation.versions.length > 0
+                      ) {
+                        // Handle viewing the latest version of the quotation
+                        const latestVersion = selectedQuotation.versions.reduce(
+                          (prev, current) =>
+                            prev.versionNumber > current.versionNumber
+                              ? prev
+                              : current
+                        );
+                        // Implement the logic to display the latest version
+                        navigate(`/consumer-dashboard/consumer-quotation/${latestVersion.id}`);
+                      }
+                    }}
                   >
-                    {selectedQuotation.quotationDraft
-                      ? "View Quotation Draft"
-                      : "No Draft Available"}
+                    View Quotation
                   </Button>
                 </div>
               </div>
