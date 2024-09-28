@@ -83,7 +83,7 @@ const CompanyQuotation = () => {
               className={`px-3 py-1 rounded-full text-sm font-medium transition-colors duration-300 ${
                 quotation.quotationStatus === "PENDING"
                   ? "bg-yellow-100 text-yellow-800 group-hover:bg-yellow-200"
-                  : quotation.quotationStatus === "APPROVED"
+                  : quotation.quotationStatus === "RECEIVED"
                   ? "bg-green-100 text-green-800 group-hover:bg-green-200"
                   : "bg-gray-100 text-gray-800 group-hover:bg-gray-200"
               }`}
@@ -215,7 +215,7 @@ const CompanyQuotation = () => {
                     className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
                       selectedQuotation.quotationStatus === "PENDING"
                         ? "bg-yellow-100 text-yellow-800"
-                        : selectedQuotation.quotationStatus === "APPROVED"
+                        : selectedQuotation.quotationStatus === "RECEIVED"
                         ? "bg-green-100 text-green-800"
                         : "bg-gray-100 text-gray-800"
                     }`}

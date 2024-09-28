@@ -293,6 +293,11 @@ router.post("/draft", authenticateToken, async (req, res) => {
       { transaction: t }
     );
 
+    await quotation.update(
+      { quotationStatus: "RECEIVED" },
+      { where: { id: quotationId }, transaction: t }
+    );
+
     await t.commit();
     res.status(200).json({
       message: "Quotation draft saved successfully.",

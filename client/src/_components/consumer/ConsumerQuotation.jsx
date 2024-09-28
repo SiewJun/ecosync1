@@ -418,15 +418,14 @@ const ConsumerQuotation = () => {
                         </p>
                       ) : (
                         <p className="text-gray-700">
-                          Your quotation is currently being drafted. Our team is
-                          working on providing you with the best possible
-                          solution. We&apos;ll notify you once it&apos;s ready
-                          for your review.
+                          Your quotation has been drafted. The company will work
+                          closely with you to provide you with the best possible
+                          solution.
                         </p>
                       )
                     ) : selectedQuotation.quotationStatus === "PENDING" ? (
                       <p className="text-gray-700">
-                        Our team is currently reviewing your quotation request.
+                        The company is currently reviewing your quotation request.
                         Please wait until we get back to you with more
                         information.
                       </p>
@@ -465,7 +464,9 @@ const ConsumerQuotation = () => {
                               : current
                         );
                         // Implement the logic to display the latest version
-                        navigate(`/consumer-dashboard/consumer-quotation/${latestVersion.id}`);
+                        navigate(
+                          `/consumer-dashboard/consumer-quotation/${latestVersion.id}`
+                        );
                       }
                     }}
                   >

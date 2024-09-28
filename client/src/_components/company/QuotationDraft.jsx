@@ -6,16 +6,17 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { AlertCircle, Save, Send, FileEdit } from "lucide-react";
+import { AlertCircle, Save, Send, FileEdit, CheckCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const QuotationDraft = () => {
-  const { quotationId } = useParams(); // Use quotationId here
+  const { quotationId } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [isNewQuotation, setIsNewQuotation] = useState(false);
   const [quotationVersionId, setQuotationVersionId] = useState(null);
+  const [isFinalized, setIsFinalized] = useState(false);
   const [quotationData, setQuotationData] = useState({
     systemSize: "",
     panelSpecifications: "",
@@ -27,29 +28,30 @@ const QuotationDraft = () => {
     incentives: "",
     productWarranties: "",
     timeline: "",
+    status: "",
   });
 
   useEffect(() => {
     if (quotationId) {
-      // Use quotationId here
       fetchQuotation();
     } else {
       setIsNewQuotation(true);
     }
-  }, [quotationId]); // Use quotationId here
+  }, [quotationId]);
 
   const fetchQuotation = async () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        `http://localhost:5000/api/quotation/latest/${quotationId}`, // Use quotationId here
+        `http://localhost:5000/api/quotation/latest/${quotationId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
       setQuotationData(response.data);
       setQuotationVersionId(response.data.id);
+      setIsFinalized(response.data.status === "FINALIZED");
     } catch (err) {
       if (err.response && err.response.status === 404) {
         setIsNewQuotation(true);
@@ -79,8 +81,8 @@ const QuotationDraft = () => {
         `http://localhost:5000${endpoint}`,
         {
           ...quotationData,
-          quotationId: quotationId || undefined, // Use quotationId here
-          quotationVersionId: quotationVersionId || undefined, // Include the version ID
+          quotationId: quotationId || undefined,
+          quotationVersionId: quotationVersionId || undefined,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -119,6 +121,16 @@ const QuotationDraft = () => {
               <AlertDescription>
                 You&apos;re creating a new quotation draft. Fill in the details
                 below and save when ready.
+              </AlertDescription>
+            </Alert>
+          )}
+          {isFinalized && (
+            <Alert className="mb-6">
+              <CheckCircle className="h-4 w-4" />
+              <AlertTitle>Finalized Quotation</AlertTitle>
+              <AlertDescription>
+                This quotation has been finalized and sent to the consumer. You
+                cannot make further changes.
               </AlertDescription>
             </Alert>
           )}
@@ -245,14 +257,14 @@ const QuotationDraft = () => {
                 type="button"
                 variant="outline"
                 onClick={() => handleSubmit("save")}
-                disabled={loading}
+                disabled={loading || isFinalized}
               >
                 <Save className="mr-2 h-4 w-4" /> Save as Draft
               </Button>
               <Button
                 type="button"
                 onClick={() => handleSubmit("finalize")}
-                disabled={loading}
+                disabled={loading || isFinalized}
               >
                 <Send className="mr-2 h-4 w-4" /> Finalize Quotation
               </Button>
