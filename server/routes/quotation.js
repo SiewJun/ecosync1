@@ -252,15 +252,14 @@ router.post("/draft", authenticateToken, async (req, res) => {
   const userRole = req.user.role;
 
   if (userRole !== "COMPANY") {
-    return res
-      .status(403)
-      .json({ message: "Only companies can draft quotations." });
+    return res.status(403).json({ message: "Only companies can draft quotations." });
   }
 
   const {
     systemSize,
     panelSpecifications,
     costBreakdown,
+    timeline,
     estimatedEnergyProduction,
     savings,
     paybackPeriod,
@@ -268,8 +267,6 @@ router.post("/draft", authenticateToken, async (req, res) => {
     incentives,
     rebates,
     productWarranties,
-    timeline,
-    quotationVersionId,
     quotationId,
   } = req.body;
 
@@ -290,24 +287,21 @@ router.post("/draft", authenticateToken, async (req, res) => {
       return res.status(403).json({ message: "Access denied." });
     }
 
-    let quotationVersion;
-
     const latestVersion = await QuotationVersion.findOne({
       where: { quotationId },
       order: [["versionNumber", "DESC"]],
       transaction: t,
     });
 
-    const newVersionNumber = latestVersion
-      ? latestVersion.versionNumber + 1
-      : 1;
+    const newVersionNumber = latestVersion ? latestVersion.versionNumber + 1 : 1;
 
-    quotationVersion = await QuotationVersion.create(
+    const quotationVersion = await QuotationVersion.create(
       {
         quotationId,
         systemSize,
         panelSpecifications,
         costBreakdown,
+        timeline,
         estimatedEnergyProduction,
         savings,
         paybackPeriod,
@@ -315,7 +309,6 @@ router.post("/draft", authenticateToken, async (req, res) => {
         incentives,
         rebates,
         productWarranties,
-        timeline,
         status: "DRAFT",
         versionNumber: newVersionNumber,
       },

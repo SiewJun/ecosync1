@@ -1,8 +1,8 @@
-'use strict';
+"use strict";
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('QuotationVersions', {
+    await queryInterface.createTable("QuotationVersions", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -13,11 +13,11 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'Quotations', 
-          key: 'id',
+          model: "Quotations",
+          key: "id",
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
       },
       systemSize: {
         type: Sequelize.STRING,
@@ -30,6 +30,7 @@ module.exports = {
       costBreakdown: {
         type: Sequelize.JSON,
         allowNull: false,
+        defaultValue: [],
       },
       estimatedEnergyProduction: {
         type: Sequelize.STRING,
@@ -56,8 +57,9 @@ module.exports = {
         allowNull: true,
       },
       timeline: {
-        type: Sequelize.TEXT,
+        type: Sequelize.JSON,
         allowNull: false,
+        defaultValue: [],
       },
       versionNumber: {
         type: Sequelize.INTEGER,
@@ -65,24 +67,24 @@ module.exports = {
         defaultValue: 1,
       },
       status: {
-        type: Sequelize.ENUM('DRAFT', 'FINALIZED'), // Status can be either 'DRAFT' or 'FINALIZED'
+        type: Sequelize.STRING, // Changed from ENUM to STRING
         allowNull: false,
-        defaultValue: 'DRAFT',
+        defaultValue: "DRAFT",
       },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
     });
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('QuotationVersions');
+    await queryInterface.dropTable("QuotationVersions");
   },
 };
