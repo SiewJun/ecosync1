@@ -16,9 +16,23 @@ import {
   DollarSign,
   Calendar,
   CheckIcon,
+  Clock,
+  AlertTriangle,
 } from "lucide-react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 
 const ConsumerQuotation = () => {
   const [quotations, setQuotations] = useState([]);
@@ -27,6 +41,7 @@ const ConsumerQuotation = () => {
   const [selectedQuotation, setSelectedQuotation] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(6);
+  const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
   const scrollRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: scrollRef,
@@ -34,6 +49,7 @@ const ConsumerQuotation = () => {
     layoutEffect: false,
   });
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
@@ -81,6 +97,43 @@ const ConsumerQuotation = () => {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const handleRejectQuotation = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(
+        `http://localhost:5000/api/quotation/reject/${selectedQuotation.id}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setQuotations(
+        quotations.map((q) =>
+          q.id === selectedQuotation.id
+            ? { ...q, quotationStatus: "REJECTED" }
+            : q
+        )
+      );
+      setSelectedQuotation({
+        ...selectedQuotation,
+        quotationStatus: "REJECTED",
+      });
+      toast({
+        title: "Quotation Rejected",
+        description: "The quotation has been successfully rejected.",
+        variant: "default",
+      });
+    } catch (error) {
+      console.error("Error rejecting quotation:", error);
+      toast({
+        title: "Error",
+        description: "Failed to reject the quotation. Please try again.",
+        variant: "destructive",
+      });
+    }
+    setIsRejectDialogOpen(false);
+  };
+
   const QuotationCard = ({ quotation }) => (
     <motion.div
       layout
@@ -114,13 +167,17 @@ const ConsumerQuotation = () => {
                   ? "bg-yellow-100 text-yellow-800 group-hover:bg-yellow-200"
                   : quotation.quotationStatus === "RECEIVED"
                   ? "bg-green-100 text-green-800 group-hover:bg-green-200"
+                  : quotation.quotationStatus === "FINALIZED"
+                  ? "bg-blue-100 text-blue-800 group-hover:bg-blue-200"
+                  : quotation.quotationStatus === "REJECTED"
+                  ? "bg-red-100 text-red-800 group-hover:bg-red-200"
                   : "bg-gray-100 text-gray-800 group-hover:bg-gray-200"
               }`}
             >
               {quotation.quotationStatus}
             </div>
           </div>
-          <h3 className="text-xl font-semiboldb-2 group-hover:text-primary transition-colors duration-300">
+          <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors duration-300">
             {quotation.company?.CompanyDetail?.companyName || "Unknown Company"}
           </h3>
           <div className="flex items-center text-sm text-gray-500 mb-4">
@@ -181,8 +238,9 @@ const ConsumerQuotation = () => {
   }
 
   return (
-    <div className="min-h-screen contaienr p-6" ref={scrollRef}>
+    <div className="min-h-screen container p-6" ref={scrollRef}>
       <div className="max-w-5xl mx-auto">
+        <Toaster />
         <ScrollArea className="h-[calc(100vh-250px)]">
           <AnimatePresence>
             {quotations.length ? (
@@ -290,12 +348,28 @@ const ConsumerQuotation = () => {
                         ? "bg-yellow-100 text-yellow-800"
                         : selectedQuotation.quotationStatus === "RECEIVED"
                         ? "bg-green-100 text-green-800"
+                        : selectedQuotation.quotationStatus === "FINALIZED"
+                        ? "bg-blue-100 text-blue-800"
+                        : selectedQuotation.quotationStatus === "REJECTED"
+                        ? "bg-red-100 text-red-800"
                         : "bg-gray-100 text-gray-800"
                     }`}
                   >
                     {selectedQuotation.quotationStatus}
                   </div>
                 </div>
+
+                {selectedQuotation.quotationStatus === "REJECTED" && (
+                  <div className="mb-8 p-4 bg-red-100 border border-red-300 rounded-md">
+                    <div className="flex items-center">
+                      <AlertTriangle className="h-5 w-5 text-red-500 mr-2" />
+                      <p className="text-red-700 font-medium">
+                        You have rejected this quotation and further actions
+                        cannot be taken on it.
+                      </p>
+                    </div>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div>
@@ -358,21 +432,21 @@ const ConsumerQuotation = () => {
 
                 <div className="mt-8">
                   <h3 className="text-xl font-semibold mb-4">
-                    Date & Time Submitted
+                    Quotation Timeline
                   </h3>
                   <div className="relative">
-                    <div className="absolute left-4 top-0 bottom-0 w-0.5"></div>
+                    <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200"></div>
                     <ul className="space-y-6 relative">
                       <li className="ml-6">
                         <div className="flex items-center">
-                          <div className="absolute left-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                            <Calendar className="h-4 w-4 text-foreground" />
+                          <div className="absolute left-0 w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
+                            <Clock className="h-4 w-4 text-white" />
                           </div>
                           <div className="ml-4">
-                            <p className="text-sm font-medium text-foreground">
+                            <p className="text-sm font-medium">
                               Quotation Submitted
                             </p>
-                            <p className="text-sm text-foreground text-gray-500">
+                            <p className="text-sm text-gray-500">
                               {new Date(
                                 selectedQuotation.createdAt
                               ).toLocaleString()}
@@ -388,7 +462,26 @@ const ConsumerQuotation = () => {
                             </div>
                             <div className="ml-4">
                               <p className="text-sm font-medium">
-                                Quotation Approved
+                                Quotation Received
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                {new Date(
+                                  selectedQuotation.updatedAt
+                                ).toLocaleString()}
+                              </p>
+                            </div>
+                          </div>
+                        </li>
+                      )}
+                      {selectedQuotation.quotationStatus === "FINALIZED" && (
+                        <li className="ml-6">
+                          <div className="flex items-center">
+                            <div className="absolute left-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                              <FileText className="h-4 w-4 text-white" />
+                            </div>
+                            <div className="ml-4">
+                              <p className="text-sm font-medium">
+                                Quotation Finalized
                               </p>
                               <p className="text-sm text-gray-500">
                                 {new Date(
@@ -406,39 +499,32 @@ const ConsumerQuotation = () => {
                 <div className="mt-12">
                   <h3 className="text-xl font-semibold mb-4">Next Steps</h3>
                   <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 shadow-sm">
-                    {selectedQuotation.versions &&
-                    selectedQuotation.versions.length > 0 ? (
-                      selectedQuotation.versions.some(
-                        (version) => version.status === "FINALIZED"
-                      ) ? (
-                        <p className="text-gray-700">
-                          Your quotation has been finalized! You can now review
-                          the details and proceed with the next steps in your
-                          solar journey.
-                        </p>
-                      ) : (
-                        <p className="text-gray-700">
-                          Your quotation has been drafted. The company will work
-                          closely with you to provide you with the best possible
-                          solution.
-                        </p>
-                      )
-                    ) : selectedQuotation.quotationStatus === "PENDING" ? (
+                    {selectedQuotation.quotationStatus === "PENDING" && (
                       <p className="text-gray-700">
-                        The company is currently reviewing your quotation request.
-                        Please wait until we get back to you with more
-                        information.
+                        The company is currently reviewing your quotation
+                        request. Please wait for them to process your
+                        information and provide a detailed quote.
                       </p>
-                    ) : (
+                    )}
+                    {selectedQuotation.quotationStatus === "RECEIVED" && (
                       <p className="text-gray-700">
-                        Please contact our support team for more information
-                        about your quotation status.
+                        Your quotation request has been replied by the company.
+                        They will work closely with you to finalize the
+                        quotation.
+                      </p>
+                    )}
+                    {selectedQuotation.quotationStatus === "FINALIZED" && (
+                      <p className="text-gray-700">
+                        Great news! Your quotation has been finalized. Please
+                        review the details carefully. If everything looks good,
+                        you can proceed with accepting the quote or contact the
+                        company for any clarifications.
                       </p>
                     )}
                   </div>
                 </div>
 
-                <div className="mt-12 flex justify-end space-x-4">
+                <div className="mt-12 flex flex-col sm:flex-row justify-end sm:space-x-4">
                   <Button
                     className="bg-black text-white dark:bg-white dark:text-gray-700 hover:bg-gray-800 dark:hover:bg-gray-200"
                     onClick={closeDetails}
@@ -448,36 +534,70 @@ const ConsumerQuotation = () => {
                   <Button
                     variant="default"
                     disabled={
-                      !selectedQuotation.versions ||
-                      selectedQuotation.versions.length === 0
+                      selectedQuotation.quotationStatus !== "FINALIZED" &&
+                      selectedQuotation.quotationStatus !== "RECEIVED"
                     }
+                    className="mt-3 sm:mt-0"
                     onClick={() => {
                       if (
                         selectedQuotation.versions &&
                         selectedQuotation.versions.length > 0
                       ) {
-                        // Handle viewing the latest version of the quotation
                         const latestVersion = selectedQuotation.versions.reduce(
                           (prev, current) =>
                             prev.versionNumber > current.versionNumber
                               ? prev
                               : current
                         );
-                        // Implement the logic to display the latest version
                         navigate(
                           `/consumer-dashboard/consumer-quotation/${latestVersion.id}`
                         );
                       }
                     }}
                   >
-                    View Quotation
+                    {selectedQuotation.quotationStatus === "FINALIZED"
+                      ? "Review Finalized Quotation"
+                      : "View Quotation"}
                   </Button>
+                  {selectedQuotation.quotationStatus !== "REJECTED" && (
+                    <Button
+                      variant="destructive"
+                      className="mt-3 sm:mt-0"
+                      onClick={() => setIsRejectDialogOpen(true)}
+                    >
+                      Reject Quotation
+                    </Button>
+                  )}
                 </div>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Reject Quotation Confirmation Dialog */}
+      <AlertDialog
+        open={isRejectDialogOpen}
+        onOpenChange={setIsRejectDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Are you sure you want to reject this quotation?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. Rejecting the quotation will end the
+              process with this company.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleRejectQuotation}>
+              Reject Quotation
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

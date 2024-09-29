@@ -6,8 +6,16 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { AlertCircle, Save, Send, FileEdit, CheckCircle } from "lucide-react";
+import {
+  AlertCircle,
+  Save,
+  Send,
+  FileEdit,
+  CheckCircle,
+  ArrowLeftCircle,
+} from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Link } from "react-router-dom";
 
 const QuotationDraft = () => {
   const { quotationId } = useParams();
@@ -106,6 +114,13 @@ const QuotationDraft = () => {
 
   return (
     <div className="min-h-screen container p-6">
+      <Link
+        to="/company-dashboard/company-quotation"
+        className="inline-flex items-center text-primary hover:text-black  dark:hover:text-white mb-8"
+      >
+        <ArrowLeftCircle className="mr-2" size={16} />
+        Back to Quotations
+      </Link>
       <Card className="w-full max-w-4xl mx-auto">
         <CardHeader>
           <CardTitle className="text-2xl font-bold flex items-center">

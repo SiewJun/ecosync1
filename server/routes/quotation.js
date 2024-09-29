@@ -185,6 +185,35 @@ router.get("/consumer-quotations/:versionId", authenticateToken, async (req, res
   }
 });
 
+router.post("/reject/:id", authenticateToken, async (req, res) => {
+  const quotationId = req.params.id;
+  const consumerId = req.user.id;
+  const userRole = req.user.role;
+
+  // Check if the role is CONSUMER
+  if (userRole !== "CONSUMER") {
+    return res.status(403).json({ message: "Forbidden: Access is denied" });
+  }
+
+  try {
+    const quotation = await Quotation.findOne({
+      where: { id: quotationId, consumerId },
+    });
+
+    if (!quotation) {
+      return res.status(404).json({ message: "Quotation not found" });
+    }
+
+    quotation.quotationStatus = "REJECTED";
+    await quotation.save();
+
+    res.json({ message: "Quotation rejected successfully" });
+  } catch (error) {
+    console.error("Error rejecting quotation:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 router.get("/company-quotations", authenticateToken, async (req, res) => {
   const companyId = req.user.id;
   const userRole = req.user.role;
@@ -400,7 +429,7 @@ router.post("/finalize", authenticateToken, async (req, res) => {
     // Update the related quotation status to "RECEIVED"
     await quotation.update(
       {
-        quotationStatus: "RECEIVED",
+        quotationStatus: "FINALIZED",
       },
       { transaction: t }
     );

@@ -4,7 +4,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { User, FileText, ChevronRight, X, DollarSign } from "lucide-react";
+import {
+  User,
+  FileText,
+  ChevronRight,
+  X,
+  DollarSign,
+  Clock,
+  AlertTriangle,
+} from "lucide-react";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
@@ -15,11 +23,7 @@ const CompanyQuotation = () => {
   const [error, setError] = useState(null);
   const [selectedQuotation, setSelectedQuotation] = useState(null);
   const navigate = useNavigate();
-
-  const handleDraftButtonClick = () => {
-    const quotationId = selectedQuotation.id;
-    navigate(`${quotationId}`);
-  };
+  
   useEffect(() => {
     const fetchQuotations = async () => {
       try {
@@ -32,7 +36,7 @@ const CompanyQuotation = () => {
           }
         );
         setQuotations(response.data.quotations);
-        // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line no-unused-vars
       } catch (err) {
         setError("Failed to load quotations. Please try again later.");
       } finally {
@@ -61,7 +65,9 @@ const CompanyQuotation = () => {
       className="group"
     >
       <Card
-        className="hover:shadow-xl transition-all duration-500 border cursor-pointer overflow-hidden"
+        className={`hover:shadow-xl transition-all duration-500 border cursor-pointer overflow-hidden ${
+          quotation.quotationStatus === "REJECTED" ? "opacity-60" : ""
+        }`}
         onClick={() => handleQuotationClick(quotation)}
       >
         <CardContent className="p-6 relative">
@@ -85,6 +91,10 @@ const CompanyQuotation = () => {
                   ? "bg-yellow-100 text-yellow-800 group-hover:bg-yellow-200"
                   : quotation.quotationStatus === "RECEIVED"
                   ? "bg-green-100 text-green-800 group-hover:bg-green-200"
+                  : quotation.quotationStatus === "FINALIZED"
+                  ? "bg-blue-100 text-blue-800 group-hover:bg-blue-200"
+                  : quotation.quotationStatus === "REJECTED"
+                  ? "bg-red-100 text-red-800 group-hover:bg-red-200"
                   : "bg-gray-100 text-gray-800 group-hover:bg-gray-200"
               }`}
             >
@@ -95,12 +105,14 @@ const CompanyQuotation = () => {
             {quotation.consumer?.username || "Unknown Consumer"}
           </h3>
           <div className="flex items-center text-sm text-gray-500 mb-4">
+            <Clock className="h-4 w-4 mr-2" />
             <p>
               Submitted on {new Date(quotation.createdAt).toLocaleDateString()}
             </p>
           </div>
           <div className="flex justify-between items-center">
             <div className="flex items-center">
+              <DollarSign className="h-5 w-5 text-green-500 mr-2" />
               <p className="text-sm font-medium text-gray-500">
                 Avg. Monthly: RM{quotation.averageMonthlyElectricityBill}
               </p>
@@ -217,12 +229,25 @@ const CompanyQuotation = () => {
                         ? "bg-yellow-100 text-yellow-800"
                         : selectedQuotation.quotationStatus === "RECEIVED"
                         ? "bg-green-100 text-green-800"
+                        : selectedQuotation.quotationStatus === "FINALIZED"
+                        ? "bg-blue-100 text-blue-800"
+                        : selectedQuotation.quotationStatus === "REJECTED"
+                        ? "bg-red-100 text-red-800"
                         : "bg-gray-100 text-gray-800"
                     }`}
                   >
                     {selectedQuotation.quotationStatus}
                   </div>
                 </div>
+
+                {selectedQuotation.quotationStatus === "REJECTED" && (
+                  <div className="mb-8 p-4 bg-red-100 border border-red-300 rounded-md">
+                    <div className="flex items-center">
+                      <AlertTriangle className="h-5 w-5 text-red-500 mr-2" />
+                      <p className="text-red-700 font-medium">This quotation has been rejected by the consumer.</p>
+                    </div>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div>
@@ -292,12 +317,34 @@ const CompanyQuotation = () => {
                   >
                     Close
                   </Button>
-                  <Button
-                    variant="default"
-                    onClick={handleDraftButtonClick}
-                  >
-                    Draft Quotation
-                  </Button>
+                  {(selectedQuotation.quotationStatus === "PENDING" ||
+                    selectedQuotation.quotationStatus === "RECEIVED") && (
+                    <Button
+                      variant="default"
+                      onClick={() => navigate(`${selectedQuotation.id}`)}
+                    >
+                      Draft Quotation
+                    </Button>
+                  )}
+
+                  {selectedQuotation.quotationStatus === "FINALIZED" && (
+                    <Button
+                      variant="default"
+                      onClick={() => navigate(`${selectedQuotation.id}`)}
+                    >
+                      View Finalized Quotation
+                    </Button>
+                  )}
+
+                  {selectedQuotation.quotationStatus === "REJECTED" && (
+                    <Button
+                      variant="default"
+                      disabled
+                      className="opacity-50 cursor-not-allowed"
+                    >
+                      Quotation Rejected
+                    </Button>
+                  )}
                 </div>
               </div>
             </motion.div>
