@@ -144,7 +144,9 @@ const ConsumerQuotation = () => {
       className="group"
     >
       <Card
-        className="hover:shadow-xl transition-all duration-500 border cursor-pointer overflow-hidden"
+        className={`hover:shadow-xl transition-all duration-500 border cursor-pointer overflow-hidden ${
+          quotation.quotationStatus === "REJECTED" ? "opacity-60" : ""
+        }`}
         onClick={() => handleQuotationClick(quotation)}
       >
         <CardContent className="p-6 relative">
@@ -564,6 +566,9 @@ const ConsumerQuotation = () => {
                       variant="destructive"
                       className="mt-3 sm:mt-0"
                       onClick={() => setIsRejectDialogOpen(true)}
+                      disabled={
+                        selectedQuotation.quotationStatus == "PENDING"
+                      }
                     >
                       Reject Quotation
                     </Button>
