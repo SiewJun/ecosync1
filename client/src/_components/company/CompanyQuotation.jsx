@@ -23,7 +23,7 @@ const CompanyQuotation = () => {
   const [error, setError] = useState(null);
   const [selectedQuotation, setSelectedQuotation] = useState(null);
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     const fetchQuotations = async () => {
       try {
@@ -36,7 +36,7 @@ const CompanyQuotation = () => {
           }
         );
         setQuotations(response.data.quotations);
-      // eslint-disable-next-line no-unused-vars
+        // eslint-disable-next-line no-unused-vars
       } catch (err) {
         setError("Failed to load quotations. Please try again later.");
       } finally {
@@ -244,7 +244,9 @@ const CompanyQuotation = () => {
                   <div className="mb-8 p-4 bg-red-100 border border-red-300 rounded-md">
                     <div className="flex items-center">
                       <AlertTriangle className="h-5 w-5 text-red-500 mr-2" />
-                      <p className="text-red-700 font-medium">This quotation has been rejected by the consumer.</p>
+                      <p className="text-red-700 font-medium">
+                        This quotation has been rejected by the consumer.
+                      </p>
                     </div>
                   </div>
                 )}
