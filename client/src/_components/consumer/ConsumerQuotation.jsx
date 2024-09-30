@@ -629,7 +629,10 @@ const ConsumerQuotation = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleRejectQuotation}>
+            <AlertDialogAction
+              onClick={handleRejectQuotation}
+              className="bg-red-600 text-white hover:bg-red-700 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2"
+            >
               Reject Quotation
             </AlertDialogAction>
           </AlertDialogFooter>
