@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
-import PropTypes from "prop-types";
 import {
   ArrowLeftCircle,
   Sun,
@@ -36,6 +35,7 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
+import PropTypes from 'prop-types';
 
 const ConsumerQuotationView = () => {
   const { versionId } = useParams();
@@ -77,7 +77,6 @@ const ConsumerQuotationView = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      // Refresh the quotation details after accepting
       const response = await axios.get(
         `http://localhost:5000/api/quotation/consumer-quotations/${versionId}`,
         {
@@ -85,8 +84,6 @@ const ConsumerQuotationView = () => {
         }
       );
       setQuotationDetails(response.data);
-
-      // Show success toast
       toast({
         title: "Quotation Accepted",
         description: "Your quotation has been successfully accepted.",
@@ -165,7 +162,7 @@ const ConsumerQuotationView = () => {
       <div className="max-w-5xl mx-auto">
         <div className="bg-white shadow-lg rounded-lg overflow-hidden">
           {/* Header */}
-          <div className="px-8 py-6 border-b border-gray-200">
+          <div className="px-8 py-6 border-b border-gray-200 bg-gray-50">
             <div className="flex justify-between items-center">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">
@@ -192,7 +189,7 @@ const ConsumerQuotationView = () => {
             {/* Accepted Alert */}
             {isAccepted && (
               <Alert className="bg-gradient-to-r from-green-50 to-emerald-50">
-                <AlertTitle>Quotation Accepted</AlertTitle>
+                <AlertTitle className="font-semibold">Quotation Accepted</AlertTitle>
                 <AlertDescription>
                   You have accepted this quotation. The company will be notified
                   and will contact you soon to discuss the next steps in the
@@ -235,52 +232,64 @@ const ConsumerQuotationView = () => {
             </AlertDialog>
 
             {/* Client and Company Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-gray-50 p-6 rounded-lg">
               <DetailSection title="Client Details">
-                <p>
-                  {salutation} {name}
+                <p className="mb-1">
+                  <span className="font-semibold">{salutation} {name}</span>
                 </p>
-                <p>{email}</p>
-                <p>{phoneNumber}</p>
-                <p>{address}</p>
-                <p>{state}</p>
+                <p className="mb-1">{email}</p>
+                <p className="mb-1">{phoneNumber}</p>
+                <p className="mb-1">{address}</p>
+                <p className="mb-1">{state}</p>
                 <p>{propertyType}</p>
               </DetailSection>
               <DetailSection title="Company Details">
-                <p>{company.CompanyDetail.companyName}</p>
-                <p>{company.CompanyDetail.phoneNumber}</p>
+                <p className="mb-1">
+                  <span className="font-semibold">{company.CompanyDetail.companyName}</span>
+                </p>
+                <p className="mb-1">{company.CompanyDetail.phoneNumber}</p>
                 <p>{company.CompanyDetail.website}</p>
               </DetailSection>
             </div>
 
             {/* System Specifications and Energy Production */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white p-6 rounded-lg border border-gray-200">
               <DetailSection
                 title="System Specifications"
                 icon={<Sun size={18} />}
               >
-                <p>System Size: {systemSize}</p>
-                <p>Panel Specifications: {panelSpecifications}</p>
+                <p className="mb-2">
+                  <span className="font-semibold">System Size:</span> {systemSize}
+                </p>
+                <p>
+                  <span className="font-semibold">Panel Specifications:</span> {panelSpecifications}
+                </p>
               </DetailSection>
               <DetailSection
                 title="Energy Production"
                 icon={<Battery size={18} />}
               >
-                <p>Estimated Production: {estimatedEnergyProduction}</p>
+                <p className="mb-2">
+                  <span className="font-semibold">Estimated Production:</span> {estimatedEnergyProduction}
+                </p>
                 <p>
-                  Current Avg. Monthly Bill: RM{averageMonthlyElectricityBill}
+                  <span className="font-semibold">Current Avg. Monthly Bill:</span> RM{averageMonthlyElectricityBill}
                 </p>
               </DetailSection>
             </div>
 
             {/* Financial Benefits */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 bg-gray-50 p-6 rounded-lg">
               <DetailSection
                 title="Financial Benefits"
                 icon={<DollarSign size={18} />}
               >
-                <p>Savings: {savings}</p>
-                <p>ROI: {roi}</p>
+                <p className="mb-2">
+                  <span className="font-semibold">Savings:</span> {savings}
+                </p>
+                <p>
+                  <span className="font-semibold">ROI:</span> {roi}
+                </p>
               </DetailSection>
               <DetailSection title="Payback Period" icon={<Clock size={18} />}>
                 <p>{paybackPeriod}</p>
@@ -291,34 +300,38 @@ const ConsumerQuotationView = () => {
             </div>
 
             {/* Cost Breakdown */}
-            <DetailSection
-              title="Cost Breakdown"
-              icon={<DollarSign size={18} />}
-            >
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Item</TableHead>
-                    <TableHead>Quantity</TableHead>
-                    <TableHead>Unit Price</TableHead>
-                    <TableHead>Total</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {costBreakdown.map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{item.item}</TableCell>
-                      <TableCell>{item.quantity}</TableCell>
-                      <TableCell>RM{item.unitPrice}</TableCell>
-                      <TableCell>RM{item.totalPrice}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </DetailSection>
+            <div className="bg-white p-6 rounded-lg border border-gray-200">
+              <DetailSection
+                title="Cost Breakdown"
+                icon={<DollarSign size={18} />}
+              >
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="font-semibold">Item</TableHead>
+                        <TableHead className="font-semibold">Quantity</TableHead>
+                        <TableHead className="font-semibold">Unit Price</TableHead>
+                        <TableHead className="font-semibold">Total</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {costBreakdown.map((item, index) => (
+                        <TableRow key={index}>
+                          <TableCell>{item.item}</TableCell>
+                          <TableCell>{item.quantity}</TableCell>
+                          <TableCell>RM{item.unitPrice}</TableCell>
+                          <TableCell>RM{item.totalPrice}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </DetailSection>
+            </div>
 
             {/* Warranties and Project Timeline */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-gray-50 p-6 rounded-lg">
               <DetailSection title="Warranties" icon={<Shield size={18} />}>
                 <p>{productWarranties}</p>
               </DetailSection>
@@ -326,35 +339,37 @@ const ConsumerQuotationView = () => {
                 title="Project Timeline"
                 icon={<Calendar size={18} />}
               >
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Phase</TableHead>
-                      <TableHead>Start Date</TableHead>
-                      <TableHead>End Date</TableHead>
-                      <TableHead>Description</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {timeline.map((phase, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{phase.phase}</TableCell>
-                        <TableCell>
-                          {new Date(phase.startDate).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell>
-                          {new Date(phase.endDate).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell>{phase.description}</TableCell>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="font-semibold">Phase</TableHead>
+                        <TableHead className="font-semibold">Start Date</TableHead>
+                        <TableHead className="font-semibold">End Date</TableHead>
+                        <TableHead className="font-semibold">Description</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {timeline.map((phase, index) => (
+                        <TableRow key={index}>
+                          <TableCell>{phase.phase}</TableCell>
+                          <TableCell>
+                            {new Date(phase.startDate).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell>
+                            {new Date(phase.endDate).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell>{phase.description}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </DetailSection>
             </div>
 
             {/* Footer */}
-            <div className="flex justify-between items-center text-sm text-gray-500 pt-4 border-t border-gray-200">
+            <div className="flex justify-between items-center text-sm text-gray-500 pt-6 mt-8 border-t border-gray-200">
               <p>
                 Quotation created on: {new Date(createdAt).toLocaleDateString()}
               </p>
@@ -372,13 +387,14 @@ const ConsumerQuotationView = () => {
 
 const DetailSection = ({ title, children, icon }) => (
   <div>
-    <h3 className="text-lg font-semibold mb-2 text-gray-700 flex items-center">
+    <h3 className="text-lg font-semibold mb-3 text-gray-700 flex items-center">
       {icon && <span className="mr-2">{icon}</span>}
       {title}
     </h3>
     <div className="text-gray-600">{children}</div>
   </div>
 );
+
 DetailSection.propTypes = {
   title: PropTypes.string.isRequired,
   children: PropTypes.node.isRequired,

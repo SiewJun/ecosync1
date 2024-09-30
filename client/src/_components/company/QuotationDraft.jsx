@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -126,6 +126,16 @@ const QuotationDraft = () => {
     setTimeline(updatedTimeline);
   };
 
+  const DateInput = React.forwardRef((props, ref) => (
+    <Input
+      {...props}
+      ref={ref}
+      type="date"
+      className="text-foreground bg-accent border-input"
+    />
+  ));
+  DateInput.displayName = "DateInput";
+
   const addTimelinePhase = () => {
     setTimeline([
       ...timeline,
@@ -156,11 +166,23 @@ const QuotationDraft = () => {
       }
     }
 
-    if (costBreakdown.some((item) => !item.item || !item.quantity || !item.unitPrice)) {
+    if (
+      costBreakdown.some(
+        (item) => !item.item || !item.quantity || !item.unitPrice
+      )
+    ) {
       return false;
     }
 
-    if (timeline.some((phase) => !phase.phase || !phase.startDate || !phase.endDate || !phase.description)) {
+    if (
+      timeline.some(
+        (phase) =>
+          !phase.phase ||
+          !phase.startDate ||
+          !phase.endDate ||
+          !phase.description
+      )
+    ) {
       return false;
     }
 
@@ -451,8 +473,7 @@ const QuotationDraft = () => {
                         />
                       </TableCell>
                       <TableCell>
-                        <Input
-                          type="date"
+                        <DateInput
                           value={phase.startDate}
                           onChange={(e) =>
                             handleTimelineChange(
@@ -464,8 +485,7 @@ const QuotationDraft = () => {
                         />
                       </TableCell>
                       <TableCell>
-                        <Input
-                          type="date"
+                        <DateInput
                           value={phase.endDate}
                           onChange={(e) =>
                             handleTimelineChange(
