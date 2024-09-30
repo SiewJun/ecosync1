@@ -138,7 +138,41 @@ const QuotationDraft = () => {
     setTimeline(updatedTimeline);
   };
 
+  const validateForm = () => {
+    const requiredFields = [
+      "systemSize",
+      "panelSpecifications",
+      "estimatedEnergyProduction",
+      "savings",
+      "paybackPeriod",
+      "roi",
+      "incentives",
+      "productWarranties",
+    ];
+
+    for (const field of requiredFields) {
+      if (!quotationData[field]) {
+        return false;
+      }
+    }
+
+    if (costBreakdown.some((item) => !item.item || !item.quantity || !item.unitPrice)) {
+      return false;
+    }
+
+    if (timeline.some((phase) => !phase.phase || !phase.startDate || !phase.endDate || !phase.description)) {
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (action) => {
+    if (!validateForm()) {
+      setError("Please fill in all required fields.");
+      return;
+    }
+
     setLoading(true);
     setError("");
     try {

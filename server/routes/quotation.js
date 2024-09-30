@@ -238,6 +238,27 @@ router.get("/company-quotations", authenticateToken, async (req, res) => {
             },
           ],
         },
+        {
+          model: QuotationVersion,
+          as: "versions",
+          attributes: [
+            "id",
+            "quotationId",
+            "systemSize",
+            "panelSpecifications",
+            "costBreakdown",
+            "estimatedEnergyProduction",
+            "savings",
+            "paybackPeriod",
+            "roi",
+            "incentives",
+            "productWarranties",
+            "timeline",
+            "versionNumber",
+            "status",
+            "createdAt",
+          ],
+        },
       ],
     });
 
@@ -487,6 +508,55 @@ router.get("/latest/:quotationId", authenticateToken, async (req, res) => {
     res
       .status(500)
       .json({ message: "Failed to fetch latest quotation version." });
+  }
+});
+
+router.post("/accept/:quotationVersionId", authenticateToken, async (req, res) => {
+  const { quotationVersionId } = req.params;
+  const consumerId = req.user.id;
+  const userRole = req.user.role;
+
+  // Only consumers can accept quotations
+  if (userRole !== "CONSUMER") {
+    return res.status(403).json({ message: "Only consumers can accept quotations." });
+  }
+
+  try {
+    // Fetch the specific quotation version by ID
+    const quotationVersion = await QuotationVersion.findByPk(quotationVersionId, {
+      include: [
+        {
+          model: Quotation,
+          as: "quotation",
+          include: [
+            {
+              model: User,
+              as: "consumer",
+              attributes: ["id"],
+            },
+          ],
+        },
+      ],
+    });
+
+    if (!quotationVersion) {
+      return res.status(404).json({ message: "Quotation version not found." });
+    }
+
+    // Check if the consumer owns this quotation
+    const quotation = quotationVersion.quotation;
+    if (quotation.consumerId !== consumerId) {
+      return res.status(403).json({ message: "You do not have access to this quotation." });
+    }
+
+    // Update the quotation status to ACCEPTED
+    quotation.quotationStatus = "ACCEPTED";
+    await quotation.save();
+
+    res.status(200).json({ message: "Quotation accepted successfully", quotation });
+  } catch (error) {
+    console.error("Error accepting quotation:", error);
+    res.status(500).json({ message: "Failed to accept quotation." });
   }
 });
 

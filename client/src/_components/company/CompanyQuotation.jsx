@@ -12,6 +12,7 @@ import {
   DollarSign,
   Clock,
   AlertTriangle,
+  ThumbsUp,
 } from "lucide-react";
 import axios from "axios";
 import PropTypes from "prop-types";
@@ -55,6 +56,23 @@ const CompanyQuotation = () => {
     setSelectedQuotation(null);
   };
 
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "PENDING":
+        return "bg-yellow-100 text-yellow-800 group-hover:bg-yellow-200";
+      case "RECEIVED":
+        return "bg-green-100 text-green-800 group-hover:bg-green-200";
+      case "FINALIZED":
+        return "bg-blue-100 text-blue-800 group-hover:bg-blue-200";
+      case "REJECTED":
+        return "bg-red-100 text-red-800 group-hover:bg-red-200";
+      case "ACCEPTED":
+        return "bg-primary text-primary-foreground";
+      default:
+        return "bg-gray-100 text-gray-800 group-hover:bg-gray-200";
+    }
+  };
+
   const QuotationCard = ({ quotation }) => (
     <motion.div
       layout
@@ -86,17 +104,9 @@ const CompanyQuotation = () => {
               )}
             </Avatar>
             <div
-              className={`px-3 py-1 rounded-full text-sm font-medium transition-colors duration-300 ${
-                quotation.quotationStatus === "PENDING"
-                  ? "bg-yellow-100 text-yellow-800 group-hover:bg-yellow-200"
-                  : quotation.quotationStatus === "RECEIVED"
-                  ? "bg-green-100 text-green-800 group-hover:bg-green-200"
-                  : quotation.quotationStatus === "FINALIZED"
-                  ? "bg-blue-100 text-blue-800 group-hover:bg-blue-200"
-                  : quotation.quotationStatus === "REJECTED"
-                  ? "bg-red-100 text-red-800 group-hover:bg-red-200"
-                  : "bg-gray-100 text-gray-800 group-hover:bg-gray-200"
-              }`}
+              className={`px-3 py-1 rounded-full text-sm font-medium transition-colors duration-300 ${getStatusColor(
+                quotation.quotationStatus
+              )}`}
             >
               {quotation.quotationStatus}
             </div>
@@ -224,17 +234,9 @@ const CompanyQuotation = () => {
                     {selectedQuotation.consumer?.username}
                   </h2>
                   <div
-                    className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                      selectedQuotation.quotationStatus === "PENDING"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : selectedQuotation.quotationStatus === "RECEIVED"
-                        ? "bg-green-100 text-green-800"
-                        : selectedQuotation.quotationStatus === "FINALIZED"
-                        ? "bg-blue-100 text-blue-800"
-                        : selectedQuotation.quotationStatus === "REJECTED"
-                        ? "bg-red-100 text-red-800"
-                        : "bg-gray-100 text-gray-800"
-                    }`}
+                    className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+                      selectedQuotation.quotationStatus
+                    )}`}
                   >
                     {selectedQuotation.quotationStatus}
                   </div>
@@ -246,6 +248,18 @@ const CompanyQuotation = () => {
                       <AlertTriangle className="h-5 w-5 text-red-500 mr-2" />
                       <p className="text-red-700 font-medium">
                         This quotation has been rejected by the consumer.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {selectedQuotation.quotationStatus === "ACCEPTED" && (
+                  <div className="mb-8 p-4 bg-primary border border-primary rounded-md">
+                    <div className="flex items-center">
+                      <ThumbsUp className="h-5 w-5 text-primary-foreground-500 mr-2" />
+                      <p className="text-primary-foreground font-medium">
+                        This quotation has been accepted by the consumer. Please
+                        proceed with the next steps.
                       </p>
                     </div>
                   </div>
@@ -329,12 +343,13 @@ const CompanyQuotation = () => {
                     </Button>
                   )}
 
-                  {selectedQuotation.quotationStatus === "FINALIZED" && (
+                  {(selectedQuotation.quotationStatus === "ACCEPTED" ||
+                    selectedQuotation.quotationStatus === "FINALIZED") && (
                     <Button
                       variant="default"
                       onClick={() => navigate(`${selectedQuotation.id}`)}
                     >
-                      View Finalized Quotation
+                      View Quotation
                     </Button>
                   )}
 

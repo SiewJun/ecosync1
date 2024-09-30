@@ -18,6 +18,7 @@ import {
   CheckIcon,
   Clock,
   AlertTriangle,
+  ThumbsUp,
 } from "lucide-react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
@@ -134,6 +135,23 @@ const ConsumerQuotation = () => {
     setIsRejectDialogOpen(false);
   };
 
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "PENDING":
+        return "bg-yellow-100 text-yellow-800 group-hover:bg-yellow-200";
+      case "RECEIVED":
+        return "bg-green-100 text-green-800 group-hover:bg-green-200";
+      case "FINALIZED":
+        return "bg-blue-100 text-blue-800 group-hover:bg-blue-200";
+      case "REJECTED":
+        return "bg-red-100 text-red-800 group-hover:bg-red-200";
+      case "ACCEPTED":
+        return "bg-primary text-primary-foreground";
+      default:
+        return "bg-gray-100 text-gray-800 group-hover:bg-gray-200";
+    }
+  };
+
   const QuotationCard = ({ quotation }) => (
     <motion.div
       layout
@@ -164,17 +182,9 @@ const ConsumerQuotation = () => {
               )}
             </Avatar>
             <div
-              className={`px-3 py-1 rounded-full text-sm font-medium transition-colors duration-300 ${
-                quotation.quotationStatus === "PENDING"
-                  ? "bg-yellow-100 text-yellow-800 group-hover:bg-yellow-200"
-                  : quotation.quotationStatus === "RECEIVED"
-                  ? "bg-green-100 text-green-800 group-hover:bg-green-200"
-                  : quotation.quotationStatus === "FINALIZED"
-                  ? "bg-blue-100 text-blue-800 group-hover:bg-blue-200"
-                  : quotation.quotationStatus === "REJECTED"
-                  ? "bg-red-100 text-red-800 group-hover:bg-red-200"
-                  : "bg-gray-100 text-gray-800 group-hover:bg-gray-200"
-              }`}
+              className={`px-3 py-1 rounded-full text-sm font-medium transition-colors duration-300 ${getStatusColor(
+                quotation.quotationStatus
+              )}`}
             >
               {quotation.quotationStatus}
             </div>
@@ -345,17 +355,9 @@ const ConsumerQuotation = () => {
                     {selectedQuotation.company?.CompanyDetail?.companyName}
                   </h2>
                   <div
-                    className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                      selectedQuotation.quotationStatus === "PENDING"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : selectedQuotation.quotationStatus === "RECEIVED"
-                        ? "bg-green-100 text-green-800"
-                        : selectedQuotation.quotationStatus === "FINALIZED"
-                        ? "bg-blue-100 text-blue-800"
-                        : selectedQuotation.quotationStatus === "REJECTED"
-                        ? "bg-red-100 text-red-800"
-                        : "bg-gray-100 text-gray-800"
-                    }`}
+                    className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+                      selectedQuotation.quotationStatus
+                    )}`}
                   >
                     {selectedQuotation.quotationStatus}
                   </div>
@@ -494,6 +496,25 @@ const ConsumerQuotation = () => {
                           </div>
                         </li>
                       )}
+                      {selectedQuotation.quotationStatus === "ACCEPTED" && (
+                        <li className="ml-6">
+                          <div className="flex items-center">
+                            <div className="absolute left-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                              <ThumbsUp className="h-4 w-4 text-white" />
+                            </div>
+                            <div className="ml-4">
+                              <p className="text-sm font-medium">
+                                Quotation Accepted
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                {new Date(
+                                  selectedQuotation.updatedAt
+                                ).toLocaleString()}
+                              </p>
+                            </div>
+                          </div>
+                        </li>
+                      )}
                     </ul>
                   </div>
                 </div>
@@ -523,6 +544,18 @@ const ConsumerQuotation = () => {
                         company for any clarifications.
                       </p>
                     )}
+                    {selectedQuotation.quotationStatus === "ACCEPTED" && (
+                      <div className="mb-8 p-4 bg-primary border border-priamry rounded-md">
+                        <div className="flex items-center">
+                          <ThumbsUp className="h-5 w-5 text-primary-foreground mr-2" />
+                          <p className="text-primary-foreground font-medium">
+                            You have accepted this quotation. The company will
+                            be in touch with you shortly to proceed with the
+                            next steps.
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -535,10 +568,7 @@ const ConsumerQuotation = () => {
                   </Button>
                   <Button
                     variant="default"
-                    disabled={
-                      selectedQuotation.quotationStatus !== "FINALIZED" &&
-                      selectedQuotation.quotationStatus !== "RECEIVED"
-                    }
+                    disabled={selectedQuotation.quotationStatus === "PENDING"}
                     className="mt-3 sm:mt-0"
                     onClick={() => {
                       if (
@@ -557,22 +587,24 @@ const ConsumerQuotation = () => {
                       }
                     }}
                   >
-                    {selectedQuotation.quotationStatus === "FINALIZED"
-                      ? "Review Finalized Quotation"
+                    {selectedQuotation.quotationStatus === "FINALIZED" ||
+                    selectedQuotation.quotationStatus === "ACCEPTED"
+                      ? "Review Quotation"
                       : "View Quotation"}
                   </Button>
-                  {selectedQuotation.quotationStatus !== "REJECTED" && (
-                    <Button
-                      variant="destructive"
-                      className="mt-3 sm:mt-0"
-                      onClick={() => setIsRejectDialogOpen(true)}
-                      disabled={
-                        selectedQuotation.quotationStatus == "PENDING"
-                      }
-                    >
-                      Reject Quotation
-                    </Button>
-                  )}
+                  {selectedQuotation.quotationStatus !== "REJECTED" &&
+                    selectedQuotation.quotationStatus !== "ACCEPTED" && (
+                      <Button
+                        variant="destructive"
+                        className="mt-3 sm:mt-0"
+                        onClick={() => setIsRejectDialogOpen(true)}
+                        disabled={
+                          selectedQuotation.quotationStatus === "PENDING"
+                        }
+                      >
+                        Reject Quotation
+                      </Button>
+                    )}
                 </div>
               </div>
             </motion.div>

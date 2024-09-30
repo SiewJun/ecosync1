@@ -19,10 +19,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { User, Mail, Phone, Home, Building, DollarSign } from "lucide-react";
-import { loadGoogleMaps } from "@/utils/googleMaps";
+import { loadGoogleMaps, geocodeAddress } from "@/utils/googleMaps";
 
 const UserDetailsForm = ({ onSubmit, initialData }) => {
   const [formData, setFormData] = useState(initialData);
+  const [addressCoordinates, setAddressCoordinates] = useState(null);
 
   const addressInputRef = useRef(null);
   const autocompleteRef = useRef(null);
@@ -48,7 +49,6 @@ const UserDetailsForm = ({ onSubmit, initialData }) => {
   }, []);
 
   useEffect(() => {
-    // Update formData when initialData changes
     setFormData(initialData);
   }, [initialData]);
 
@@ -62,7 +62,6 @@ const UserDetailsForm = ({ onSubmit, initialData }) => {
     const address = place.formatted_address;
     let state = "";
 
-    // Extract state from address components
     for (const component of place.address_components) {
       if (component.types.includes("administrative_area_level_1")) {
         state = component.long_name;
@@ -75,17 +74,39 @@ const UserDetailsForm = ({ onSubmit, initialData }) => {
       address: address,
       state: state,
     }));
+
+    setAddressCoordinates({
+      lat: place.geometry.location.lat(),
+      lng: place.geometry.location.lng(),
+    });
   };
 
   const handleChange = (name, value) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    if (!addressCoordinates) {
+      // If coordinates are not set by autocomplete, try to geocode the address
+      try {
+        const coordinates = await geocodeAddress(formData.address);
+        if (coordinates) {
+          setAddressCoordinates(coordinates);
+          onSubmit(formData, coordinates);
+        } else {
+          throw new Error("Unable to geocode the address");
+        }
+      } catch (error) {
+        console.error("Error geocoding address:", error);
+        // Handle the error (e.g., show an error message to the user)
+      }
+    } else {
+      // If coordinates are already set, submit the form
+      onSubmit(formData, addressCoordinates);
+    }
   };
-
+  
   const inputVariants = {
     focus: { scale: 1.02, transition: { duration: 0.2 } },
   };

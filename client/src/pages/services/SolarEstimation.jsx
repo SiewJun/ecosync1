@@ -30,11 +30,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import AddressForm from "@/_components/services/AddressForm";
 import MapComponent from "@/_components/services/MapComponent";
 import { calculatePanels, calculateSavings } from "@/utils/SolarCalculator";
 import UserDetailsForm from "@/_components/services/UserDetailsForm";
-import { loadGoogleMaps, geocodeAddress } from "@/utils/googleMaps";
 import NavBar from "@/_components/nav/NavBar";
 import PropTypes from "prop-types";
 import { Toaster } from "@/components/ui/toaster";
@@ -56,7 +54,6 @@ const SolarEstimation = () => {
   const [panelCount, setPanelCount] = useState(0);
   const [savings, setSavings] = useState(null);
   const [error, setError] = useState(null);
-  const [isAddressConfirmed, setIsAddressConfirmed] = useState(false);
   const [isRoofMapped, setIsRoofMapped] = useState(false);
   const [nearbyCompanies, setNearbyCompanies] = useState([]);
   const [isLoadingCompanies, setIsLoadingCompanies] = useState(false);
@@ -65,6 +62,13 @@ const SolarEstimation = () => {
   const [activeAuthTab, setActiveAuthTab] = useState("login");
   const [submittedQuotations, setSubmittedQuotations] = useState([]);
   const { toast } = useToast();
+
+  const steps = [
+    { title: "Your Details", icon: <Sun className="w-6 h-6" /> },
+    { title: "Map Your Roof", icon: <Home className="w-6 h-6" /> },
+    { title: "Panel Estimate", icon: <Sun className="w-6 h-6" /> },
+    { title: "Solar Savings", icon: <DollarSign className="w-6 h-6" /> },
+  ];
 
   const handleRequestQuotation = async (companyId) => {
     try {
@@ -199,8 +203,15 @@ const SolarEstimation = () => {
     }
   };
 
+  const handleFormSubmit = async (data, coordinates) => {
+    setFormData(data);
+    setError(null);
+    setLocation(coordinates);
+    setStep(2);
+  };
+
   useEffect(() => {
-    if (step === 5 && formData.address) {
+    if (step === 4 && formData.address) {
       fetchNearbyCompanies();
     }
   }, [step, formData.address]);
@@ -226,46 +237,6 @@ const SolarEstimation = () => {
     }
   };
 
-  const steps = [
-    { title: "Your Details", icon: <Sun className="w-6 h-6" /> },
-    { title: "Confirm Address", icon: <MapPin className="w-6 h-6" /> },
-    { title: "Map Your Roof", icon: <Home className="w-6 h-6" /> },
-    { title: "Panel Estimate", icon: <Sun className="w-6 h-6" /> },
-    { title: "Solar Savings", icon: <DollarSign className="w-6 h-6" /> },
-  ];
-
-  const handleFormSubmit = async (data) => {
-    setFormData(data);
-    setError(null);
-
-    loadGoogleMaps(async () => {
-      try {
-        const coordinates = await geocodeAddress(data.address);
-        if (coordinates) {
-          setLocation(coordinates);
-          setStep(2);
-        } else {
-          throw new Error(
-            "Unable to find the address. Please check and try again."
-          );
-        }
-      } catch (error) {
-        console.error("Error fetching location:", error);
-        setError(
-          error.message || "Failed to locate the address. Please try again."
-        );
-      }
-    });
-  };
-
-  const handleAddressSelect = (place) => {
-    setLocation({
-      lat: place.geometry.location.lat(),
-      lng: place.geometry.location.lng(),
-    });
-    setIsAddressConfirmed(true);
-  };
-
   const handlePolygonComplete = (area) => {
     const panels = calculatePanels(area);
     setPanelCount(panels);
@@ -280,7 +251,7 @@ const SolarEstimation = () => {
         panelCount
       );
       setSavings(calculatedSavings);
-      setStep(5);
+      setStep(4);
     }
   };
 
@@ -289,10 +260,8 @@ const SolarEstimation = () => {
       case 1:
         return Object.values(formData).every((value) => value !== "");
       case 2:
-        return isAddressConfirmed;
-      case 3:
         return isRoofMapped;
-      case 4:
+      case 3:
         return true; // User can always proceed from panel estimate to solar savings
       default:
         return false;
@@ -307,19 +276,12 @@ const SolarEstimation = () => {
         );
       case 2:
         return (
-          <AddressForm
-            onAddressSelect={handleAddressSelect}
-            initialAddress={formData.address}
-          />
-        );
-      case 3:
-        return (
           <MapComponent
             center={location}
             onPolygonComplete={handlePolygonComplete}
           />
         );
-      case 4:
+      case 3:
         return (
           <div className="text-center">
             <p className="text-2xl font-semibold mb-4">
@@ -335,7 +297,7 @@ const SolarEstimation = () => {
             </Button>
           </div>
         );
-      case 5:
+      case 4:
         return (
           <div className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -620,7 +582,8 @@ const NearbyCompanies = ({
         </ul>
       ) : (
         <p className="text-center py-8 text-gray-600">
-          No nearby solar companies found. Please try to reach out to the companies.
+          No nearby solar companies found. Please try to reach out to the
+          companies.
         </p>
       )}
     </CardContent>
