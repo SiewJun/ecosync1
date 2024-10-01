@@ -4,10 +4,10 @@ import {
   User,
   MessageSquare,
   FileText,
-  ShoppingCart,
   ReceiptText,
   Menu,
   LogOut,
+  ClipboardList,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -93,9 +93,7 @@ const ConsumerDashboard = () => {
                 to="/consumer-dashboard/chat"
                 className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
                   "/consumer-dashboard/chat"
-                )} ${getLinkClasses(
-                  "/consumer-dashboard/chat/:id"
-                )}`}
+                )} ${getLinkClasses("/consumer-dashboard/chat/:id")}`}
               >
                 <MessageSquare className="h-4 w-4" />
                 Chat
@@ -112,13 +110,13 @@ const ConsumerDashboard = () => {
                 Quotation
               </Link>
               <Link
-                to="/consumer-dashboard/company-chat"
+                to="/consumer-dashboard/consumer-project"
                 className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
-                  "/consumer-dashboard/company-chat"
+                  "/consumer-dashboard/consumer-project"
                 )}`}
               >
-                <ShoppingCart className="h-4 w-4" />
-                Order
+                <ClipboardList className="h-4 w-4" />
+                Projects
               </Link>
               <Link
                 to="/consumer-dashboard/company-quotation"
@@ -190,9 +188,7 @@ const ConsumerDashboard = () => {
                   to="/consumer-dashboard/chat"
                   className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
                     "/consumer-dashboard/chat"
-                  )} ${getLinkClasses(
-                    "/consumer-dashboard/chat/:id"
-                  )}`}
+                  )} ${getLinkClasses("/consumer-dashboard/chat/:id")}`}
                 >
                   <MessageSquare className="h-4 w-4" />
                   Chat
@@ -212,8 +208,8 @@ const ConsumerDashboard = () => {
                     "/consumer-dashboard/company-quotation"
                   )}`}
                 >
-                  <ShoppingCart className="h-4 w-4" />
-                  Order
+                  <ClipboardList className="h-4 w-4" />
+                  Projects
                 </Link>
                 <Link
                   to="/consumer-dashboard/company-projects"
@@ -243,11 +239,17 @@ const ConsumerDashboard = () => {
         <main className="flex flex-1 flex-col">
           <Routes>
             <Route path="/consumer-profile" element={<ConsumerProfile />} />
-            <Route path="/consumer-profile/consumer-edit-profile" element={<ConsumerEditProfileForm />} />
+            <Route
+              path="/consumer-profile/consumer-edit-profile"
+              element={<ConsumerEditProfileForm />}
+            />
             <Route path="/chat" element={<ChatList />} />
             <Route path="/chat/:companyId" element={<Chat />} />
             <Route path="/consumer-quotation" element={<ConsumerQuotation />} />
-            <Route path="/consumer-quotation/:versionId" element={<ConsumerQuotationView />} />
+            <Route
+              path="/consumer-quotation/:versionId"
+              element={<ConsumerQuotationView />}
+            />
           </Routes>
         </main>
       </div>

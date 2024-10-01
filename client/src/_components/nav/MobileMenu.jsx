@@ -11,7 +11,6 @@ import {
   User,
   MessageSquare,
   FileText,
-  ShoppingCart,
   LogOut,
   LayoutDashboard,
   Building,
@@ -67,8 +66,8 @@ const renderDashboardLinks = (user) => {
           </Link>
           <Link to="/consumer-dashboard/order">
             <li className={linkClasses}>
-              <ShoppingCart className="inline-block mr-2" />
-              Order
+              <ClipboardList className="inline-block mr-2" />
+              Projects
             </li>
           </Link>
           <Link to="/consumer-dashboard/invoice">
@@ -187,14 +186,10 @@ const MobileMenu = ({ user }) => {
                       <Link to="/about">About Ecosync</Link>
                     </li>
                     <li className="py-2 px-4 rounded-md text-muted-foreground hover:text-primary-foreground hover:bg-primary transition-colors">
-                      <Link to="/solar-estimation">
-                        Get Estimate
-                      </Link>
+                      <Link to="/solar-estimation">Get Estimate</Link>
                     </li>
                     <li className="py-2 px-4 rounded-md text-muted-foreground hover:text-primary-foreground hover:bg-primary transition-colors">
-                      <Link to="/installers">
-                        Search Solar Installers
-                      </Link>
+                      <Link to="/installers">Search Solar Installers</Link>
                     </li>
                     <li className="py-2 px-4 rounded-md text-muted-foreground hover:text-primary-foreground hover:bg-primary transition-colors">
                       <Link to="/solar-solutions">

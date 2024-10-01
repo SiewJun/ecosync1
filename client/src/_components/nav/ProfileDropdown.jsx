@@ -12,7 +12,6 @@ import {
   User,
   MessageSquare,
   FileText,
-  ShoppingCart,
   ReceiptText,
   LogOut,
   LayoutDashboard,
@@ -76,8 +75,8 @@ const ProfileDropdown = ({ user }) => {
                 to="/consumer-dashboard/consumer-order"
                 className="flex items-center gap-2 p-2 rounded-md cursor-pointer"
               >
-                <ShoppingCart className="h-4 w-4" />
-                Order
+                <ClipboardList className="h-4 w-4" />
+                Projects
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
