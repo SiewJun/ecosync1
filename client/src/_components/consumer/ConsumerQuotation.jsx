@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import { motion, AnimatePresence, useSpring, useScroll } from "framer-motion";
+import { motion, AnimatePresence} from "framer-motion";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -10,7 +10,6 @@ import {
   Building2,
   FileText,
   ChevronRight,
-  X,
   ArrowLeft,
   ArrowRight,
   DollarSign,
@@ -34,6 +33,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const ConsumerQuotation = () => {
   const [quotations, setQuotations] = useState([]);
@@ -44,19 +50,9 @@ const ConsumerQuotation = () => {
   const [itemsPerPage] = useState(6);
   const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
   const scrollRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: scrollRef,
-    offset: ["start start", "end start"],
-    layoutEffect: false,
-  });
+
   const navigate = useNavigate();
   const { toast } = useToast();
-
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001,
-  });
 
   useEffect(() => {
     const fetchQuotations = async () => {
@@ -253,7 +249,7 @@ const ConsumerQuotation = () => {
     <div className="min-h-screen container p-6" ref={scrollRef}>
       <div className="max-w-5xl mx-auto">
         <Toaster />
-        <ScrollArea className="h-[calc(100vh-250px)]">
+        <ScrollArea className="h-[calc(150vh-250px)]">
           <AnimatePresence>
             {quotations.length ? (
               <motion.div
@@ -320,42 +316,27 @@ const ConsumerQuotation = () => {
         )}
       </div>
 
-      <motion.div
-        className="fixed top-0 left-0 right-0 h-1 bg-primary origin-left"
-        style={{ scaleX }}
-      />
-
-      {/* Detailed View */}
-      <AnimatePresence>
-        {selectedQuotation && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-black dark:bg-white dark:bg-opacity-25 bg-opacity-50 flex items-center justify-center p-4 z-50"
-          >
-            <motion.div
-              initial={{ scale: 0.9, y: 50 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 50 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="bg-background rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto relative"
-            >
-              <Button
-                className="absolute top-4 right-4"
-                variant="ghost"
-                onClick={closeDetails}
-              >
-                <X className="h-6 w-6" />
-              </Button>
-              <div className="p-8">
-                <div className="mb-8">
-                  <h2 className="text-3xl font-bold mb-2">
-                    {selectedQuotation.company?.CompanyDetail?.companyName}
-                  </h2>
+      {/* Detailed View Dialog */}
+      <Dialog open={!!selectedQuotation} onOpenChange={closeDetails}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">Quotation Details</DialogTitle>
+            <DialogDescription>
+              View the details of your solar quotation.
+            </DialogDescription>
+          </DialogHeader>
+          {selectedQuotation && (
+            <ScrollArea className="mt-4 max-h-[60vh]">
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-xl font-semibold">
+                      {selectedQuotation.company?.CompanyDetail?.companyName ||
+                        "Unknown Company"}
+                    </h3>
+                  </div>
                   <div
-                    className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+                    className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
                       selectedQuotation.quotationStatus
                     )}`}
                   >
@@ -558,59 +539,51 @@ const ConsumerQuotation = () => {
                     )}
                   </div>
                 </div>
-
-                <div className="mt-12 flex flex-col sm:flex-row justify-end sm:space-x-4">
-                  <Button
-                    className="bg-black text-white dark:bg-white dark:text-gray-700 hover:bg-gray-800 dark:hover:bg-gray-200"
-                    onClick={closeDetails}
-                  >
-                    Close
-                  </Button>
-                  <Button
-                    variant="default"
-                    disabled={selectedQuotation.quotationStatus === "PENDING"}
-                    className="mt-3 sm:mt-0"
-                    onClick={() => {
-                      if (
-                        selectedQuotation.versions &&
-                        selectedQuotation.versions.length > 0
-                      ) {
-                        const latestVersion = selectedQuotation.versions.reduce(
-                          (prev, current) =>
-                            prev.versionNumber > current.versionNumber
-                              ? prev
-                              : current
-                        );
-                        navigate(
-                          `/consumer-dashboard/consumer-quotation/${latestVersion.id}`
-                        );
-                      }
-                    }}
-                  >
-                    {selectedQuotation.quotationStatus === "FINALIZED" ||
-                    selectedQuotation.quotationStatus === "ACCEPTED"
-                      ? "Review Quotation"
-                      : "View Quotation"}
-                  </Button>
-                  {selectedQuotation.quotationStatus !== "REJECTED" &&
-                    selectedQuotation.quotationStatus !== "ACCEPTED" && (
-                      <Button
-                        variant="destructive"
-                        className="mt-3 sm:mt-0"
-                        onClick={() => setIsRejectDialogOpen(true)}
-                        disabled={
-                          selectedQuotation.quotationStatus === "PENDING"
-                        }
-                      >
-                        Reject Quotation
-                      </Button>
-                    )}
-                </div>
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </ScrollArea>
+          )}
+          <div className="mt-6 flex justify-end space-x-2">
+            <Button variant="outline" onClick={closeDetails}>
+              Close
+            </Button>
+            <Button
+              variant="default"
+              disabled={selectedQuotation?.quotationStatus === "PENDING"}
+              onClick={() => {
+                if (
+                  selectedQuotation?.versions &&
+                  selectedQuotation.versions.length > 0
+                ) {
+                  const latestVersion = selectedQuotation.versions.reduce(
+                    (prev, current) =>
+                      prev.versionNumber > current.versionNumber
+                        ? prev
+                        : current
+                  );
+                  navigate(
+                    `/consumer-dashboard/consumer-quotation/${latestVersion.id}`
+                  );
+                }
+              }}
+            >
+              {selectedQuotation?.quotationStatus === "FINALIZED" ||
+              selectedQuotation?.quotationStatus === "ACCEPTED"
+                ? "Review Quotation"
+                : "View Quotation"}
+            </Button>
+            {selectedQuotation?.quotationStatus !== "REJECTED" &&
+              selectedQuotation?.quotationStatus !== "ACCEPTED" && (
+                <Button
+                  variant="destructive"
+                  onClick={() => setIsRejectDialogOpen(true)}
+                  disabled={selectedQuotation?.quotationStatus === "PENDING"}
+                >
+                  Reject Quotation
+                </Button>
+              )}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Reject Quotation Confirmation Dialog */}
       <AlertDialog

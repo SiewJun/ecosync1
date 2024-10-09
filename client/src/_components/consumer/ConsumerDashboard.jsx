@@ -23,6 +23,7 @@ import Chat from "../communication/Chat";
 import ChatList from "../communication/ChatLIst";
 import ConsumerQuotation from "./ConsumerQuotation";
 import ConsumerQuotationView from "./ConsumerQuotationView";
+import ConsumerProject from "./ConsumerProject";
 
 const ConsumerDashboard = () => {
   const [user, setUser] = useState(null);
@@ -250,6 +251,7 @@ const ConsumerDashboard = () => {
               path="/consumer-quotation/:versionId"
               element={<ConsumerQuotationView />}
             />
+            <Route path="/consumer-project" element={<ConsumerProject />} />
           </Routes>
         </main>
       </div>

@@ -11,6 +11,7 @@ const {
   Message,
   CompanyDetail,
   CompanyProfile,
+  Project
 } = require("../models");
 const authenticateToken = require("../middleware/auth");
 
@@ -534,6 +535,11 @@ router.post("/accept/:quotationVersionId", authenticateToken, async (req, res) =
               as: "consumer",
               attributes: ["id"],
             },
+            {
+              model: User,
+              as: "company",
+              attributes: ["id"],
+            },
           ],
         },
       ],
@@ -553,7 +559,14 @@ router.post("/accept/:quotationVersionId", authenticateToken, async (req, res) =
     quotation.quotationStatus = "ACCEPTED";
     await quotation.save();
 
-    res.status(200).json({ message: "Quotation accepted successfully", quotation });
+    // Create a project between the consumer and company
+    const project = await Project.create({
+      consumerId: quotation.consumerId,
+      companyId: quotation.companyId,
+      quotationId: quotation.id,
+    });
+
+    res.status(200).json({ message: "Quotation accepted successfully, project created", project });
   } catch (error) {
     console.error("Error accepting quotation:", error);
     res.status(500).json({ message: "Failed to accept quotation." });

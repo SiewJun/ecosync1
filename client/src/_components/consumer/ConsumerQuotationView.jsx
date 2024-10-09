@@ -11,6 +11,7 @@ import {
   Shield,
   Calendar,
   CheckCircle,
+  Loader2,
 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -107,8 +108,8 @@ const ConsumerQuotationView = () => {
 
   if (!quotationDetails) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        Loading...
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -188,9 +189,9 @@ const ConsumerQuotationView = () => {
           <div className="px-8 py-6 space-y-8">
             {/* Accepted Alert */}
             {isAccepted && (
-              <Alert className="bg-gradient-to-r from-green-50 to-emerald-50">
-                <AlertTitle className="font-semibold">Quotation Accepted</AlertTitle>
-                <AlertDescription>
+              <Alert className="bg-gradient-to-r from-green-50 to-emerald-50 dark:border-0">
+                <AlertTitle className="font-semibold text-black">Quotation Accepted</AlertTitle>
+                <AlertDescription className="text-black">
                   You have accepted this quotation. The company will be notified
                   and will contact you soon to discuss the next steps in the
                   installation process.

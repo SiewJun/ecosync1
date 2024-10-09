@@ -1,0 +1,101 @@
+const express = require("express");
+const router = express.Router();
+const {
+  User,
+  CompanyDetail,
+  CompanyProfile,
+  Project,
+  ProjectStep,
+} = require("../models");
+const authenticateToken = require("../middleware/auth");
+
+router.get("/consumer-projects", authenticateToken, async (req, res) => {
+  const consumerId = req.user.id;
+  const userRole = req.user.role;
+
+  // Only consumers can view their projects
+  if (userRole !== "CONSUMER") {
+    return res.status(403).json({ message: "Only consumers can view their projects." });
+  }
+
+  try {
+    // Fetch all projects that belong to the consumer
+    const projects = await Project.findAll({
+      where: { consumerId },
+      include: [
+        {
+          model: User, // Include company details
+          as: "company",
+          attributes: ["id", "avatarUrl"],
+          include: [
+            {
+              model: CompanyDetail,
+              attributes: ["companyName", "phoneNumber", "address", "businessLicense", "website"],
+            },
+          ],
+        },
+        {
+          model: ProjectStep, // Include the project steps
+          as: "steps",
+          attributes: ["id", "stepName", "stepType", "status", "dueDate", "completedAt"],
+        },
+      ],
+    });
+
+    if (projects.length === 0) {
+      return res.status(404).json({ message: "No projects found for this consumer." });
+    }
+
+    res.status(200).json({ projects });
+  } catch (error) {
+    console.error("Error fetching consumer projects:", error);
+    res.status(500).json({ message: "Failed to fetch consumer projects." });
+  }
+});
+
+router.get("/consumer-projects/:projectId", authenticateToken, async (req, res) => {
+  const consumerId = req.user.id;
+  const userRole = req.user.role;
+  const { projectId } = req.params;
+
+  // Only consumers can view their specific project
+  if (userRole !== "CONSUMER") {
+    return res.status(403).json({ message: "Only consumers can view their projects." });
+  }
+
+  try {
+    // Fetch the specific project details
+    const project = await Project.findOne({
+      where: { id: projectId, consumerId },
+      include: [
+        {
+          model: User, // Include company details
+          as: "company",
+          attributes: ["id", "avatarUrl"],
+          include: [
+            {
+              model: CompanyDetail,
+              attributes: ["companyName", "businessLicense", "address", "website", "phoneNumber"],
+            },
+          ],
+        },
+        {
+          model: ProjectStep, // Include project steps
+          as: "steps",
+          attributes: ["id", "stepName", "stepType", "status", "dueDate", "completedAt"],
+        },
+      ],
+    });
+
+    if (!project) {
+      return res.status(404).json({ message: "Project not found or not accessible to this consumer." });
+    }
+
+    res.status(200).json({ project });
+  } catch (error) {
+    console.error("Error fetching project details for consumer:", error);
+    res.status(500).json({ message: "Failed to fetch project details." });
+  }
+});
+
+module.exports = router;

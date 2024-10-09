@@ -8,7 +8,6 @@ import {
   User,
   FileText,
   ChevronRight,
-  X,
   DollarSign,
   Clock,
   AlertTriangle,
@@ -17,6 +16,13 @@ import {
 import axios from "axios";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const CompanyQuotation = () => {
   const [quotations, setQuotations] = useState([]);
@@ -37,7 +43,7 @@ const CompanyQuotation = () => {
           }
         );
         setQuotations(response.data.quotations);
-        // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line no-unused-vars
       } catch (err) {
         setError("Failed to load quotations. Please try again later.");
       } finally {
@@ -205,36 +211,25 @@ const CompanyQuotation = () => {
         </ScrollArea>
       </div>
 
-      <AnimatePresence>
-        {selectedQuotation && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-black dark:bg-white dark:bg-opacity-25 bg-opacity-50 flex items-center justify-center p-4 z-50"
-          >
-            <motion.div
-              initial={{ scale: 0.9, y: 50 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 50 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="bg-background rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto relative"
-            >
-              <Button
-                className="absolute top-4 right-4"
-                variant="ghost"
-                onClick={closeDetails}
-              >
-                <X className="h-6 w-6" />
-              </Button>
-              <div className="p-8">
-                <div className="mb-8">
-                  <h2 className="text-3xl font-bold mb-2">
-                    {selectedQuotation.consumer?.username}
-                  </h2>
+      <Dialog open={!!selectedQuotation} onOpenChange={closeDetails}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">Quotation Details</DialogTitle>
+            <DialogDescription>
+              View the details of your solar quotation.
+            </DialogDescription>
+          </DialogHeader>
+          {selectedQuotation && (
+            <ScrollArea className="mt-4 max-h-[60vh]">
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-xl font-semibold">
+                      {selectedQuotation.consumer?.username || "Unknown Consumer"}
+                    </h3>
+                  </div>
                   <div
-                    className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+                    className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
                       selectedQuotation.quotationStatus
                     )}`}
                   >
@@ -256,7 +251,7 @@ const CompanyQuotation = () => {
                 {selectedQuotation.quotationStatus === "ACCEPTED" && (
                   <div className="mb-8 p-4 bg-primary border border-primary rounded-md">
                     <div className="flex items-center">
-                      <ThumbsUp className="h-5 w-5 text-primary-foreground-500 mr-2" />
+                      <ThumbsUp className="h-5 w-5 text-primary-foreground mr-2" />
                       <p className="text-primary-foreground font-medium">
                         This quotation has been accepted by the consumer. Please
                         proceed with the next steps.
@@ -364,10 +359,10 @@ const CompanyQuotation = () => {
                   )}
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </ScrollArea>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
