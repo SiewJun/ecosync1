@@ -143,9 +143,9 @@ const CompanyDashboard = () => {
                 Quotation
               </Link>
               <Link
-                to="/company-dashboard/company-projects"
+                to="/company-dashboard/company-project"
                 className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
-                  "/company-dashboard/company-projects"
+                  "/company-dashboard/company-project"
                 )}`}
               >
                 <ClipboardList className="h-4 w-4" />
@@ -236,13 +236,13 @@ const CompanyDashboard = () => {
                   Quotation
                 </Link>
                 <Link
-                  to="/company-dashboard/company-projects"
+                  to="/company-dashboard/company-project"
                   className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
-                    "/company-dashboard/company-projects"
+                    "/company-dashboard/company-project"
                   )}`}
                 >
                   <ClipboardList className="h-4 w-4" />
-                  Projects
+                  Project
                 </Link>
 
                 {/* Add mt-auto here to push the logout button to the bottom */}
@@ -288,7 +288,7 @@ const CompanyDashboard = () => {
             <Route path="/company-chat/:consumerId" element={<ChatCompany />} />
             <Route path="/company-quotation" element={<CompanyQuotation />} />
             <Route path="company-quotation/:quotationId" element={<QuotationDraft />} />
-            <Route path="/company-projects" element={<CompanyProject />} />
+            <Route path="/company-project" element={<CompanyProject />} />
             {/* Add other routes here */}
           </Routes>
         </main>
