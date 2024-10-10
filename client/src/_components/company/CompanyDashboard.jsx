@@ -29,6 +29,8 @@ import ChatListCompany from "../communication/ChatListCompany";
 import ChatCompany from "../communication/ChatCompany";
 import CompanyQuotation from "./CompanyQuotation";
 import QuotationDraft from "./QuotationDraft";
+import CompanyProject from "./CompanyProject";
+
 const CompanyDashboard = () => {
   const [user, setUser] = useState(null);
   const location = useLocation();
@@ -286,6 +288,7 @@ const CompanyDashboard = () => {
             <Route path="/company-chat/:consumerId" element={<ChatCompany />} />
             <Route path="/company-quotation" element={<CompanyQuotation />} />
             <Route path="company-quotation/:quotationId" element={<QuotationDraft />} />
+            <Route path="/company-projects" element={<CompanyProject />} />
             {/* Add other routes here */}
           </Routes>
         </main>
