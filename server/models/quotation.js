@@ -10,6 +10,13 @@ module.exports = (sequelize, DataTypes) => {
       
       // Quotation has many versions
       this.hasMany(models.QuotationVersion, { foreignKey: 'quotationId', as: 'versions' });
+
+      // Include the most recent version
+      this.hasOne(models.QuotationVersion, {
+        foreignKey: 'quotationId',
+        as: 'latestVersion',
+        order: [['createdAt', 'DESC']]
+      });
     }
   }
 

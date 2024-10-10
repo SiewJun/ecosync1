@@ -3,7 +3,8 @@ const router = express.Router();
 const {
   User,
   CompanyDetail,
-  CompanyProfile,
+  Quotation,
+  QuotationVersion,
   Project,
   ProjectStep,
 } = require("../models");
@@ -31,6 +32,22 @@ router.get("/consumer-projects", authenticateToken, async (req, res) => {
             {
               model: CompanyDetail,
               attributes: ["companyName", "phoneNumber", "address", "businessLicense", "website"],
+            },
+          ],
+        },
+        {
+          model: Quotation, // Include quotation details
+          as: "quotation",
+          attributes: [
+            "id", "quotationStatus", "averageMonthlyElectricityBill", "propertyType", "address", "state"
+          ],
+          include: [
+            {
+              model: QuotationVersion,
+              as: "latestVersion",
+              attributes: [
+                "id", "systemSize", "panelSpecifications", "costBreakdown", "estimatedEnergyProduction", "savings", "paybackPeriod", "roi", "incentives", "productWarranties", "timeline", "versionNumber", "status"
+              ],
             },
           ],
         },
