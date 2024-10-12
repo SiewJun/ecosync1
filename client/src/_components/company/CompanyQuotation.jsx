@@ -12,6 +12,7 @@ import {
   Clock,
   AlertTriangle,
   ThumbsUp,
+  Loader2,
 } from "lucide-react";
 import axios from "axios";
 import PropTypes from "prop-types";
@@ -158,7 +159,7 @@ const CompanyQuotation = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -227,6 +228,7 @@ const CompanyQuotation = () => {
                     <h3 className="text-xl font-semibold">
                       {selectedQuotation.consumer?.username || "Unknown Consumer"}
                     </h3>
+                    <p>Quotation ID: {selectedQuotation.id}</p>
                   </div>
                   <div
                     className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(

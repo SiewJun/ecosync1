@@ -30,6 +30,7 @@ import ChatCompany from "../communication/ChatCompany";
 import CompanyQuotation from "./CompanyQuotation";
 import QuotationDraft from "./QuotationDraft";
 import CompanyProject from "./CompanyProject";
+import CompanyProjectStep from "./CompanyProjectStep";
 
 const CompanyDashboard = () => {
   const [user, setUser] = useState(null);
@@ -146,6 +147,8 @@ const CompanyDashboard = () => {
                 to="/company-dashboard/company-project"
                 className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
                   "/company-dashboard/company-project"
+                )} ${getLinkClasses(
+                  "/company-dashboard/company-project/:projectId"
                 )}`}
               >
                 <ClipboardList className="h-4 w-4" />
@@ -239,6 +242,8 @@ const CompanyDashboard = () => {
                   to="/company-dashboard/company-project"
                   className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
                     "/company-dashboard/company-project"
+                  )} ${getLinkClasses(
+                    "/company-dashboard/company-project/:projectId"
                   )}`}
                 >
                   <ClipboardList className="h-4 w-4" />
@@ -289,6 +294,7 @@ const CompanyDashboard = () => {
             <Route path="/company-quotation" element={<CompanyQuotation />} />
             <Route path="company-quotation/:quotationId" element={<QuotationDraft />} />
             <Route path="/company-project" element={<CompanyProject />} />
+            <Route path="/company-project/:projectId" element={<CompanyProjectStep />} />
             {/* Add other routes here */}
           </Routes>
         </main>

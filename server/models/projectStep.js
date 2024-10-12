@@ -32,10 +32,30 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.ENUM('DEPOSIT', 'DOCUMENT_UPLOAD', 'FINAL_PAYMENT', 'INSTALLATION', 'COMPLETION'),
       allowNull: false,
     },
+    paymentAmount: {  // Added for payment steps
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,  // Only for payment-related steps
+    },
+    filePath: {  // For document upload steps
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    stepOrder: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    isMandatory: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
     status: {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: 'PENDING',
+    },
+    paymentStatus: {  // Track payment separately
+      type: DataTypes.ENUM('PENDING', 'PAID', 'FAILED'),
+      allowNull: true,
     },
     dueDate: {
       type: DataTypes.DATE,
@@ -43,6 +63,14 @@ module.exports = (sequelize, DataTypes) => {
     },
     completedAt: {
       type: DataTypes.DATE,
+      allowNull: true,
+    },
+    assignedTo: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    notes: {
+      type: DataTypes.TEXT,
       allowNull: true,
     },
   }, {

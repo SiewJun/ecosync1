@@ -5,8 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ExternalLink, Phone, MapPin, FileText, Calendar } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { ExternalLink, Phone, MapPin, FileText, Calendar, Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogTrigger,
@@ -72,9 +71,8 @@ const CompanyPublicProfile = () => {
 
   if (loading) {
     return (
-      <div className="container mx-auto p-6 space-y-6">
-        <Skeleton className="h-12 w-64" />
-        <Skeleton className="h-64 w-full" />
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }

@@ -55,7 +55,6 @@ const CompanyProjects = () => {
           }
         );
         setProjects(response.data.projects);
-        console.log(response.data.projects);
       } catch (error) {
         if (error.response && error.response.status === 404) {
           setProjects([]);
@@ -241,6 +240,8 @@ const CompanyProjects = () => {
                     <h3 className="text-xl font-semibold">
                       {selectedProject.consumer.username}
                     </h3>
+                    <p>Project ID: {selectedProject.id}</p>
+                    <p>Quotation ID: {selectedProject.quotation.id}</p>
                   </div>
                   <Badge
                     className={`${getStatusColor(
@@ -432,14 +433,28 @@ const CompanyProjects = () => {
                       value={selectedProject.consumer.email}
                     />
                     <InfoItem
-                      label="Address"
+                      label="Name"
+                      value={
+                        selectedProject.quotation.name ||
+                        "N/A"
+                      }
+                    />
+                    <InfoItem
+                      label="Consumer's Project Phone"
+                      value={
+                        selectedProject.quotation.phoneNumber ||
+                        "N/A"
+                      }
+                    />
+                    <InfoItem
+                      label="Consumer's Address"
                       value={
                         selectedProject.consumer.ConsumerProfile?.address ||
                         "N/A"
                       }
                     />
                     <InfoItem
-                      label="Phone"
+                      label="Consumer Phone"
                       value={
                         selectedProject.consumer.ConsumerProfile?.phoneNumber ||
                         "N/A"
@@ -456,13 +471,13 @@ const CompanyProjects = () => {
             </Button>
             <Button
               onClick={() =>
-                navigate(`/company-dashboard/project/${selectedProject.id}`)
+                navigate(`/company-dashboard/company-project/${selectedProject.id}`)
               }
               disabled={
                 selectedProject?.quotation.latestVersion.status !== "FINALIZED"
               }
             >
-              View Full Project
+              Customise Timeline
             </Button>
           </div>
         </DialogContent>

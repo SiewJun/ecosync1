@@ -10,6 +10,8 @@ const {
   ProjectStep,
 } = require("../models");
 const authenticateToken = require("../middleware/auth");
+const upload = require("../middleware/multer"); 
+const stripe = require('stripe')('your_stripe_secret_key'); // Add your Stripe secret key here
 
 router.get("/consumer-projects", authenticateToken, async (req, res) => {
   const consumerId = req.user.id;
@@ -100,7 +102,7 @@ router.get("/company-projects", authenticateToken, async (req, res) => {
           model: Quotation, // Include quotation details
           as: "quotation",
           attributes: [
-            "id", "quotationStatus", "averageMonthlyElectricityBill", "propertyType", "address", "state"
+            "id", "name", "email", "phoneNumber", "quotationStatus", "averageMonthlyElectricityBill", "propertyType", "address", "state"
           ],
           include: [
             {
@@ -128,6 +130,80 @@ router.get("/company-projects", authenticateToken, async (req, res) => {
   } catch (error) {
     console.error("Error fetching company projects:", error);
     res.status(500).json({ message: "Failed to fetch company projects." });
+  }
+});
+
+router.post("/:projectId/steps", authenticateToken, upload.single("document"), async (req, res) => {
+  const { stepName, stepType, dueDate, description } = req.body;
+  const { projectId } = req.params;
+
+  try {
+    const project = await Project.findByPk(projectId);
+
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    // Ensure the user can only create steps for their own project (consumer or company)
+    if (req.user.id !== project.companyId) {
+      return res.status(403).json({ message: "Unauthorized to add steps to this project." });
+    }
+
+    // For DOCUMENT_UPLOAD type, handle file upload
+    let uploadedFilePath = null;
+    if (stepType === "DOCUMENT_UPLOAD" && req.file) {
+      uploadedFilePath = req.file.path; // multer stores the file at this path
+    }
+
+    const newStep = await ProjectStep.create({
+      projectId: project.id,
+      stepName,
+      stepType,
+      description,
+      status: "PENDING",
+      dueDate,
+      ...(stepType === "DOCUMENT_UPLOAD" && { description: `Uploaded file: ${uploadedFilePath}` }), // Add file path if DOCUMENT_UPLOAD
+    });
+
+    res.status(201).json({ message: "Step created successfully", newStep });
+  } catch (error) {
+    console.error("Error creating project step:", error);
+    res.status(500).json({ message: "Failed to create project step." });
+  }
+});
+
+router.post("/projects/:projectId/steps/:stepId/payment", authenticateToken, async (req, res) => {
+  const { projectId, stepId } = req.params;
+  const { amount } = req.body;
+
+  try {
+    const project = await Project.findByPk(projectId);
+    const step = await ProjectStep.findByPk(stepId);
+
+    if (!project || !step) {
+      return res.status(404).json({ message: "Project or step not found" });
+    }
+
+    // Only allow payment for DEPOSIT and FINAL_PAYMENT steps
+    if (!["DEPOSIT", "FINAL_PAYMENT"].includes(step.stepType)) {
+      return res.status(400).json({ message: "Only deposit or final payments are allowed." });
+    }
+
+    // Create Stripe payment intent
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amount * 100, // Amount in cents
+      currency: "usd", // You can change this to your currency
+      payment_method_types: ["card"],
+      metadata: { projectId, stepId },
+    });
+
+    res.status(201).json({
+      clientSecret: paymentIntent.client_secret, // Send client secret to the front-end
+      message: "Payment intent created",
+    });
+  } catch (error) {
+    console.error("Error creating payment:", error);
+    res.status(500).json({ message: "Failed to create payment." });
   }
 });
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Images, ShieldCheck, Info } from "lucide-react";
+import { Images, ShieldCheck, Info, Loader2 } from "lucide-react";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ import SolarSolutionsSection from "./SolarSolutionsSection";
 
 const CompanyProfile = () => {
   const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
   const BASE_URL = "http://localhost:5000/";
   const navigate = useNavigate();
 
@@ -30,16 +31,26 @@ const CompanyProfile = () => {
         setProfile(response.data);
       } catch (error) {
         console.error("Error fetching company profile:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchProfile();
   }, []);
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   if (!profile) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+        <p>No profile data available.</p>
       </div>
     );
   }

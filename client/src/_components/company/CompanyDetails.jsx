@@ -13,7 +13,7 @@ import {
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Eye, EyeOff, AlertCircle, X } from "lucide-react";
+import { Eye, EyeOff, AlertCircle, X, Loader2 } from "lucide-react";
 
 const CompanyDetail = () => {
   const [user, setUser] = useState(null);
@@ -36,6 +36,7 @@ const CompanyDetail = () => {
   const [success, setSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showChangePasswordForm, setShowChangePasswordForm] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const BASE_URL = "http://localhost:5000/";
 
@@ -55,6 +56,8 @@ const CompanyDetail = () => {
         setCompany(userData.CompanyDetail);
       } catch (error) {
         console.error("Error fetching company details:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -123,7 +126,11 @@ const CompanyDetail = () => {
 
   return (
     <div className="max-w-5xl container mx-auto p-6 space-y-8">
-      {user && company ? (
+      {isLoading ? (
+        <div className="flex justify-center items-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      ) : user && company ? (
         <div className="space-y-8">
           {/* User Information Card */}
           <Card className="shadow-md">
