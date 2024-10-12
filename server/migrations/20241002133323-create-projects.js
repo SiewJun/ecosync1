@@ -42,7 +42,7 @@ module.exports = {
       status: {
         type: Sequelize.STRING,
         allowNull: false,
-        defaultValue: 'IN_PROGRESS'
+        defaultValue: 'PENDING'
       },
       startDate: {
         type: Sequelize.DATE,

@@ -1,5 +1,5 @@
 const express = require('express');
-const { Project, ProjectStep } = require("../models");
+const { User, Project, ProjectStep } = require("../models");
 const router = express.Router();
 const authenticateToken = require("../middleware/auth");
 
@@ -51,8 +51,38 @@ router.get('/:projectId/steps', authenticateToken, async (req, res) => {
     // Fetch the steps for the project
     const steps = await ProjectStep.findAll({ where: { projectId: project.id } });
 
-    res.status(200).json({ steps });
+    res.status(200).json({ steps, projectStatus: project.status });
   } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// GET /consumer/:projectId/steps
+router.get('/consumer/:projectId/steps', authenticateToken, async (req, res) => {
+  const { projectId } = req.params;
+
+  try {
+    // Check if the project belongs to the consumer
+    const project = await Project.findOne({
+      where: { id: projectId, consumerId: req.user.id },
+      include: [
+        { model: User, as: 'company', attributes: ['username', 'avatarUrl'] },
+      ]
+    });
+
+    if (!project) {
+      return res.status(403).json({ error: 'Unauthorized: This project does not belong to you.' });
+    }
+
+    // Fetch the steps for the project
+    const steps = await ProjectStep.findAll({
+      where: { projectId: project.id },
+      order: [['stepOrder', 'ASC']]
+    });
+
+    res.status(200).json({ project, steps });
+  } catch (error) {
+    console.error('Error fetching consumer project steps:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
@@ -107,6 +137,36 @@ router.delete('/:projectId/steps/:stepId', authenticateToken, async (req, res) =
 
     await step.destroy();
     res.status(200).json({ message: 'Step deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// PUT /:projectId/publish
+router.put('/:projectId/publish', authenticateToken, async (req, res) => {
+  const { projectId } = req.params;
+
+  try {
+    // Check if the project belongs to the company
+    const project = await Project.findOne({
+      where: { id: projectId, companyId: req.user.id },
+    });
+
+    if (!project) {
+      return res.status(403).json({ error: 'Unauthorized: You do not own this project.' });
+    }
+
+    // Check if the project already has steps
+    const steps = await ProjectStep.findAll({ where: { projectId: project.id } });
+
+    if (steps.length < 5) {
+      return res.status(400).json({ error: 'Not enough steps to publish the project. A minimum of 5 steps is required.' });
+    }
+
+    // Update project status to STARTED
+    await project.update({ status: 'IN_PROGRESS' });
+
+    res.status(200).json({ message: 'Project successfully published and status updated to STARTED.' });
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' });
   }

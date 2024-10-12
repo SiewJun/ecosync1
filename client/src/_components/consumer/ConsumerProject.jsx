@@ -467,7 +467,7 @@ const ConsumerProjects = () => {
             </Button>
             <Button
               onClick={() =>
-                navigate(`/consumer-dashboard/project/${selectedProject.id}`)
+                navigate(`/consumer-dashboard/consumer-project/${selectedProject.id}`)
               }
               disabled={
                 selectedProject?.quotation.latestVersion.status !== "FINALIZED"

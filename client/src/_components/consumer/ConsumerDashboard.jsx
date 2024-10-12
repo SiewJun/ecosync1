@@ -24,6 +24,7 @@ import ChatList from "../communication/ChatLIst";
 import ConsumerQuotation from "./ConsumerQuotation";
 import ConsumerQuotationView from "./ConsumerQuotationView";
 import ConsumerProject from "./ConsumerProject";
+import ConsumerProjectStep from "./ConsumerProjectStep";
 
 const ConsumerDashboard = () => {
   const [user, setUser] = useState(null);
@@ -114,6 +115,8 @@ const ConsumerDashboard = () => {
                 to="/consumer-dashboard/consumer-project"
                 className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
                   "/consumer-dashboard/consumer-project"
+                )} ${getLinkClasses(
+                  "/consumer-dashboard/consumer-project/:id"
                 )}`}
               >
                 <ClipboardList className="h-4 w-4" />
@@ -198,24 +201,28 @@ const ConsumerDashboard = () => {
                   to="/consumer-dashboard/consumer-quotation"
                   className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
                     "/consumer-dashboard/consumer-quotation"
+                  )} ${getLinkClasses(
+                    "/consumer-dashboard/consumer-quotation/:id"
                   )}`}
                 >
                   <FileText className="h-4 w-4" />
                   Quotation
                 </Link>
                 <Link
-                  to="/consumer-dashboard/company-quotation"
+                  to="/consumer-dashboard/consumer-project"
                   className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
-                    "/consumer-dashboard/company-quotation"
+                    "/consumer-dashboard/consumer-project"
+                  )} ${getLinkClasses(
+                    "/consumer-dashboard/consumer-project/:id"
                   )}`}
                 >
                   <ClipboardList className="h-4 w-4" />
                   Projects
                 </Link>
                 <Link
-                  to="/consumer-dashboard/company-projects"
+                  to="/consumer-dashboard/company-project"
                   className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
-                    "/consumer-dashboard/company-projects"
+                    "/consumer-dashboard/company-project"
                   )}`}
                 >
                   <ReceiptText className="h-4 w-4" />
@@ -252,6 +259,10 @@ const ConsumerDashboard = () => {
               element={<ConsumerQuotationView />}
             />
             <Route path="/consumer-project" element={<ConsumerProject />} />
+            <Route
+              path="/consumer-project/:projectId"
+              element={<ConsumerProjectStep />}
+            />
           </Routes>
         </main>
       </div>

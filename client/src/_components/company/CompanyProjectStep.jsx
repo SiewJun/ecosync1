@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
@@ -59,6 +59,7 @@ const stepTypes = [
 const CompanyProjectStep = () => {
   const { projectId } = useParams();
   const [steps, setSteps] = useState([]);
+  const [projectStatus, setProjectStatus] = useState("");
   const [newStep, setNewStep] = useState({
     stepName: "",
     description: "",
@@ -72,15 +73,30 @@ const CompanyProjectStep = () => {
   const [loading, setLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [canPublish, setCanPublish] = useState(false);
   const token = localStorage.getItem("token");
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  const checkCanPublish = useCallback(() => {
+    const sortedSteps = [...steps].sort((a, b) => a.stepOrder - b.stepOrder);
+    const isConsecutive = sortedSteps.every(
+      (step, index) => step.stepOrder === index + 1
+    );
+    setCanPublish(
+      sortedSteps.length === 5 && isConsecutive && projectStatus !== "IN_PROGRESS"
+    );
+  }, [steps, projectStatus]);
+
   useEffect(() => {
-    fetchSteps();
+    fetchProjectData();
   }, [projectId]);
 
-  const fetchSteps = async () => {
+  useEffect(() => {
+    checkCanPublish();
+  }, [steps, checkCanPublish]);
+
+  const fetchProjectData = async () => {
     setLoading(true);
     try {
       const response = await axios.get(
@@ -90,15 +106,40 @@ const CompanyProjectStep = () => {
         }
       );
       setSteps(response.data.steps);
+      setProjectStatus(response.data.projectStatus);
+      setLoading(false);
       // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to fetch project steps. Please try again.",
+        description: "Failed to fetch project data. Please try again.",
         variant: "destructive",
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePublishProject = async () => {
+    try {
+      await axios.put(
+        `http://localhost:5000/api/project-step/${projectId}/publish`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      toast({
+        title: "Success",
+        description: "Project successfully published!",
+      });
+      fetchProjectData();
+      // eslint-disable-next-line no-unused-vars
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to publish the project. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -291,7 +332,7 @@ const CompanyProjectStep = () => {
   if (loading && steps.length === 0) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <Loader2 className="h-12 w-12 animate-spin" />
       </div>
     );
   }
@@ -319,142 +360,152 @@ const CompanyProjectStep = () => {
           </TooltipProvider>
           <div className="flex flex-col">
             <h3 className="text-xl font-semibold">Project Steps</h3>
-            <p className="text-sm text-gray-500">Project ID: {projectId}</p>
+            <p className="text-sm text-muted-foreground">
+              Project ID: {projectId}
+            </p>
           </div>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button
-              onClick={() => {
-                resetForm();
-                setIsDialogOpen(true);
-              }}
-              className="shadow-sm hover:shadow-md transition-shadow"
-            >
-              <Plus className="h-4 w-4 mr-2" /> Add New Step
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>
-                {editStepId ? "Edit Step" : "Add New Step"}
-              </DialogTitle>
-              <DialogDescription>
-                {editStepId
-                  ? "Edit the details of the existing step."
-                  : "Add a new step to your project."}
-              </DialogDescription>
-            </DialogHeader>
-            {errorMessage && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Error</AlertTitle>
-                <AlertDescription>{errorMessage}</AlertDescription>
-              </Alert>
-            )}
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="stepName">Step Name</Label>
-                <Input
-                  id="stepName"
-                  value={newStep.stepName}
-                  onChange={(e) => handleChange("stepName", e.target.value)}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  value={newStep.description}
-                  onChange={(e) => handleChange("description", e.target.value)}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="stepType">Step Type</Label>
-                <Select
-                  value={newStep.stepType}
-                  onValueChange={(value) => handleChange("stepType", value)}
-                >
-                  <SelectTrigger id="stepType">
-                    <SelectValue placeholder="Select step type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {stepTypes.map((type) => (
-                      <SelectItem key={type.value} value={type.value}>
-                        {type.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              {(newStep.stepType === "DEPOSIT" ||
-                newStep.stepType === "FINAL_PAYMENT") && (
+        <div className="flex space-x-2">
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button
+                onClick={() => {
+                  resetForm();
+                  setIsDialogOpen(true);
+                }}
+                className="shadow-sm hover:shadow-md transition-shadow"
+              >
+                <Plus className="h-4 w-4 mr-2" /> Add New Step
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>
+                  {editStepId ? "Edit Step" : "Add New Step"}
+                </DialogTitle>
+                <DialogDescription>
+                  {editStepId
+                    ? "Edit the details of the existing step."
+                    : "Add a new step to your project."}
+                </DialogDescription>
+              </DialogHeader>
+              {errorMessage && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Error</AlertTitle>
+                  <AlertDescription>{errorMessage}</AlertDescription>
+                </Alert>
+              )}
+              <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="paymentAmount">Payment Amount</Label>
+                  <Label htmlFor="stepName">Step Name</Label>
                   <Input
-                    id="paymentAmount"
-                    type="number"
-                    value={newStep.paymentAmount}
+                    id="stepName"
+                    value={newStep.stepName}
+                    onChange={(e) => handleChange("stepName", e.target.value)}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    value={newStep.description}
                     onChange={(e) =>
-                      handleChange("paymentAmount", e.target.value)
+                      handleChange("description", e.target.value)
                     }
                   />
                 </div>
-              )}
-              <div className="grid gap-2">
-                <Label htmlFor="dueDate">Due Date</Label>
-                <Input
-                  id="dueDate"
-                  type="date"
-                  value={newStep.dueDate}
-                  onChange={(e) => handleChange("dueDate", e.target.value)}
-                  className="text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
-                />
+                <div className="grid gap-2">
+                  <Label htmlFor="stepType">Step Type</Label>
+                  <Select
+                    value={newStep.stepType}
+                    onValueChange={(value) => handleChange("stepType", value)}
+                  >
+                    <SelectTrigger id="stepType">
+                      <SelectValue placeholder="Select step type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {stepTypes.map((type) => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {(newStep.stepType === "DEPOSIT" ||
+                  newStep.stepType === "FINAL_PAYMENT") && (
+                  <div className="grid gap-2">
+                    <Label htmlFor="paymentAmount">Payment Amount</Label>
+                    <Input
+                      id="paymentAmount"
+                      type="number"
+                      value={newStep.paymentAmount}
+                      onChange={(e) =>
+                        handleChange("paymentAmount", e.target.value)
+                      }
+                    />
+                  </div>
+                )}
+                <div className="grid gap-2">
+                  <Label htmlFor="dueDate">Due Date</Label>
+                  <Input
+                    id="dueDate"
+                    type="date"
+                    value={newStep.dueDate}
+                    onChange={(e) => handleChange("dueDate", e.target.value)}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="stepOrder">Step Order</Label>
+                  <Input
+                    id="stepOrder"
+                    type="number"
+                    value={newStep.stepOrder}
+                    onChange={(e) => handleChange("stepOrder", e.target.value)}
+                  />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="isMandatory"
+                    checked={newStep.isMandatory}
+                    onCheckedChange={(checked) =>
+                      handleChange("isMandatory", checked)
+                    }
+                  />
+                  <Label htmlFor="isMandatory">Mandatory</Label>
+                </div>
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="stepOrder">Step Order</Label>
-                <Input
-                  id="stepOrder"
-                  type="number"
-                  value={newStep.stepOrder}
-                  onChange={(e) => handleChange("stepOrder", e.target.value)}
-                />
-              </div>
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="isMandatory"
-                  checked={newStep.isMandatory}
-                  onCheckedChange={(checked) =>
-                    handleChange("isMandatory", checked)
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() =>
+                    editStepId ? handleEditStep(editStepId) : handleAddStep()
                   }
-                />
-                <Label htmlFor="isMandatory">Mandatory</Label>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button
-                onClick={() =>
-                  editStepId ? handleEditStep(editStepId) : handleAddStep()
-                }
-              >
-                {editStepId ? "Update Step" : "Add Step"}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+                >
+                  {editStepId ? "Update Step" : "Add Step"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          {canPublish && projectStatus !== "IN_PROGRESS" && (
+            <Button onClick={handlePublishProject}>Publish</Button>
+          )}
+        </div>
       </div>
 
-      {/* Timeline Section */}
-      <ScrollArea className="h-[calc(110vh-200px)] pr-4">
+      <ScrollArea className="h-[calc(100vh-200px)] pr-4">
         <div className="space-y-6">
           {steps
             .sort((a, b) => a.stepOrder - b.stepOrder)
             .map((step) => (
               <Card key={step.id} className="relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-1 h-full bg-sky-500"></div>
+                <div className="absolute top-0 left-0 w-1 h-full bg-primary"></div>
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-center">
                     <CardTitle className="text-lg">{step.stepName}</CardTitle>
@@ -482,9 +533,9 @@ const CompanyProjectStep = () => {
                               variant="ghost"
                               size="icon"
                               onClick={() => handleDeleteStep(step.id)}
-                              className="hover:bg-red-100 transition-colors"
+                              className="hover:bg-destructive/10 transition-colors"
                             >
-                              <Trash className="h-4 w-4 text-red-500" />
+                              <Trash className="h-4 w-4 text-destructive" />
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent>
@@ -499,12 +550,12 @@ const CompanyProjectStep = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-sm text-gray-600 mb-2">
+                  <div className="text-sm text-muted-foreground mb-2">
                     {step.description}
                   </div>
                   <div className="flex flex-wrap gap-4 text-sm">
                     <div className="flex items-center">
-                      <Label className="mr-2">Due:</Label>
+                      <Label className="mr-2 text-muted-foreground">Due:</Label>
                       <span>
                         {step.dueDate
                           ? new Date(step.dueDate).toLocaleDateString()
@@ -513,12 +564,16 @@ const CompanyProjectStep = () => {
                     </div>
                     {step.paymentAmount && (
                       <div className="flex items-center">
-                        <Label className="mr-2">Payment:</Label>
+                        <Label className="mr-2 text-muted-foreground">
+                          Payment:
+                        </Label>
                         <span>RM{step.paymentAmount}</span>
                       </div>
                     )}
                     <div className="flex items-center">
-                      <Label className="mr-2">Mandatory:</Label>
+                      <Label className="mr-2 text-muted-foreground">
+                        Mandatory:
+                      </Label>
                       <span>{step.isMandatory ? "Yes" : "No"}</span>
                     </div>
                   </div>
@@ -531,7 +586,7 @@ const CompanyProjectStep = () => {
       {steps.length === 0 && !loading && (
         <Card className="mt-8">
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <AlertCircle className="h-12 w-12 text-gray-400 mb-4" />
+            <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
             <CardDescription className="text-center">
               No steps have been added to this project yet.
               <br />
