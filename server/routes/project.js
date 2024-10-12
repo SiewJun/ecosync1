@@ -172,39 +172,4 @@ router.post("/:projectId/steps", authenticateToken, upload.single("document"), a
   }
 });
 
-router.post("/projects/:projectId/steps/:stepId/payment", authenticateToken, async (req, res) => {
-  const { projectId, stepId } = req.params;
-  const { amount } = req.body;
-
-  try {
-    const project = await Project.findByPk(projectId);
-    const step = await ProjectStep.findByPk(stepId);
-
-    if (!project || !step) {
-      return res.status(404).json({ message: "Project or step not found" });
-    }
-
-    // Only allow payment for DEPOSIT and FINAL_PAYMENT steps
-    if (!["DEPOSIT", "FINAL_PAYMENT"].includes(step.stepType)) {
-      return res.status(400).json({ message: "Only deposit or final payments are allowed." });
-    }
-
-    // Create Stripe payment intent
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: amount * 100, // Amount in cents
-      currency: "usd", // You can change this to your currency
-      payment_method_types: ["card"],
-      metadata: { projectId, stepId },
-    });
-
-    res.status(201).json({
-      clientSecret: paymentIntent.client_secret, // Send client secret to the front-end
-      message: "Payment intent created",
-    });
-  } catch (error) {
-    console.error("Error creating payment:", error);
-    res.status(500).json({ message: "Failed to create payment." });
-  }
-});
-
 module.exports = router;
