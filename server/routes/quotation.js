@@ -500,10 +500,18 @@ router.get("/latest/:quotationId", authenticateToken, async (req, res) => {
     });
 
     if (!latestQuotationVersion) {
-      return res.status(404).json({ message: "No quotation versions found." });
+      return res.status(200).json({
+        message: "No quotation versions found.",
+        canFinalize: false,
+        isNewQuotation: true,
+      });
     }
 
-    res.status(200).json(latestQuotationVersion);
+    res.status(200).json({
+      ...latestQuotationVersion.toJSON(),
+      canFinalize: true,
+      isNewQuotation: false,
+    });
   } catch (error) {
     console.error("Error fetching latest quotation version:", error);
     res

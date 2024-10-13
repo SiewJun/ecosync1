@@ -4,8 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { AlertCircle, ChevronLeft, Asterisk } from "lucide-react";
+import { AlertCircle, ArrowLeftCircle, Asterisk } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const CompanyProfileEditForm = () => {
   const [profileData, setProfileData] = useState({
@@ -83,105 +85,112 @@ const CompanyProfileEditForm = () => {
 
   return (
     <>
-      <div className="flex items-center mb-4">
-        <ChevronLeft className="cursor-pointer" onClick={() => navigate(-1)} />
-        <span className="ml-2 text-xl font-bold">Back</span>{" "}
-      </div>
-      <div className="max-w-5xl container mx-auto p-6 space-y-8">
-        <Card className="shadow-lg rounded-lg overflow-hidden">
-          <CardHeader className="p-4">
-            <CardTitle className="text-xl font-bold">
-              Edit Company Profile
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-6">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label
-                  htmlFor="description"
-                  className="block text-sm font-medium"
-                >
-                  Description
-                </label>
-                <Textarea
-                  id="description"
-                  name="description"
-                  value={profileData.description}
-                  onChange={handleChange}
-                  placeholder="Company Description"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-500 focus:ring focus:ring-gray-500 focus:ring-opacity-50"
-                />
-              </div>
-              <div>
-                <label htmlFor="overview" className="block text-sm font-medium">
-                  Overview
-                </label>
-                <Textarea
-                  id="overview"
-                  name="overview"
-                  value={profileData.overview}
-                  onChange={handleChange}
-                  placeholder="Company Overview"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-500 focus:ring focus:ring-gray-500 focus:ring-opacity-50"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="certificate"
-                  className="block text-sm font-medium"
-                >
-                  Certificate
-                </label>
-                <Input
-                  id="certificate"
-                  type="file"
-                  name="certificate"
-                  onChange={handleFileChange} // Use handleFileChange to set the file
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-500 focus:ring focus:ring-gray-500 focus:ring-opacity-50"
-                />
-                <div className="flex mt-2 items-center">
-                  <p className="flex items-center text-sm text-slate-400">
-                    <Asterisk className="w-3 h-3"/>
-                    Add a certificate to build trust with consumers
-                  </p>
-                </div>
-              </div>
-              <div>
-                <label htmlFor="services" className="block text-sm font-medium">
-                  Services
-                </label>
-                <Input
-                  id="services"
-                  type="text"
-                  name="services"
-                  value={profileData.services}
-                  onChange={handleChange}
-                  placeholder="Services"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-500 focus:ring focus:ring-gray-500 focus:ring-opacity-50"
-                />
-              </div>
-              <Button type="submit" className="w-full">
-                Save Changes
-              </Button>
+      <ScrollArea className="h-screen">
+        <div className="p-6">
+          <Link
+            to="/company-dashboard/company-profile"
+            className="inline-flex items-center text-primary hover:text-black dark:hover:text-white mb-8"
+          >
+            <ArrowLeftCircle className="mr-2" size={16} />
+            Back to profile
+          </Link>
+          <div className="flex justify-center items-center">
+            <Card className="shadow-lg rounded-lg overflow-hidden w-full max-w-3xl">
+              <CardHeader className="p-4">
+                <CardTitle className="text-xl font-bold">
+                  Edit Company Profile
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div>
+                    <label
+                      htmlFor="description"
+                      className="block text-sm font-medium"
+                    >
+                      Description
+                    </label>
+                    <Textarea
+                      id="description"
+                      name="description"
+                      value={profileData.description}
+                      onChange={handleChange}
+                      placeholder="Company Description"
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-500 focus:ring focus:ring-gray-500 focus:ring-opacity-50"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="overview" className="block text-sm font-medium">
+                      Overview
+                    </label>
+                    <Textarea
+                      id="overview"
+                      name="overview"
+                      value={profileData.overview}
+                      onChange={handleChange}
+                      placeholder="Company Overview"
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-500 focus:ring focus:ring-gray-500 focus:ring-opacity-50"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="certificate"
+                      className="block text-sm font-medium"
+                    >
+                      Certificate
+                    </label>
+                    <Input
+                      id="certificate"
+                      type="file"
+                      name="certificate"
+                      onChange={handleFileChange} // Use handleFileChange to set the file
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-500 focus:ring focus:ring-gray-500 focus:ring-opacity-50"
+                    />
+                    <div className="flex mt-2 items-center">
+                      <p className="flex items-center text-sm text-slate-400">
+                        <Asterisk className="w-3 h-3"/>
+                        Add a certificate to build trust with consumers
+                      </p>
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="services" className="block text-sm font-medium">
+                      Services
+                    </label>
+                    <Input
+                      id="services"
+                      type="text"
+                      name="services"
+                      value={profileData.services}
+                      onChange={handleChange}
+                      placeholder="Services"
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-500 focus:ring focus:ring-gray-500 focus:ring-opacity-50"
+                    />
+                  </div>
+                  <Button type="submit" className="w-full">
+                    Save Changes
+                  </Button>
 
-              {/* Feedback Messages */}
-              {error && (
-                <div className="flex items-center space-x-2 border border-red-500 bg-red-100 p-2 rounded-md mt-2">
-                  <AlertCircle className="h-5 w-5" />
-                  <p className="text-sm">{error}</p>
-                </div>
-              )}
+                  {/* Feedback Messages */}
+                  {error && (
+                    <div className="flex items-center space-x-2 border border-red-500 bg-red-100 p-2 rounded-md mt-2">
+                      <AlertCircle className="h-5 w-5" />
+                      <p className="text-sm">{error}</p>
+                    </div>
+                  )}
 
-              {success && (
-                <div className="flex items-center space-x-2 border border-green-500 bg-green-100 text-green-700 p-2 rounded-md mt-2">
-                  <AlertCircle className="h-5 w-5" />
-                  <p className="text-sm">{success}</p>
-                </div>
-              )}
-            </form>
-          </CardContent>
-        </Card>
-      </div>
+                  {success && (
+                    <div className="flex items-center space-x-2 border border-green-500 bg-green-100 text-green-700 p-2 rounded-md mt-2">
+                      <AlertCircle className="h-5 w-5" />
+                      <p className="text-sm">{success}</p>
+                    </div>
+                  )}
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </ScrollArea>
     </>
   );
 };

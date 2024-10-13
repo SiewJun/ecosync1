@@ -222,6 +222,8 @@ const CompanyDashboard = () => {
                   to="/company-dashboard/company-chat"
                   className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
                     "/company-dashboard/company-chat"
+                  )} ${getLinkClasses(
+                    "/company-dashboard/company-chat/:id"
                   )}`}
                 >
                   <MessageCircle className="h-4 w-4" />

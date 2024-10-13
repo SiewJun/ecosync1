@@ -15,6 +15,7 @@ import {
   ArrowLeftCircle,
   Plus,
   Trash2,
+  Eye,
 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Link } from "react-router-dom";
@@ -26,6 +27,101 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+
+import PropTypes from "prop-types";
+
+const QuotationPreview = ({ quotationData, costBreakdown, timeline }) => {
+  return (
+    <ScrollArea className="h-[80vh] w-full">
+      <div className="p-6 space-y-6">
+        <h2 className="text-2xl font-bold">Quotation Preview</h2>
+        <p>Quotation Version: {quotationData.id}</p>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <h3 className="font-semibold">System Size</h3>
+            <p>{quotationData.systemSize}</p>
+          </div>
+          <div>
+            <h3 className="font-semibold">Panel Specifications</h3>
+            <p>{quotationData.panelSpecifications}</p>
+          </div>
+          <div>
+            <h3 className="font-semibold">Estimated Energy Production</h3>
+            <p>{quotationData.estimatedEnergyProduction}</p>
+          </div>
+          <div>
+            <h3 className="font-semibold">Savings</h3>
+            <p>{quotationData.savings}</p>
+          </div>
+          <div>
+            <h3 className="font-semibold">Payback Period</h3>
+            <p>{quotationData.paybackPeriod}</p>
+          </div>
+          <div>
+            <h3 className="font-semibold">ROI</h3>
+            <p>{quotationData.roi}</p>
+          </div>
+        </div>
+        <div>
+          <h3 className="font-semibold">Cost Breakdown</h3>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Item</TableHead>
+                <TableHead>Quantity</TableHead>
+                <TableHead>Unit Price</TableHead>
+                <TableHead>Total Price</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {costBreakdown.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell>{item.item}</TableCell>
+                  <TableCell>{item.quantity}</TableCell>
+                  <TableCell>{item.unitPrice}</TableCell>
+                  <TableCell>{item.totalPrice}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+        <div>
+          <h3 className="font-semibold">Incentives</h3>
+          <p>{quotationData.incentives}</p>
+        </div>
+        <div>
+          <h3 className="font-semibold">Product Warranties</h3>
+          <p>{quotationData.productWarranties}</p>
+        </div>
+        <div>
+          <h3 className="font-semibold">Project Timeline</h3>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Phase</TableHead>
+                <TableHead>Start Date</TableHead>
+                <TableHead>End Date</TableHead>
+                <TableHead>Description</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {timeline.map((phase, index) => (
+                <TableRow key={index}>
+                  <TableCell>{phase.phase}</TableCell>
+                  <TableCell>{phase.startDate}</TableCell>
+                  <TableCell>{phase.endDate}</TableCell>
+                  <TableCell>{phase.description}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+    </ScrollArea>
+  );
+};
 
 const QuotationDraft = () => {
   const { quotationId } = useParams();
@@ -35,6 +131,7 @@ const QuotationDraft = () => {
   const [isNewQuotation, setIsNewQuotation] = useState(false);
   const [quotationVersionId, setQuotationVersionId] = useState(null);
   const [isFinalized, setIsFinalized] = useState(false);
+  const [canFinalize, setCanFinalize] = useState(false);
   const [quotationData, setQuotationData] = useState({
     systemSize: "",
     panelSpecifications: "",
@@ -58,6 +155,7 @@ const QuotationDraft = () => {
       fetchQuotation();
     } else {
       setIsNewQuotation(true);
+      setCanFinalize(false);
     }
   }, [quotationId]);
 
@@ -71,20 +169,24 @@ const QuotationDraft = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      const { costBreakdown, timeline, ...rest } = response.data;
-      setQuotationData(rest);
-      setCostBreakdown(costBreakdown || []);
-      setTimeline(timeline || []);
-      setQuotationVersionId(response.data.id);
-      setIsFinalized(response.data.status === "FINALIZED");
-    } catch (err) {
-      if (err.response && err.response.status === 404) {
+      if (response.data.isNewQuotation) {
         setIsNewQuotation(true);
+        setCanFinalize(false);
       } else {
-        setError(
-          "An error occurred while fetching the quotation. Please try again."
-        );
+        const { costBreakdown, timeline, canFinalize, ...rest } = response.data;
+        setQuotationData(rest);
+        setCostBreakdown(costBreakdown || []);
+        setTimeline(timeline || []);
+        setQuotationVersionId(response.data.id);
+        setIsFinalized(response.data.status === "FINALIZED");
+        setCanFinalize(canFinalize);
+        setIsNewQuotation(false);
       }
+      // eslint-disable-next-line no-unused-vars
+    } catch (err) {
+      setError(
+        "An error occurred while fetching the quotation. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -234,321 +336,378 @@ const QuotationDraft = () => {
     <div className="min-h-screen container p-6">
       <Link
         to="/company-dashboard/company-quotation"
-        className="inline-flex items-center text-primary hover:text-black  dark:hover:text-white mb-8"
+        className="inline-flex items-center text-primary hover:text-black dark:hover:text-white mb-8"
       >
         <ArrowLeftCircle className="mr-2" size={16} />
         Back to Quotations
       </Link>
       <Card className="w-full max-w-4xl mx-auto">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold flex items-center">
-            <FileEdit className="mr-2 h-6 w-6" />
-            {isNewQuotation ? "Create New Quotation" : "Edit Quotation"}
+          <CardTitle className="text-2xl font-bold flex items-center justify-between">
+            <span className="flex items-center">
+              <FileEdit className="mr-2 h-6 w-6" />
+              {isNewQuotation ? "Create New Quotation" : "Edit Quotation"}
+            </span>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline">
+                  <Eye className="mr-2 h-4 w-4" /> Preview
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl">
+                <QuotationPreview
+                  quotationData={quotationData}
+                  costBreakdown={costBreakdown}
+                  timeline={timeline}
+                />
+              </DialogContent>
+            </Dialog>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {isNewQuotation && (
-            <Alert className="mb-6">
-              <FileEdit className="h-4 w-4" />
-              <AlertTitle>New Quotation</AlertTitle>
-              <AlertDescription>
-                You&apos;re creating a new quotation draft. Fill in the details
-                below and save when ready.
-              </AlertDescription>
-            </Alert>
-          )}
-          {isFinalized && (
-            <Alert className="mb-6">
-              <CheckCircle className="h-4 w-4" />
-              <AlertTitle>Finalized Quotation</AlertTitle>
-              <AlertDescription>
-                This quotation has been finalized and sent to the consumer. You
-                cannot make further changes.
-              </AlertDescription>
-            </Alert>
-          )}
-          {error && (
-            <Alert variant="destructive" className="mb-6">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-          <form className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="systemSize">System Size</Label>
-                <Input
-                  id="systemSize"
-                  name="systemSize"
-                  value={quotationData.systemSize}
-                  onChange={handleChange}
-                  placeholder="e.g., 5kW"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="panelSpecifications">
-                  Panel Specifications
-                </Label>
-                <Input
-                  id="panelSpecifications"
-                  name="panelSpecifications"
-                  value={quotationData.panelSpecifications}
-                  onChange={handleChange}
-                  placeholder="e.g., 20 x 250W Monocrystalline"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="estimatedEnergyProduction">
-                  Estimated Energy Production
-                </Label>
-                <Input
-                  id="estimatedEnergyProduction"
-                  name="estimatedEnergyProduction"
-                  value={quotationData.estimatedEnergyProduction}
-                  onChange={handleChange}
-                  placeholder="e.g., 7,000 kWh/year"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="savings">Savings</Label>
-                <Input
-                  id="savings"
-                  name="savings"
-                  value={quotationData.savings}
-                  onChange={handleChange}
-                  placeholder="e.g., RM1,200/year"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="paybackPeriod">Payback Period</Label>
-                <Input
-                  id="paybackPeriod"
-                  name="paybackPeriod"
-                  value={quotationData.paybackPeriod}
-                  onChange={handleChange}
-                  placeholder="e.g., 7 years"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="roi">ROI</Label>
-                <Input
-                  id="roi"
-                  name="roi"
-                  value={quotationData.roi}
-                  onChange={handleChange}
-                  placeholder="e.g., 15% over 25 years"
-                />
-              </div>
+          <ScrollArea className="h-[calc(95vh-200px)]">
+            <div className="p-6 space-y-6">
+              {isNewQuotation && (
+                <Alert className="mb-6">
+                  <FileEdit className="h-4 w-4" />
+                  <AlertTitle>New Quotation</AlertTitle>
+                  <AlertDescription>
+                    You&apos;re creating a new quotation draft. Fill in the
+                    details below and save when ready.
+                  </AlertDescription>
+                </Alert>
+              )}
+              {isFinalized && (
+                <Alert className="mb-6">
+                  <CheckCircle className="h-4 w-4" />
+                  <AlertTitle>Finalized Quotation</AlertTitle>
+                  <AlertDescription>
+                    This quotation has been finalized and sent to the consumer.
+                    You cannot make further changes.
+                  </AlertDescription>
+                </Alert>
+              )}
+              {error && (
+                <Alert variant="destructive" className="mb-6">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Error</AlertTitle>
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+              <form className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="systemSize">System Size</Label>
+                    <Input
+                      id="systemSize"
+                      name="systemSize"
+                      value={quotationData.systemSize}
+                      onChange={handleChange}
+                      placeholder="e.g., 5kW"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="panelSpecifications">
+                      Panel Specifications
+                    </Label>
+                    <Input
+                      id="panelSpecifications"
+                      name="panelSpecifications"
+                      value={quotationData.panelSpecifications}
+                      onChange={handleChange}
+                      placeholder="e.g., 20 x 250W Monocrystalline"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="estimatedEnergyProduction">
+                      Estimated Energy Production
+                    </Label>
+                    <Input
+                      id="estimatedEnergyProduction"
+                      name="estimatedEnergyProduction"
+                      value={quotationData.estimatedEnergyProduction}
+                      onChange={handleChange}
+                      placeholder="e.g., 7,000 kWh/year"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="savings">Savings</Label>
+                    <Input
+                      id="savings"
+                      name="savings"
+                      value={quotationData.savings}
+                      onChange={handleChange}
+                      placeholder="e.g., RM1,200/year"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="paybackPeriod">Payback Period</Label>
+                    <Input
+                      id="paybackPeriod"
+                      name="paybackPeriod"
+                      value={quotationData.paybackPeriod}
+                      onChange={handleChange}
+                      placeholder="e.g., 7 years"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="roi">ROI</Label>
+                    <Input
+                      id="roi"
+                      name="roi"
+                      value={quotationData.roi}
+                      onChange={handleChange}
+                      placeholder="e.g., 15% over 25 years"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="costBreakdown">Cost Breakdown</Label>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Item</TableHead>
+                        <TableHead>Quantity</TableHead>
+                        <TableHead>Unit Price</TableHead>
+                        <TableHead>Total Price</TableHead>
+                        <TableHead>Action</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {costBreakdown.map((item, index) => (
+                        <TableRow key={index}>
+                          <TableCell>
+                            <Input
+                              value={item.item}
+                              onChange={(e) =>
+                                handleCostBreakdownChange(
+                                  index,
+                                  "item",
+                                  e.target.value
+                                )
+                              }
+                              placeholder="Item description"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Input
+                              type="number"
+                              value={item.quantity}
+                              onChange={(e) =>
+                                handleCostBreakdownChange(
+                                  index,
+                                  "quantity",
+                                  e.target.value
+                                )
+                              }
+                              placeholder="Quantity"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Input
+                              type="number"
+                              value={item.unitPrice}
+                              onChange={(e) =>
+                                handleCostBreakdownChange(
+                                  index,
+                                  "unitPrice",
+                                  e.target.value
+                                )
+                              }
+                              placeholder="Unit Price"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Input
+                              value={item.totalPrice}
+                              readOnly
+                              placeholder="Total Price"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => removeCostBreakdownRow(index)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                  <Button
+                    type="button"
+                    onClick={addCostBreakdownRow}
+                    className="mt-2"
+                  >
+                    <Plus className="mr-2 h-4 w-4" /> Add Item
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="incentives">Incentives</Label>
+                  <Textarea
+                    id="incentives"
+                    name="incentives"
+                    value={quotationData.incentives}
+                    onChange={handleChange}
+                    placeholder="List any applicable incentives or rebates"
+                    rows={3}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="productWarranties">Product Warranties</Label>
+                  <Textarea
+                    id="productWarranties"
+                    name="productWarranties"
+                    value={quotationData.productWarranties}
+                    onChange={handleChange}
+                    placeholder="Describe the warranties for panels, inverters, etc."
+                    rows={3}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="timeline">Project Timeline</Label>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Phase</TableHead>
+                        <TableHead>Start Date</TableHead>
+                        <TableHead>End Date</TableHead>
+                        <TableHead>Description</TableHead>
+                        <TableHead>Action</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {timeline.map((phase, index) => (
+                        <TableRow key={index}>
+                          <TableCell>
+                            <Input
+                              value={phase.phase}
+                              onChange={(e) =>
+                                handleTimelineChange(
+                                  index,
+                                  "phase",
+                                  e.target.value
+                                )
+                              }
+                              placeholder="Phase name"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <DateInput
+                              value={phase.startDate}
+                              onChange={(e) =>
+                                handleTimelineChange(
+                                  index,
+                                  "startDate",
+                                  e.target.value
+                                )
+                              }
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <DateInput
+                              value={phase.endDate}
+                              onChange={(e) =>
+                                handleTimelineChange(
+                                  index,
+                                  "endDate",
+                                  e.target.value
+                                )
+                              }
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Input
+                              value={phase.description}
+                              onChange={(e) =>
+                                handleTimelineChange(
+                                  index,
+                                  "description",
+                                  e.target.value
+                                )
+                              }
+                              placeholder="Phase description"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => removeTimelinePhase(index)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                  <Button
+                    type="button"
+                    onClick={addTimelinePhase}
+                    className="mt-2"
+                  >
+                    <Plus className="mr-2 h-4 w-4" /> Add Phase
+                  </Button>
+                </div>
+                <div className="flex justify-end space-x-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => handleSubmit("save")}
+                    disabled={loading || isFinalized}
+                  >
+                    <Save className="mr-2 h-4 w-4" /> Save as Draft
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => handleSubmit("finalize")}
+                    disabled={loading || isFinalized || !canFinalize}
+                  >
+                    <Send className="mr-2 h-4 w-4" /> Finalize Quotation
+                  </Button>
+                </div>
+              </form>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="costBreakdown">Cost Breakdown</Label>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Item</TableHead>
-                    <TableHead>Quantity</TableHead>
-                    <TableHead>Unit Price</TableHead>
-                    <TableHead>Total Price</TableHead>
-                    <TableHead>Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {costBreakdown.map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell>
-                        <Input
-                          value={item.item}
-                          onChange={(e) =>
-                            handleCostBreakdownChange(
-                              index,
-                              "item",
-                              e.target.value
-                            )
-                          }
-                          placeholder="Item description"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Input
-                          type="number"
-                          value={item.quantity}
-                          onChange={(e) =>
-                            handleCostBreakdownChange(
-                              index,
-                              "quantity",
-                              e.target.value
-                            )
-                          }
-                          placeholder="Quantity"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Input
-                          type="number"
-                          value={item.unitPrice}
-                          onChange={(e) =>
-                            handleCostBreakdownChange(
-                              index,
-                              "unitPrice",
-                              e.target.value
-                            )
-                          }
-                          placeholder="Unit Price"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Input
-                          value={item.totalPrice}
-                          readOnly
-                          placeholder="Total Price"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => removeCostBreakdownRow(index)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-              <Button
-                type="button"
-                onClick={addCostBreakdownRow}
-                className="mt-2"
-              >
-                <Plus className="mr-2 h-4 w-4" /> Add Item
-              </Button>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="incentives">Incentives</Label>
-              <Textarea
-                id="incentives"
-                name="incentives"
-                value={quotationData.incentives}
-                onChange={handleChange}
-                placeholder="List any applicable incentives or rebates"
-                rows={3}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="productWarranties">Product Warranties</Label>
-              <Textarea
-                id="productWarranties"
-                name="productWarranties"
-                value={quotationData.productWarranties}
-                onChange={handleChange}
-                placeholder="Describe the warranties for panels, inverters, etc."
-                rows={3}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="timeline">Project Timeline</Label>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Phase</TableHead>
-                    <TableHead>Start Date</TableHead>
-                    <TableHead>End Date</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {timeline.map((phase, index) => (
-                    <TableRow key={index}>
-                      <TableCell>
-                        <Input
-                          value={phase.phase}
-                          onChange={(e) =>
-                            handleTimelineChange(index, "phase", e.target.value)
-                          }
-                          placeholder="Phase name"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <DateInput
-                          value={phase.startDate}
-                          onChange={(e) =>
-                            handleTimelineChange(
-                              index,
-                              "startDate",
-                              e.target.value
-                            )
-                          }
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <DateInput
-                          value={phase.endDate}
-                          onChange={(e) =>
-                            handleTimelineChange(
-                              index,
-                              "endDate",
-                              e.target.value
-                            )
-                          }
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Input
-                          value={phase.description}
-                          onChange={(e) =>
-                            handleTimelineChange(
-                              index,
-                              "description",
-                              e.target.value
-                            )
-                          }
-                          placeholder="Phase description"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => removeTimelinePhase(index)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-              <Button type="button" onClick={addTimelinePhase} className="mt-2">
-                <Plus className="mr-2 h-4 w-4" /> Add Phase
-              </Button>
-            </div>
-            <div className="flex justify-end space-x-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => handleSubmit("save")}
-                disabled={loading || isFinalized}
-              >
-                <Save className="mr-2 h-4 w-4" /> Save as Draft
-              </Button>
-              <Button
-                type="button"
-                onClick={() => handleSubmit("finalize")}
-                disabled={loading || isFinalized}
-              >
-                <Send className="mr-2 h-4 w-4" /> Finalize Quotation
-              </Button>
-            </div>
-          </form>
+          </ScrollArea>
         </CardContent>
       </Card>
     </div>
   );
+};
+QuotationPreview.propTypes = {
+  quotationData: PropTypes.shape({
+    id: PropTypes.string,
+    systemSize: PropTypes.string,
+    panelSpecifications: PropTypes.string,
+    estimatedEnergyProduction: PropTypes.string,
+    savings: PropTypes.string,
+    paybackPeriod: PropTypes.string,
+    roi: PropTypes.string,
+    incentives: PropTypes.string,
+    productWarranties: PropTypes.string,
+  }).isRequired,
+  costBreakdown: PropTypes.arrayOf(
+    PropTypes.shape({
+      item: PropTypes.string,
+      quantity: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      unitPrice: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      totalPrice: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    })
+  ).isRequired,
+  timeline: PropTypes.arrayOf(
+    PropTypes.shape({
+      phase: PropTypes.string,
+      startDate: PropTypes.string,
+      endDate: PropTypes.string,
+      description: PropTypes.string,
+    })
+  ).isRequired,
 };
 
 export default QuotationDraft;

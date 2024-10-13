@@ -77,7 +77,7 @@ const CompanyProfile = () => {
       profile.services);
 
   return (
-    <ScrollArea className="h-[calc(100vh-4rem)] px-4">
+    <ScrollArea className="h-screen">
       <div className="max-w-5xl container mx-auto p-6 space-y-8">
         {/* Company Overview */}
         <Card className="shadow-md">

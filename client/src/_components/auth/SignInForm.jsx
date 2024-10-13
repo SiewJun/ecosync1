@@ -28,7 +28,7 @@ const SignInForm = () => {
   };
 
   return (
-    <div className="flex w-full flex-col lg:flex-row min-h-[700px]">
+    <div className="flex w-full flex-col lg:flex-row h-screen">
       <div className="flex flex-1 items-center justify-center lg:w-1/2">
         <div className="mx-auto w-[350px] space-y-6">
           <div className="text-center space-y-2">

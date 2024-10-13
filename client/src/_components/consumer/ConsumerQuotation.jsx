@@ -249,7 +249,7 @@ const ConsumerQuotation = () => {
     <div className="min-h-screen container p-6" ref={scrollRef}>
       <div className="max-w-5xl mx-auto">
         <Toaster />
-        <ScrollArea className="h-[calc(120vh-250px)]">
+        <ScrollArea className="h-screen">
           <AnimatePresence>
             {quotations.length ? (
               <motion.div

@@ -126,7 +126,7 @@ const CompanyDetail = () => {
   };
 
   return (
-    <ScrollArea className="h-[calc(100vh-4rem)] px-4">
+    <ScrollArea className="h-screen">
       <div className="max-w-5xl container mx-auto p-6 space-y-8">
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
