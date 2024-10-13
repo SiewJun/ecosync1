@@ -395,8 +395,14 @@ const ConsumerProjects = () => {
                       <CardTitle>Project Timeline</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      {selectedProject.steps &&
-                      selectedProject.steps.length > 0 ? (
+                      {selectedProject.status === "PENDING" ? (
+                        <p className="text-sm text-muted-foreground">
+                          The company is planning the steps for this project and
+                          will publish them ASAP. Please check back soon to
+                          follow along and complete the project together.
+                        </p>
+                      ) : selectedProject.steps &&
+                        selectedProject.steps.length > 0 ? (
                         <div className="space-y-4">
                           {selectedProject.steps.map((step, index) => (
                             <div
@@ -439,7 +445,6 @@ const ConsumerProjects = () => {
                       )}
                     </CardContent>
                   </Card>
-
                   <Card>
                     <CardHeader>
                       <CardTitle>Company Information</CardTitle>
@@ -494,8 +499,8 @@ const ConsumerProjects = () => {
                   )
                 }
                 disabled={
-                  selectedProject?.quotation.latestVersion.status !==
-                  "FINALIZED"
+                  selectedProject?.quotation.latestVersion.status !== "FINALIZED" ||
+                  selectedProject?.status == "PENDING"
                 }
               >
                 View Full Project

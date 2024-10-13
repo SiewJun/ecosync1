@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { motion, AnimatePresence} from "framer-motion";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -49,7 +49,6 @@ const ConsumerQuotation = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(6);
   const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
-  const scrollRef = useRef(null);
 
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -246,10 +245,10 @@ const ConsumerQuotation = () => {
   }
 
   return (
-    <div className="min-h-screen container p-6" ref={scrollRef}>
-      <div className="max-w-5xl mx-auto">
-        <Toaster />
-        <ScrollArea className="h-screen">
+    <ScrollArea>
+      <div className="min-h-screen container p-6">
+        <div className="max-w-5xl mx-auto">
+          <Toaster />
           <AnimatePresence>
             {quotations.length ? (
               <motion.div
@@ -277,341 +276,341 @@ const ConsumerQuotation = () => {
               </motion.div>
             )}
           </AnimatePresence>
-        </ScrollArea>
-
-        {quotations.length > itemsPerPage && (
-          <div className="flex justify-center mt-8 space-x-2">
-            <Button
-              onClick={() => paginate(currentPage - 1)}
-              disabled={currentPage === 1}
-              variant="default"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            {[...Array(Math.ceil(quotations.length / itemsPerPage)).keys()].map(
-              (number) => (
-                <Button
-                  key={number + 1}
-                  onClick={() => paginate(number + 1)}
-                  className={`${
-                    currentPage === number + 1
-                      ? "bg-primary text-white"
-                      : "bg-white text-primary"
-                  } hover:bg-blue-100`}
-                >
-                  {number + 1}
-                </Button>
-              )
-            )}
-            <Button
-              onClick={() => paginate(currentPage + 1)}
-              disabled={
-                currentPage === Math.ceil(quotations.length / itemsPerPage)
-              }
-              variant="default"
-            >
-              <ArrowRight className="h-5 w-5" />
-            </Button>
-          </div>
-        )}
-      </div>
-
-      {/* Detailed View Dialog */}
-      <Dialog open={!!selectedQuotation} onOpenChange={closeDetails}>
-        <DialogContent className="max-w-4xl">
-          <DialogHeader>
-            <DialogTitle className="text-2xl">Quotation Details</DialogTitle>
-            <DialogDescription>
-              View the details of your solar quotation.
-            </DialogDescription>
-          </DialogHeader>
-          {selectedQuotation && (
-            <ScrollArea className="mt-4 max-h-[60vh]">
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-xl font-semibold">
-                      {selectedQuotation.company?.CompanyDetail?.companyName ||
-                        "Unknown Company"}
-                    </h3>
-                  </div>
-                  <div
-                    className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
-                      selectedQuotation.quotationStatus
-                    )}`}
+  
+          {quotations.length > itemsPerPage && (
+            <div className="flex justify-center mt-8 space-x-2">
+              <Button
+                onClick={() => paginate(currentPage - 1)}
+                disabled={currentPage === 1}
+                variant="default"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              {[...Array(Math.ceil(quotations.length / itemsPerPage)).keys()].map(
+                (number) => (
+                  <Button
+                    key={number + 1}
+                    onClick={() => paginate(number + 1)}
+                    className={`${
+                      currentPage === number + 1
+                        ? "bg-primary text-white"
+                        : "bg-white text-primary"
+                    } hover:bg-blue-100`}
                   >
-                    {selectedQuotation.quotationStatus}
-                  </div>
-                </div>
-
-                {selectedQuotation.quotationStatus === "REJECTED" && (
-                  <div className="mb-8 p-4 bg-red-100 border border-red-300 rounded-md">
-                    <div className="flex items-center">
-                      <AlertTriangle className="h-5 w-5 text-red-500 mr-2" />
-                      <p className="text-red-700 font-medium">
-                        You have rejected this quotation and further actions
-                        cannot be taken on it.
-                      </p>
+                    {number + 1}
+                  </Button>
+                )
+              )}
+              <Button
+                onClick={() => paginate(currentPage + 1)}
+                disabled={
+                  currentPage === Math.ceil(quotations.length / itemsPerPage)
+                }
+                variant="default"
+              >
+                <ArrowRight className="h-5 w-5" />
+              </Button>
+            </div>
+          )}
+        </div>
+  
+        {/* Detailed View Dialog */}
+        <Dialog open={!!selectedQuotation} onOpenChange={closeDetails}>
+          <DialogContent className="max-w-4xl">
+            <DialogHeader>
+              <DialogTitle className="text-2xl">Quotation Details</DialogTitle>
+              <DialogDescription>
+                View the details of your solar quotation.
+              </DialogDescription>
+            </DialogHeader>
+            {selectedQuotation && (
+              <ScrollArea className="mt-4 max-h-[60vh]">
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-xl font-semibold">
+                        {selectedQuotation.company?.CompanyDetail?.companyName ||
+                          "Unknown Company"}
+                      </h3>
+                    </div>
+                    <div
+                      className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+                        selectedQuotation.quotationStatus
+                      )}`}
+                    >
+                      {selectedQuotation.quotationStatus}
                     </div>
                   </div>
-                )}
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div>
-                    <h3 className="text-xl font-semibold mb-4">
-                      Contact Information
-                    </h3>
-                    <div className="space-y-2">
-                      <p className="text-gray-500">
-                        <span className="font-medium">Name:</span>{" "}
-                        {selectedQuotation.salutation} {selectedQuotation.name}
-                      </p>
-                      <p className="text-gray-500">
-                        <span className="font-medium">Email:</span>{" "}
-                        {selectedQuotation.email}
-                      </p>
-                      <p className="text-gray-500">
-                        <span className="font-medium">Phone:</span>{" "}
-                        {selectedQuotation.phoneNumber}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-xl font-semibold mb-4">
-                      Property Details
-                    </h3>
-                    <div className="space-y-2">
-                      <p className="text-gray-500">
-                        <span className="font-medium">Type:</span>{" "}
-                        {selectedQuotation.propertyType}
-                      </p>
-                      <p className="text-gray-500">
-                        <span className="font-medium">Address:</span>{" "}
-                        {selectedQuotation.address}
-                      </p>
-                      <p className="text-gray-500">
-                        <span className="font-medium">State:</span>{" "}
-                        {selectedQuotation.state}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-8">
-                  <h3 className="text-xl font-semibold mb-4">
-                    Electricity Usage
-                  </h3>
-                  <div className="bg-gradient-to-r from-secondary to-primary rounded-xl p-6 shadow-inner">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm">Average Monthly Bill</p>
-                        <p className="text-3xl font-bold text-primary">
-                          RM{selectedQuotation.averageMonthlyElectricityBill}
+  
+                  {selectedQuotation.quotationStatus === "REJECTED" && (
+                    <div className="mb-8 p-4 bg-red-100 border border-red-300 rounded-md">
+                      <div className="flex items-center">
+                        <AlertTriangle className="h-5 w-5 text-red-500 mr-2" />
+                        <p className="text-red-700 font-medium">
+                          You have rejected this quotation and further actions
+                          cannot be taken on it.
                         </p>
                       </div>
-                      <DollarSign className="h-12 w-12 text-primary-foreground opacity-50" />
+                    </div>
+                  )}
+  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                      <h3 className="text-xl font-semibold mb-4">
+                        Contact Information
+                      </h3>
+                      <div className="space-y-2">
+                        <p className="text-gray-500">
+                          <span className="font-medium">Name:</span>{" "}
+                          {selectedQuotation.salutation} {selectedQuotation.name}
+                        </p>
+                        <p className="text-gray-500">
+                          <span className="font-medium">Email:</span>{" "}
+                          {selectedQuotation.email}
+                        </p>
+                        <p className="text-gray-500">
+                          <span className="font-medium">Phone:</span>{" "}
+                          {selectedQuotation.phoneNumber}
+                        </p>
+                      </div>
+                    </div>
+  
+                    <div>
+                      <h3 className="text-xl font-semibold mb-4">
+                        Property Details
+                      </h3>
+                      <div className="space-y-2">
+                        <p className="text-gray-500">
+                          <span className="font-medium">Type:</span>{" "}
+                          {selectedQuotation.propertyType}
+                        </p>
+                        <p className="text-gray-500">
+                          <span className="font-medium">Address:</span>{" "}
+                          {selectedQuotation.address}
+                        </p>
+                        <p className="text-gray-500">
+                          <span className="font-medium">State:</span>{" "}
+                          {selectedQuotation.state}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+  
+                  <div className="mt-8">
+                    <h3 className="text-xl font-semibold mb-4">
+                      Electricity Usage
+                    </h3>
+                    <div className="bg-gradient-to-r from-secondary to-primary rounded-xl p-6 shadow-inner">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm">Average Monthly Bill</p>
+                          <p className="text-3xl font-bold text-primary">
+                            RM{selectedQuotation.averageMonthlyElectricityBill}
+                          </p>
+                        </div>
+                        <DollarSign className="h-12 w-12 text-primary-foreground opacity-50" />
+                      </div>
+                    </div>
+                  </div>
+  
+                  <div className="mt-8">
+                    <h3 className="text-xl font-semibold mb-4">
+                      Quotation Timeline
+                    </h3>
+                    <div className="relative">
+                      <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200"></div>
+                      <ul className="space-y-6 relative">
+                        <li className="ml-6">
+                          <div className="flex items-center">
+                            <div className="absolute left-0 w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
+                              <Clock className="h-4 w-4 text-white" />
+                            </div>
+                            <div className="ml-4">
+                              <p className="text-sm font-medium">
+                                Quotation Submitted
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                {new Date(
+                                  selectedQuotation.createdAt
+                                ).toLocaleString()}
+                              </p>
+                            </div>
+                          </div>
+                        </li>
+                        {selectedQuotation.quotationStatus === "RECEIVED" && (
+                          <li className="ml-6">
+                            <div className="flex items-center">
+                              <div className="absolute left-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                <CheckIcon className="h-4 w-4 text-white" />
+                              </div>
+                              <div className="ml-4">
+                                <p className="text-sm font-medium">
+                                  Quotation Received
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                  {new Date(
+                                    selectedQuotation.updatedAt
+                                  ).toLocaleString()}
+                                </p>
+                              </div>
+                            </div>
+                          </li>
+                        )}
+                        {selectedQuotation.quotationStatus === "FINALIZED" && (
+                          <li className="ml-6">
+                            <div className="flex items-center">
+                              <div className="absolute left-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                                <FileText className="h-4 w-4 text-white" />
+                              </div>
+                              <div className="ml-4">
+                                <p className="text-sm font-medium">
+                                  Quotation Finalized
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                  {new Date(
+                                    selectedQuotation.updatedAt
+                                  ).toLocaleString()}
+                                </p>
+                              </div>
+                            </div>
+                          </li>
+                        )}
+                        {selectedQuotation.quotationStatus === "ACCEPTED" && (
+                          <li className="ml-6">
+                            <div className="flex items-center">
+                              <div className="absolute left-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                                <ThumbsUp className="h-4 w-4 text-white" />
+                              </div>
+                              <div className="ml-4">
+                                <p className="text-sm font-medium">
+                                  Quotation Accepted
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                  {new Date(
+                                    selectedQuotation.updatedAt
+                                  ).toLocaleString()}
+                                </p>
+                              </div>
+                            </div>
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                  </div>
+  
+                  <div className="mt-12">
+                    <h3 className="text-xl font-semibold mb-4">Next Steps</h3>
+                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 shadow-sm">
+                      {selectedQuotation.quotationStatus === "PENDING" && (
+                        <p className="text-gray-700">
+                          The company is currently reviewing your quotation
+                          request. Please wait for them to process your
+                          information and provide a detailed quote.
+                        </p>
+                      )}
+                      {selectedQuotation.quotationStatus === "RECEIVED" && (
+                        <p className="text-gray-700">
+                          Your quotation request has been replied by the company.
+                          They will work closely with you to finalize the
+                          quotation.
+                        </p>
+                      )}
+                      {selectedQuotation.quotationStatus === "FINALIZED" && (
+                        <p className="text-gray-700">
+                          Great news! Your quotation has been finalized. Please
+                          review the details carefully. If everything looks good,
+                          you can proceed with accepting the quote or contact the
+                          company for any clarifications.
+                        </p>
+                      )}
+                      {selectedQuotation.quotationStatus === "ACCEPTED" && (
+                        <div className="mb-8 p-4 bg-primary border border-priamry rounded-md">
+                          <div className="flex items-center">
+                            <ThumbsUp className="h-5 w-5 text-primary-foreground mr-2" />
+                            <p className="text-primary-foreground font-medium">
+                              You have accepted this quotation. The company will
+                              be in touch with you shortly to proceed with the
+                              next steps.
+                            </p>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
-
-                <div className="mt-8">
-                  <h3 className="text-xl font-semibold mb-4">
-                    Quotation Timeline
-                  </h3>
-                  <div className="relative">
-                    <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200"></div>
-                    <ul className="space-y-6 relative">
-                      <li className="ml-6">
-                        <div className="flex items-center">
-                          <div className="absolute left-0 w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
-                            <Clock className="h-4 w-4 text-white" />
-                          </div>
-                          <div className="ml-4">
-                            <p className="text-sm font-medium">
-                              Quotation Submitted
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              {new Date(
-                                selectedQuotation.createdAt
-                              ).toLocaleString()}
-                            </p>
-                          </div>
-                        </div>
-                      </li>
-                      {selectedQuotation.quotationStatus === "RECEIVED" && (
-                        <li className="ml-6">
-                          <div className="flex items-center">
-                            <div className="absolute left-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                              <CheckIcon className="h-4 w-4 text-white" />
-                            </div>
-                            <div className="ml-4">
-                              <p className="text-sm font-medium">
-                                Quotation Received
-                              </p>
-                              <p className="text-sm text-gray-500">
-                                {new Date(
-                                  selectedQuotation.updatedAt
-                                ).toLocaleString()}
-                              </p>
-                            </div>
-                          </div>
-                        </li>
-                      )}
-                      {selectedQuotation.quotationStatus === "FINALIZED" && (
-                        <li className="ml-6">
-                          <div className="flex items-center">
-                            <div className="absolute left-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                              <FileText className="h-4 w-4 text-white" />
-                            </div>
-                            <div className="ml-4">
-                              <p className="text-sm font-medium">
-                                Quotation Finalized
-                              </p>
-                              <p className="text-sm text-gray-500">
-                                {new Date(
-                                  selectedQuotation.updatedAt
-                                ).toLocaleString()}
-                              </p>
-                            </div>
-                          </div>
-                        </li>
-                      )}
-                      {selectedQuotation.quotationStatus === "ACCEPTED" && (
-                        <li className="ml-6">
-                          <div className="flex items-center">
-                            <div className="absolute left-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                              <ThumbsUp className="h-4 w-4 text-white" />
-                            </div>
-                            <div className="ml-4">
-                              <p className="text-sm font-medium">
-                                Quotation Accepted
-                              </p>
-                              <p className="text-sm text-gray-500">
-                                {new Date(
-                                  selectedQuotation.updatedAt
-                                ).toLocaleString()}
-                              </p>
-                            </div>
-                          </div>
-                        </li>
-                      )}
-                    </ul>
-                  </div>
-                </div>
-
-                <div className="mt-12">
-                  <h3 className="text-xl font-semibold mb-4">Next Steps</h3>
-                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 shadow-sm">
-                    {selectedQuotation.quotationStatus === "PENDING" && (
-                      <p className="text-gray-700">
-                        The company is currently reviewing your quotation
-                        request. Please wait for them to process your
-                        information and provide a detailed quote.
-                      </p>
-                    )}
-                    {selectedQuotation.quotationStatus === "RECEIVED" && (
-                      <p className="text-gray-700">
-                        Your quotation request has been replied by the company.
-                        They will work closely with you to finalize the
-                        quotation.
-                      </p>
-                    )}
-                    {selectedQuotation.quotationStatus === "FINALIZED" && (
-                      <p className="text-gray-700">
-                        Great news! Your quotation has been finalized. Please
-                        review the details carefully. If everything looks good,
-                        you can proceed with accepting the quote or contact the
-                        company for any clarifications.
-                      </p>
-                    )}
-                    {selectedQuotation.quotationStatus === "ACCEPTED" && (
-                      <div className="mb-8 p-4 bg-primary border border-priamry rounded-md">
-                        <div className="flex items-center">
-                          <ThumbsUp className="h-5 w-5 text-primary-foreground mr-2" />
-                          <p className="text-primary-foreground font-medium">
-                            You have accepted this quotation. The company will
-                            be in touch with you shortly to proceed with the
-                            next steps.
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </ScrollArea>
-          )}
-          <div className="mt-6 flex justify-end space-x-2">
-            <Button variant="outline" onClick={closeDetails}>
-              Close
-            </Button>
-            <Button
-              variant="default"
-              disabled={selectedQuotation?.quotationStatus === "PENDING"}
-              onClick={() => {
-                if (
-                  selectedQuotation?.versions &&
-                  selectedQuotation.versions.length > 0
-                ) {
-                  const latestVersion = selectedQuotation.versions.reduce(
-                    (prev, current) =>
-                      prev.versionNumber > current.versionNumber
-                        ? prev
-                        : current
-                  );
-                  navigate(
-                    `/consumer-dashboard/consumer-quotation/${latestVersion.id}`
-                  );
-                }
-              }}
-            >
-              {selectedQuotation?.quotationStatus === "FINALIZED" ||
-              selectedQuotation?.quotationStatus === "ACCEPTED"
-                ? "Review Quotation"
-                : "View Quotation"}
-            </Button>
-            {selectedQuotation?.quotationStatus !== "REJECTED" &&
-              selectedQuotation?.quotationStatus !== "ACCEPTED" && (
-                <Button
-                  variant="destructive"
-                  onClick={() => setIsRejectDialogOpen(true)}
-                  disabled={selectedQuotation?.quotationStatus === "PENDING"}
-                >
-                  Reject Quotation
-                </Button>
-              )}
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Reject Quotation Confirmation Dialog */}
-      <AlertDialog
-        open={isRejectDialogOpen}
-        onOpenChange={setIsRejectDialogOpen}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              Are you sure you want to reject this quotation?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. Rejecting the quotation will end the
-              process with this company.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleRejectQuotation}
-              className="bg-red-600 text-white hover:bg-red-700 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2"
-            >
-              Reject Quotation
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+              </ScrollArea>
+            )}
+            <div className="mt-6 flex justify-end space-x-2">
+              <Button variant="outline" onClick={closeDetails}>
+                Close
+              </Button>
+              <Button
+                variant="default"
+                disabled={selectedQuotation?.quotationStatus === "PENDING"}
+                onClick={() => {
+                  if (
+                    selectedQuotation?.versions &&
+                    selectedQuotation.versions.length > 0
+                  ) {
+                    const latestVersion = selectedQuotation.versions.reduce(
+                      (prev, current) =>
+                        prev.versionNumber > current.versionNumber
+                          ? prev
+                          : current
+                    );
+                    navigate(
+                      `/consumer-dashboard/consumer-quotation/${latestVersion.id}`
+                    );
+                  }
+                }}
+              >
+                {selectedQuotation?.quotationStatus === "FINALIZED" ||
+                selectedQuotation?.quotationStatus === "ACCEPTED"
+                  ? "Review Quotation"
+                  : "View Quotation"}
+              </Button>
+              {selectedQuotation?.quotationStatus !== "REJECTED" &&
+                selectedQuotation?.quotationStatus !== "ACCEPTED" && (
+                  <Button
+                    variant="destructive"
+                    onClick={() => setIsRejectDialogOpen(true)}
+                    disabled={selectedQuotation?.quotationStatus === "PENDING"}
+                  >
+                    Reject Quotation
+                  </Button>
+                )}
+            </div>
+          </DialogContent>
+        </Dialog>
+  
+        {/* Reject Quotation Confirmation Dialog */}
+        <AlertDialog
+          open={isRejectDialogOpen}
+          onOpenChange={setIsRejectDialogOpen}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                Are you sure you want to reject this quotation?
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. Rejecting the quotation will end the
+                process with this company.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleRejectQuotation}
+                className="bg-red-600 text-white hover:bg-red-700 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2"
+              >
+                Reject Quotation
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+    </ScrollArea>
   );
 };
 

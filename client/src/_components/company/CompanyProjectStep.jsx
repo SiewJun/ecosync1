@@ -78,13 +78,17 @@ const CompanyProjectStep = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  const isEditable = projectStatus === "PENDING";
+
   const checkCanPublish = useCallback(() => {
     const sortedSteps = [...steps].sort((a, b) => a.stepOrder - b.stepOrder);
     const isConsecutive = sortedSteps.every(
       (step, index) => step.stepOrder === index + 1
     );
     setCanPublish(
-      sortedSteps.length === 5 && isConsecutive && projectStatus !== "IN_PROGRESS"
+      sortedSteps.length === 5 &&
+        isConsecutive &&
+        projectStatus !== "IN_PROGRESS"
     );
   }, [steps, projectStatus]);
 
@@ -121,13 +125,13 @@ const CompanyProjectStep = () => {
   };
 
   const handlePublishProject = async () => {
+    if (!isEditable) return;
     try {
       await axios.put(
         `http://localhost:5000/api/project-step/${projectId}/publish`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
       toast({
         title: "Success",
         description: "Project successfully published!",
@@ -176,18 +180,17 @@ const CompanyProjectStep = () => {
   };
 
   const handleAddStep = async () => {
+    if (!isEditable) return;
     if (!validateStepOrder(newStep.stepOrder)) {
       setErrorMessage(
         "Invalid step order. Ensure it is between 1 and 5, not already used, and not skipping any order."
       );
       return;
     }
-
     if (!validateFields()) {
       setErrorMessage("Please fill in all required fields.");
       return;
     }
-
     const stepData = {
       ...newStep,
       paymentAmount:
@@ -197,7 +200,6 @@ const CompanyProjectStep = () => {
           ? newStep.paymentAmount
           : null,
     };
-
     setLoading(true);
     try {
       const response = await axios.post(
@@ -229,18 +231,17 @@ const CompanyProjectStep = () => {
   };
 
   const handleEditStep = async (stepId) => {
+    if (!isEditable) return;
     if (!validateStepOrder(newStep.stepOrder)) {
       setErrorMessage(
         "Invalid step order. Ensure it is between 1 and 5, not already used, and not skipping any order."
       );
       return;
     }
-
     if (!validateFields()) {
       setErrorMessage("Please fill in all required fields.");
       return;
     }
-
     setLoading(true);
     try {
       const response = await axios.put(
@@ -275,6 +276,7 @@ const CompanyProjectStep = () => {
   };
 
   const handleDeleteStep = async (stepId) => {
+    if (!isEditable) return;
     try {
       await axios.delete(
         `http://localhost:5000/api/project-step/${projectId}/steps/${stepId}`,
@@ -319,6 +321,7 @@ const CompanyProjectStep = () => {
   };
 
   const openEditDialog = (step) => {
+    if (!isEditable) return;
     setNewStep({
       ...step,
       dueDate: step.dueDate
@@ -338,7 +341,7 @@ const CompanyProjectStep = () => {
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-6 max-w-4xl">
+    <div className="container mx-auto p-4 md:p-6 max-w-4xl h-screen flex flex-col">
       <Toaster />
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 space-y-4 md:space-y-0">
         <div className="flex items-center space-x-4">
@@ -366,140 +369,157 @@ const CompanyProjectStep = () => {
           </div>
         </div>
         <div className="flex space-x-2">
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button
-                onClick={() => {
-                  resetForm();
-                  setIsDialogOpen(true);
-                }}
-                className="shadow-sm hover:shadow-md transition-shadow"
-              >
-                <Plus className="h-4 w-4 mr-2" /> Add New Step
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>
-                  {editStepId ? "Edit Step" : "Add New Step"}
-                </DialogTitle>
-                <DialogDescription>
-                  {editStepId
-                    ? "Edit the details of the existing step."
-                    : "Add a new step to your project."}
-                </DialogDescription>
-              </DialogHeader>
-              {errorMessage && (
-                <Alert variant="destructive">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertTitle>Error</AlertTitle>
-                  <AlertDescription>{errorMessage}</AlertDescription>
-                </Alert>
-              )}
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="stepName">Step Name</Label>
-                  <Input
-                    id="stepName"
-                    value={newStep.stepName}
-                    onChange={(e) => handleChange("stepName", e.target.value)}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    value={newStep.description}
-                    onChange={(e) =>
-                      handleChange("description", e.target.value)
-                    }
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="stepType">Step Type</Label>
-                  <Select
-                    value={newStep.stepType}
-                    onValueChange={(value) => handleChange("stepType", value)}
-                  >
-                    <SelectTrigger id="stepType">
-                      <SelectValue placeholder="Select step type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {stepTypes.map((type) => (
-                        <SelectItem key={type.value} value={type.value}>
-                          {type.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                {(newStep.stepType === "DEPOSIT" ||
-                  newStep.stepType === "FINAL_PAYMENT") && (
+          {isEditable && (
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  onClick={() => {
+                    resetForm();
+                    setIsDialogOpen(true);
+                  }}
+                  className="shadow-sm hover:shadow-md transition-shadow"
+                >
+                  <Plus className="h-4 w-4 mr-2" /> Add New Step
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>
+                    {editStepId ? "Edit Step" : "Add New Step"}
+                  </DialogTitle>
+                  <DialogDescription>
+                    {editStepId
+                      ? "Edit the details of the existing step."
+                      : "Add a new step to your project."}
+                  </DialogDescription>
+                </DialogHeader>
+                {errorMessage && (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Error</AlertTitle>
+                    <AlertDescription>{errorMessage}</AlertDescription>
+                  </Alert>
+                )}
+                <div className="grid gap-4 py-4">
                   <div className="grid gap-2">
-                    <Label htmlFor="paymentAmount">Payment Amount</Label>
+                    <Label htmlFor="stepName">Step Name</Label>
                     <Input
-                      id="paymentAmount"
-                      type="number"
-                      value={newStep.paymentAmount}
+                      id="stepName"
+                      value={newStep.stepName}
+                      onChange={(e) => handleChange("stepName", e.target.value)}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="description">Description</Label>
+                    <Textarea
+                      id="description"
+                      value={newStep.description}
                       onChange={(e) =>
-                        handleChange("paymentAmount", e.target.value)
+                        handleChange("description", e.target.value)
                       }
                     />
                   </div>
-                )}
-                <div className="grid gap-2">
-                  <Label htmlFor="dueDate">Due Date</Label>
-                  <Input
-                    id="dueDate"
-                    type="date"
-                    value={newStep.dueDate}
-                    onChange={(e) => handleChange("dueDate", e.target.value)}
-                  />
+                  <div className="grid gap-2">
+                    <Label htmlFor="stepType">Step Type</Label>
+                    <Select
+                      value={newStep.stepType}
+                      onValueChange={(value) => handleChange("stepType", value)}
+                    >
+                      <SelectTrigger id="stepType">
+                        <SelectValue placeholder="Select step type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {stepTypes.map((type) => (
+                          <SelectItem key={type.value} value={type.value}>
+                            {type.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {(newStep.stepType === "DEPOSIT" ||
+                    newStep.stepType === "FINAL_PAYMENT") && (
+                    <div className="grid gap-2">
+                      <Label htmlFor="paymentAmount">Payment Amount</Label>
+                      <Input
+                        id="paymentAmount"
+                        type="number"
+                        value={newStep.paymentAmount}
+                        onChange={(e) =>
+                          handleChange("paymentAmount", e.target.value)
+                        }
+                      />
+                    </div>
+                  )}
+                  <div className="grid gap-2">
+                    <Label htmlFor="dueDate">Due Date</Label>
+                    <Input
+                      id="dueDate"
+                      type="date"
+                      value={newStep.dueDate}
+                      onChange={(e) => handleChange("dueDate", e.target.value)}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="stepOrder">Step Order</Label>
+                    <Input
+                      id="stepOrder"
+                      type="number"
+                      value={newStep.stepOrder}
+                      onChange={(e) =>
+                        handleChange("stepOrder", e.target.value)
+                      }
+                    />
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="isMandatory"
+                      checked={newStep.isMandatory}
+                      onCheckedChange={(checked) =>
+                        handleChange("isMandatory", checked)
+                      }
+                    />
+                    <Label htmlFor="isMandatory">Mandatory</Label>
+                  </div>
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="stepOrder">Step Order</Label>
-                  <Input
-                    id="stepOrder"
-                    type="number"
-                    value={newStep.stepOrder}
-                    onChange={(e) => handleChange("stepOrder", e.target.value)}
-                  />
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="isMandatory"
-                    checked={newStep.isMandatory}
-                    onCheckedChange={(checked) =>
-                      handleChange("isMandatory", checked)
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsDialogOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={() =>
+                      editStepId ? handleEditStep(editStepId) : handleAddStep()
                     }
-                  />
-                  <Label htmlFor="isMandatory">Mandatory</Label>
-                </div>
-              </div>
-              <DialogFooter>
-                <Button
-                  variant="outline"
-                  onClick={() => setIsDialogOpen(false)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={() =>
-                    editStepId ? handleEditStep(editStepId) : handleAddStep()
-                  }
-                >
-                  {editStepId ? "Update Step" : "Add Step"}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-          {canPublish && projectStatus !== "IN_PROGRESS" && (
+                  >
+                    {editStepId ? "Update Step" : "Add Step"}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
+          {canPublish && projectStatus !== "IN_PROGRESS" && isEditable && (
             <Button onClick={handlePublishProject}>Publish</Button>
           )}
         </div>
       </div>
-
-      <ScrollArea className="h-[calc(100vh-200px)] pr-4">
+      {steps.length === 0 && !loading && (
+        <Card className="mt-8">
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
+            <CardDescription className="text-center">
+              No steps have been added to this project yet.
+              <br />
+              {isEditable
+                ? 'Click the "Add New Step" button to get started.'
+                : "Steps cannot be added as the project is no longer in PENDING status."}
+            </CardDescription>
+          </CardContent>
+        </Card>
+      )}
+      <ScrollArea className="flex-grow">
         <div className="space-y-6">
           {steps
             .sort((a, b) => a.stepOrder - b.stepOrder)
@@ -509,41 +529,43 @@ const CompanyProjectStep = () => {
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-center">
                     <CardTitle className="text-lg">{step.stepName}</CardTitle>
-                    <div className="flex space-x-2">
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => openEditDialog(step)}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Edit Step</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDeleteStep(step.id)}
-                              className="hover:bg-destructive/10 transition-colors"
-                            >
-                              <Trash className="h-4 w-4 text-destructive" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Delete Step</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
+                    {isEditable && (
+                      <div className="flex space-x-2">
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => openEditDialog(step)}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Edit Step</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleDeleteStep(step.id)}
+                                className="hover:bg-destructive/10 transition-colors"
+                              >
+                                <Trash className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Delete Step</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    )}
                   </div>
                   <CardDescription>
                     Step {step.stepOrder}: {step.stepType}
@@ -582,19 +604,6 @@ const CompanyProjectStep = () => {
             ))}
         </div>
       </ScrollArea>
-
-      {steps.length === 0 && !loading && (
-        <Card className="mt-8">
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
-            <CardDescription className="text-center">
-              No steps have been added to this project yet.
-              <br />
-              Click the &quot;Add New Step&quot; button to get started.
-            </CardDescription>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 };

@@ -396,70 +396,19 @@ const QuotationDraft = () => {
               )}
               <form className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="systemSize">System Size</Label>
-                    <Input
-                      id="systemSize"
-                      name="systemSize"
-                      value={quotationData.systemSize}
-                      onChange={handleChange}
-                      placeholder="e.g., 5kW"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="panelSpecifications">
-                      Panel Specifications
-                    </Label>
-                    <Input
-                      id="panelSpecifications"
-                      name="panelSpecifications"
-                      value={quotationData.panelSpecifications}
-                      onChange={handleChange}
-                      placeholder="e.g., 20 x 250W Monocrystalline"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="estimatedEnergyProduction">
-                      Estimated Energy Production
-                    </Label>
-                    <Input
-                      id="estimatedEnergyProduction"
-                      name="estimatedEnergyProduction"
-                      value={quotationData.estimatedEnergyProduction}
-                      onChange={handleChange}
-                      placeholder="e.g., 7,000 kWh/year"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="savings">Savings</Label>
-                    <Input
-                      id="savings"
-                      name="savings"
-                      value={quotationData.savings}
-                      onChange={handleChange}
-                      placeholder="e.g., RM1,200/year"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="paybackPeriod">Payback Period</Label>
-                    <Input
-                      id="paybackPeriod"
-                      name="paybackPeriod"
-                      value={quotationData.paybackPeriod}
-                      onChange={handleChange}
-                      placeholder="e.g., 7 years"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="roi">ROI</Label>
-                    <Input
-                      id="roi"
-                      name="roi"
-                      value={quotationData.roi}
-                      onChange={handleChange}
-                      placeholder="e.g., 15% over 25 years"
-                    />
-                  </div>
+                  {Object.entries(quotationData).map(([key, value]) => (
+                    <div key={key} className="space-y-2">
+                      <Label htmlFor={key}>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</Label>
+                      <Input
+                        id={key}
+                        name={key}
+                        value={value}
+                        onChange={handleChange}
+                        placeholder={`Enter ${key}`}
+                        disabled={isFinalized}
+                      />
+                    </div>
+                  ))}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="costBreakdown">Cost Breakdown</Label>
@@ -479,42 +428,27 @@ const QuotationDraft = () => {
                           <TableCell>
                             <Input
                               value={item.item}
-                              onChange={(e) =>
-                                handleCostBreakdownChange(
-                                  index,
-                                  "item",
-                                  e.target.value
-                                )
-                              }
+                              onChange={(e) => handleCostBreakdownChange(index, "item", e.target.value)}
                               placeholder="Item description"
+                              disabled={isFinalized}
                             />
                           </TableCell>
                           <TableCell>
                             <Input
                               type="number"
                               value={item.quantity}
-                              onChange={(e) =>
-                                handleCostBreakdownChange(
-                                  index,
-                                  "quantity",
-                                  e.target.value
-                                )
-                              }
+                              onChange={(e) => handleCostBreakdownChange(index, "quantity", e.target.value)}
                               placeholder="Quantity"
+                              disabled={isFinalized}
                             />
                           </TableCell>
                           <TableCell>
                             <Input
                               type="number"
                               value={item.unitPrice}
-                              onChange={(e) =>
-                                handleCostBreakdownChange(
-                                  index,
-                                  "unitPrice",
-                                  e.target.value
-                                )
-                              }
+                              onChange={(e) => handleCostBreakdownChange(index, "unitPrice", e.target.value)}
                               placeholder="Unit Price"
+                              disabled={isFinalized}
                             />
                           </TableCell>
                           <TableCell>
@@ -522,6 +456,7 @@ const QuotationDraft = () => {
                               value={item.totalPrice}
                               readOnly
                               placeholder="Total Price"
+                              disabled={isFinalized}
                             />
                           </TableCell>
                           <TableCell>
@@ -530,6 +465,7 @@ const QuotationDraft = () => {
                               variant="destructive"
                               size="sm"
                               onClick={() => removeCostBreakdownRow(index)}
+                              disabled={isFinalized}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -542,6 +478,7 @@ const QuotationDraft = () => {
                     type="button"
                     onClick={addCostBreakdownRow}
                     className="mt-2"
+                    disabled={isFinalized}
                   >
                     <Plus className="mr-2 h-4 w-4" /> Add Item
                   </Button>
@@ -555,6 +492,7 @@ const QuotationDraft = () => {
                     onChange={handleChange}
                     placeholder="List any applicable incentives or rebates"
                     rows={3}
+                    disabled={isFinalized}
                   />
                 </div>
                 <div className="space-y-2">
@@ -566,6 +504,7 @@ const QuotationDraft = () => {
                     onChange={handleChange}
                     placeholder="Describe the warranties for panels, inverters, etc."
                     rows={3}
+                    disabled={isFinalized}
                   />
                 </div>
                 <div className="space-y-2">
@@ -586,51 +525,31 @@ const QuotationDraft = () => {
                           <TableCell>
                             <Input
                               value={phase.phase}
-                              onChange={(e) =>
-                                handleTimelineChange(
-                                  index,
-                                  "phase",
-                                  e.target.value
-                                )
-                              }
+                              onChange={(e) => handleTimelineChange(index, "phase", e.target.value)}
                               placeholder="Phase name"
+                              disabled={isFinalized}
                             />
                           </TableCell>
                           <TableCell>
                             <DateInput
                               value={phase.startDate}
-                              onChange={(e) =>
-                                handleTimelineChange(
-                                  index,
-                                  "startDate",
-                                  e.target.value
-                                )
-                              }
+                              onChange={(e) => handleTimelineChange(index, "startDate", e.target.value)}
+                              disabled={isFinalized}
                             />
                           </TableCell>
                           <TableCell>
                             <DateInput
                               value={phase.endDate}
-                              onChange={(e) =>
-                                handleTimelineChange(
-                                  index,
-                                  "endDate",
-                                  e.target.value
-                                )
-                              }
+                              onChange={(e) => handleTimelineChange(index, "endDate", e.target.value)}
+                              disabled={isFinalized}
                             />
                           </TableCell>
                           <TableCell>
                             <Input
                               value={phase.description}
-                              onChange={(e) =>
-                                handleTimelineChange(
-                                  index,
-                                  "description",
-                                  e.target.value
-                                )
-                              }
+                              onChange={(e) => handleTimelineChange(index, "description", e.target.value)}
                               placeholder="Phase description"
+                              disabled={isFinalized}
                             />
                           </TableCell>
                           <TableCell>
@@ -639,6 +558,7 @@ const QuotationDraft = () => {
                               variant="destructive"
                               size="sm"
                               onClick={() => removeTimelinePhase(index)}
+                              disabled={isFinalized}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -651,6 +571,7 @@ const QuotationDraft = () => {
                     type="button"
                     onClick={addTimelinePhase}
                     className="mt-2"
+                    disabled={isFinalized}
                   >
                     <Plus className="mr-2 h-4 w-4" /> Add Phase
                   </Button>
