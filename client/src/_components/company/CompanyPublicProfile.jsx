@@ -3,9 +3,15 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ExternalLink, Phone, MapPin, FileText, Calendar, Loader2 } from "lucide-react";
+import {
+  ExternalLink,
+  Phone,
+  MapPin,
+  FileText,
+  Calendar,
+  Loader2,
+} from "lucide-react";
 import {
   Dialog,
   DialogTrigger,
@@ -109,7 +115,7 @@ const CompanyPublicProfile = () => {
                 <h1 className="text-2xl md:text-4xl font-bold mb-2">
                   {companyData.CompanyDetail?.companyName || "Company Name"}
                 </h1>
-                <p className="text-lg md:text-xl text-gray-600">
+                <p className="text-lg md:text-xl text-gray-500">
                   {companyData.CompanyProfile?.overview ||
                     "Overview not available"}
                 </p>
@@ -199,7 +205,7 @@ const CompanyPublicProfile = () => {
                     <h2 className="text-xl md:text-2xl font-semibold mb-4">
                       About Us
                     </h2>
-                    <p className="text-gray-600 leading-relaxed">
+                    <p className="text-gray-500 leading-relaxed">
                       {companyData.CompanyProfile?.description ||
                         "Description not available"}
                     </p>
@@ -291,13 +297,12 @@ const CompanyPublicProfile = () => {
                     ? companyData.CompanyProfile.services
                         .split(",")
                         .map((service, index) => (
-                          <Badge
+                          <div
                             key={index}
-                            variant="secondary"
-                            className="text-base md:text-lg py-2 px-4 bg-blue-100 text-blue-800 justify-center"
+                            className="text-base md:text-lg py-2 px-4 bg-blue-100 text-blue-800 rounded-md shadow-sm break-words text-center"
                           >
                             {service.trim()}
-                          </Badge>
+                          </div>
                         ))
                     : "No services available"}
                 </div>
@@ -310,13 +315,26 @@ const CompanyPublicProfile = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {companyData.CompanyProfile?.CompanyGalleries?.length > 0
                     ? companyData.CompanyProfile.CompanyGalleries.map(
-                        (gallery) => (
-                          <img
-                            key={gallery.id}
-                            src={`${BASE_URL}${gallery.imageUrl}`}
-                            alt="Gallery"
-                            className="rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 object-cover h-48 w-full"
-                          />
+                        (gallery, index) => (
+                          <Dialog key={gallery.id}>
+                            <DialogTrigger asChild>
+                              <img
+                                src={`${BASE_URL}${gallery.imageUrl}`}
+                                alt={`Gallery ${index + 1}`}
+                                className="rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 object-cover h-48 w-full cursor-pointer"
+                              />
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-[720px]">
+                              <DialogTitle>
+                                Gallery Image {index + 1}
+                              </DialogTitle>
+                              <img
+                                src={`${BASE_URL}${gallery.imageUrl}`}
+                                alt={`Gallery ${index + 1}`}
+                                className="rounded-lg object-cover w-full"
+                              />
+                            </DialogContent>
+                          </Dialog>
                         )
                       )
                     : "No gallery images available"}
@@ -341,20 +359,20 @@ const CompanyPublicProfile = () => {
                               <h3 className="text-lg md:text-xl font-semibold mb-2">
                                 {solution.solutionName}
                               </h3>
-                              <p className="text-gray-600 mb-2">
+                              <p className="text-gray-500 mb-2">
                                 Type: {solution.solarPanelType}
                               </p>
-                              <p className="text-gray-600 mb-2">
+                              <p className="text-gray-500 mb-2">
                                 Power Output: {solution.powerOutput}W
                               </p>
-                              <p className="text-gray-600 mb-2">
+                              <p className="text-gray-500 mb-2">
                                 Efficiency: {solution.efficiency}%
                               </p>
-                              <p className="text-gray-600 mb-2">
+                              <p className="text-gray-500 mb-2">
                                 Warranty: {solution.warranty} years
                               </p>
-                              <p className="text-xl font-bold text-green-600 mt-4">
-                                ${solution.price}
+                              <p className="text-xl font-bold opacity-50 mt-4">
+                                RM{solution.price}
                               </p>
                             </CardContent>
                           </Card>

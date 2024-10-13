@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { useNavigate } from "react-router-dom";
 import SolarSolutionsSection from "./SolarSolutionsSection";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const CompanyProfile = () => {
   const [profile, setProfile] = useState(null);
@@ -76,7 +77,7 @@ const CompanyProfile = () => {
       profile.services);
 
   return (
-    <>
+    <ScrollArea className="h-[calc(100vh-4rem)] px-4">
       <div className="max-w-5xl container mx-auto p-6 space-y-8">
         {/* Company Overview */}
         <Card className="shadow-md">
@@ -242,7 +243,7 @@ const CompanyProfile = () => {
           navigate={navigate}
         />
       </div>
-    </>
+    </ScrollArea>
   );
 };
 

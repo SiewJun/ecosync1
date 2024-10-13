@@ -1,12 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, forwardRef } from "react";
 import PropTypes from "prop-types";
 import { motion } from "framer-motion";
 import {
   Card,
-  CardHeader,
-  CardTitle,
   CardContent,
-  CardFooter,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -17,19 +14,26 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { User, Mail, Phone, Home, Building, DollarSign } from "lucide-react";
+import { User, Mail, Phone, Home, DollarSign } from "lucide-react";
 import { loadGoogleMaps, geocodeAddress } from "@/utils/googleMaps";
+
+const InputWithIcon = forwardRef(({ icon: Icon, ...props }, ref) => (
+  <div className="relative">
+    <Icon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+    <Input {...props} ref={ref} className="pl-10 w-full border-none focus:ring-2 focus:ring-primary" />
+  </div>
+));
+
+InputWithIcon.displayName = "InputWithIcon";
 
 const UserDetailsForm = ({ onSubmit, initialData }) => {
   const [formData, setFormData] = useState(initialData);
   const [addressCoordinates, setAddressCoordinates] = useState(null);
-
   const addressInputRef = useRef(null);
   const autocompleteRef = useRef(null);
 
   useEffect(() => {
-    const initializeAutocomplete = () => {
+    loadGoogleMaps(() => {
       if (window.google && addressInputRef.current) {
         autocompleteRef.current = new window.google.maps.places.Autocomplete(
           addressInputRef.current,
@@ -38,13 +42,8 @@ const UserDetailsForm = ({ onSubmit, initialData }) => {
             fields: ["address_components", "formatted_address", "geometry"],
           }
         );
-
         autocompleteRef.current.addListener("place_changed", handlePlaceSelect);
       }
-    };
-
-    loadGoogleMaps(() => {
-      initializeAutocomplete();
     });
   }, []);
 
@@ -54,31 +53,18 @@ const UserDetailsForm = ({ onSubmit, initialData }) => {
 
   const handlePlaceSelect = () => {
     const place = autocompleteRef.current.getPlace();
-    if (!place.geometry) {
-      console.log("Returned place contains no geometry");
-      return;
+    if (place.geometry) {
+      const address = place.formatted_address;
+      const state = place.address_components.find(
+        (component) => component.types.includes("administrative_area_level_1")
+      )?.long_name || "";
+
+      setFormData((prev) => ({ ...prev, address, state }));
+      setAddressCoordinates({
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng(),
+      });
     }
-
-    const address = place.formatted_address;
-    let state = "";
-
-    for (const component of place.address_components) {
-      if (component.types.includes("administrative_area_level_1")) {
-        state = component.long_name;
-        break;
-      }
-    }
-
-    setFormData((prev) => ({
-      ...prev,
-      address: address,
-      state: state,
-    }));
-
-    setAddressCoordinates({
-      lat: place.geometry.location.lat(),
-      lng: place.geometry.location.lng(),
-    });
   };
 
   const handleChange = (name, value) => {
@@ -88,7 +74,6 @@ const UserDetailsForm = ({ onSubmit, initialData }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!addressCoordinates) {
-      // If coordinates are not set by autocomplete, try to geocode the address
       try {
         const coordinates = await geocodeAddress(formData.address);
         if (coordinates) {
@@ -99,260 +84,119 @@ const UserDetailsForm = ({ onSubmit, initialData }) => {
         }
       } catch (error) {
         console.error("Error geocoding address:", error);
-        // Handle the error (e.g., show an error message to the user)
       }
     } else {
-      // If coordinates are already set, submit the form
       onSubmit(formData, addressCoordinates);
     }
   };
-  
-  const inputVariants = {
-    focus: { scale: 1.02, transition: { duration: 0.2 } },
-  };
 
   return (
-    <Card className="w-full max-w-3xl mx-auto shadow-lg rounded-lg overflow-hidden">
-      <CardHeader className="bg-primary p-6">
-        <CardTitle className="text-3xl font-bold">Personal Details</CardTitle>
-      </CardHeader>
-      <form onSubmit={handleSubmit}>
-        <CardContent className="space-y-6 p-6">
+    <Card className="w-full max-w-2xl mx-auto shadow-sm rounded-xl overflow-hidden">
+      <CardContent className="p-8">
+        <h2 className="text-2xl font-semibold mb-6 text-gray-500">Personal Details</h2>
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label
-                htmlFor="salutation"
-                className="text-sm font-medium text-gray-700"
-              >
-                Salutation
-              </Label>
-              <Select
-                id="salutation"
-                name="salutation"
-                value={formData.salutation}
-                onValueChange={(value) => handleChange("salutation", value)}
-                required
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Mr">Mr.</SelectItem>
-                  <SelectItem value="Mrs">Mrs.</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label
-                htmlFor="name"
-                className="text-sm font-medium text-gray-700"
-              >
-                Name
-              </Label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <motion.div variants={inputVariants} whileFocus="focus">
-                  <Input
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={(e) => handleChange("name", e.target.value)}
-                    className="pl-10 w-full"
-                    placeholder="Full Name"
-                    required
-                    autoComplete="name"
-                  />
-                </motion.div>
-              </div>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label
-              htmlFor="email"
-              className="text-sm font-medium text-gray-700"
+            <Select
+              value={formData.salutation}
+              onValueChange={(value) => handleChange("salutation", value)}
+              required
             >
-              Email
-            </Label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <motion.div variants={inputVariants} whileFocus="focus">
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => handleChange("email", e.target.value)}
-                  className="pl-10 w-full"
-                  placeholder="Email Address"
-                  required
-                  autoComplete="email"
-                />
-              </motion.div>
-            </div>
+              <SelectTrigger className="w-full border-none focus:ring-2 focus:ring-primary">
+                <SelectValue placeholder="Salutation" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Mr">Mr.</SelectItem>
+                <SelectItem value="Mrs">Mrs.</SelectItem>
+                <SelectItem value="Ms">Ms.</SelectItem>
+                <SelectItem value="Dr">Dr.</SelectItem>
+              </SelectContent>
+            </Select>
+            <InputWithIcon
+              icon={User}
+              placeholder="Full Name"
+              value={formData.name}
+              onChange={(e) => handleChange("name", e.target.value)}
+              required
+            />
           </div>
-          <div className="space-y-2">
-            <Label
-              htmlFor="phone"
-              className="text-sm font-medium text-gray-700"
-            >
-              Phone Number
-            </Label>
-            <div className="relative">
-              <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <motion.div variants={inputVariants} whileFocus="focus">
-                <Input
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={(e) => handleChange("phone", e.target.value)}
-                  className="pl-10 w-full"
-                  placeholder="Phone Number"
-                  required
-                  autoComplete="tel"
-                />
-              </motion.div>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label
-              htmlFor="avgElectricityBill"
-              className="text-sm font-medium text-gray-700"
-            >
-              Average Monthly Electricity Bill (RM)
-            </Label>
-            <div className="relative">
-              <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <motion.div variants={inputVariants} whileFocus="focus">
-                <Input
-                  id="avgElectricityBill"
-                  name="avgElectricityBill"
-                  type="number"
-                  value={formData.avgElectricityBill}
-                  onChange={(e) =>
-                    handleChange("avgElectricityBill", e.target.value)
-                  }
-                  className="pl-10 w-full"
-                  placeholder="e.g. 200"
-                  required
-                  autoComplete="off"
-                />
-              </motion.div>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label
-              htmlFor="address"
-              className="text-sm font-medium text-gray-700"
-            >
-              Address
-            </Label>
-            <div className="relative">
-              <Home className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <motion.div variants={inputVariants} whileFocus="focus">
-                <Input
-                  id="address"
-                  name="address"
-                  ref={addressInputRef}
-                  value={formData.address}
-                  onChange={(e) => handleChange("address", e.target.value)}
-                  className="pl-10 w-full"
-                  placeholder="Start typing your address"
-                  required
-                  autoComplete="street-address"
-                />
-              </motion.div>
-            </div>
-          </div>
-
+          <InputWithIcon
+            icon={Mail}
+            type="email"
+            placeholder="Email Address"
+            value={formData.email}
+            onChange={(e) => handleChange("email", e.target.value)}
+            required
+          />
+          <InputWithIcon
+            icon={Phone}
+            placeholder="Phone Number"
+            value={formData.phone}
+            onChange={(e) => handleChange("phone", e.target.value)}
+            required
+          />
+          <InputWithIcon
+            icon={DollarSign}
+            type="number"
+            placeholder="Average Monthly Electricity Bill (RM)"
+            value={formData.avgElectricityBill}
+            onChange={(e) => handleChange("avgElectricityBill", e.target.value)}
+            required
+          />
+          <InputWithIcon
+            icon={Home}
+            placeholder="Start typing your address"
+            ref={addressInputRef}
+            value={formData.address}
+            onChange={(e) => handleChange("address", e.target.value)}
+            required
+          />
           <div className="grid grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label
-                htmlFor="propertyType"
-                className="text-sm font-medium text-gray-700"
-              >
-                Property Type
-              </Label>
-              <div className="relative">
-                <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <Select
-                  id="propertyType"
-                  name="propertyType"
-                  value={formData.propertyType}
-                  onValueChange={(value) => handleChange("propertyType", value)}
-                  required
-                >
-                  <SelectTrigger className="pl-10 w-full">
-                    <SelectValue placeholder="Select" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="bungalow">Bungalow</SelectItem>
-                    <SelectItem value="semi-detached">Semi Detached</SelectItem>
-                    <SelectItem value="terrace">
-                      Terrace/Linked House
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label
-                htmlFor="state"
-                className="text-sm font-medium text-gray-700"
-              >
-                State
-              </Label>
-              <Select
-                id="state"
-                name="state"
-                value={formData.state}
-                onValueChange={(value) => handleChange("state", value)}
-                required
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Johor">Johor</SelectItem>
-                  <SelectItem value="Kedah">Kedah</SelectItem>
-                  <SelectItem value="Kelantan">Kelantan</SelectItem>
-                  <SelectItem value="Melaka">Melaka</SelectItem>
-                  <SelectItem value="Negeri Sembilan">
-                    Negeri Sembilan
-                  </SelectItem>
-                  <SelectItem value="Pahang">Pahang</SelectItem>
-                  <SelectItem value="Perak">Perak</SelectItem>
-                  <SelectItem value="Perlis">Perlis</SelectItem>
-                  <SelectItem value="Pulau Pinang">Pulau Pinang</SelectItem>
-                  <SelectItem value="Sabah">Sabah</SelectItem>
-                  <SelectItem value="Sarawak">Sarawak</SelectItem>
-                  <SelectItem value="Selangor">Selangor</SelectItem>
-                  <SelectItem value="Terengganu">Terengganu</SelectItem>
-                  <SelectItem value="Wilayah Persekutuan Kuala Lumpur">Kuala Lumpur</SelectItem>
-                  <SelectItem value="Wilayah Persekutuan Labuan">Labuan</SelectItem>
-                  <SelectItem value="Putrajaya">Putrajaya</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <Select
+              value={formData.propertyType}
+              onValueChange={(value) => handleChange("propertyType", value)}
+              required
+            >
+              <SelectTrigger className="w-full border-none focus:ring-2 focus:ring-primary">
+                <SelectValue placeholder="Property Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="bungalow">Bungalow</SelectItem>
+                <SelectItem value="semi-detached">Semi Detached</SelectItem>
+                <SelectItem value="terrace">Terrace/Linked House</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select
+              value={formData.state}
+              onValueChange={(value) => handleChange("state", value)}
+              required
+            >
+              <SelectTrigger className="w-full border-none focus:ring-2 focus:ring-primary">
+                <SelectValue placeholder="State" />
+              </SelectTrigger>
+              <SelectContent>
+                {["Johor", "Kedah", "Kelantan", "Melaka", "Negeri Sembilan", "Pahang", "Perak", "Perlis", "Pulau Pinang", "Sabah", "Sarawak", "Selangor", "Terengganu", "Kuala Lumpur", "Labuan", "Putrajaya"].map((state) => (
+                  <SelectItem key={state} value={state}>{state}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-        </CardContent>
-        <CardFooter className="px-6 py-4">
           <motion.div
-            className="w-full"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
             <Button
               type="submit"
-              className="w-full font-semibold py-3 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out"
+              className="w-full bg-primary font-semibold py-3 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out"
             >
               Submit and Continue
             </Button>
           </motion.div>
-        </CardFooter>
-      </form>
+        </form>
+      </CardContent>
     </Card>
   );
 };
+
 UserDetailsForm.propTypes = {
   onSubmit: PropTypes.func.isRequired,
   initialData: PropTypes.shape({
@@ -360,14 +204,15 @@ UserDetailsForm.propTypes = {
     name: PropTypes.string,
     email: PropTypes.string,
     phone: PropTypes.string,
-    avgElectricityBill: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.number,
-    ]),
+    avgElectricityBill: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     address: PropTypes.string,
     propertyType: PropTypes.string,
     state: PropTypes.string,
   }).isRequired,
+};
+
+InputWithIcon.propTypes = {
+  icon: PropTypes.elementType.isRequired,
 };
 
 export default UserDetailsForm;

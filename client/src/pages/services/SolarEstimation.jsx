@@ -1,15 +1,7 @@
 import { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Sun,
-  MapPin,
-  Home,
-  DollarSign,
-  ChevronRight,
-  ChevronLeft,
-  Phone,
-  Globe,
-} from "lucide-react";
+import { MapPin, Phone, Globe, ArrowLeft, ArrowRight } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -30,13 +22,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import MapComponent from "@/_components/services/MapComponent";
-import { calculatePanels, calculateSavings } from "@/utils/SolarCalculator";
-import UserDetailsForm from "@/_components/services/UserDetailsForm";
-import NavBar from "@/_components/nav/NavBar";
-import PropTypes from "prop-types";
+import { Progress } from "@/components/ui/progress";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
+import MapComponent from "@/_components/services/MapComponent";
+import UserDetailsForm from "@/_components/services/UserDetailsForm";
+import NavBar from "@/_components/nav/NavBar";
+import { calculatePanels, calculateSavings } from "@/utils/SolarCalculator";
 
 const SolarEstimation = () => {
   const [step, setStep] = useState(1);
@@ -62,13 +54,7 @@ const SolarEstimation = () => {
   const [activeAuthTab, setActiveAuthTab] = useState("login");
   const [submittedQuotations, setSubmittedQuotations] = useState([]);
   const { toast } = useToast();
-
-  const steps = [
-    { title: "Your Details", icon: <Sun className="w-6 h-6" /> },
-    { title: "Map Your Roof", icon: <Home className="w-6 h-6" /> },
-    { title: "Panel Estimate", icon: <Sun className="w-6 h-6" /> },
-    { title: "Solar Savings", icon: <DollarSign className="w-6 h-6" /> },
-  ];
+  const totalSteps = 4;
 
   const handleRequestQuotation = async (companyId) => {
     try {
@@ -276,18 +262,35 @@ const SolarEstimation = () => {
         );
       case 2:
         return (
-          <MapComponent
-            center={location}
-            onPolygonComplete={handlePolygonComplete}
-          />
+          <div className="space-y-4">
+            <h2 className="text-2xl font-semibold mb-4">Map Your Roof</h2>
+            <p className="text-gray-600 mb-4">
+              Use the map below to outline your roof area. This helps us
+              estimate the number of solar panels that can be installed.
+            </p>
+            <MapComponent
+              center={location}
+              onPolygonComplete={handlePolygonComplete}
+            />
+            {isRoofMapped && (
+              <Alert variant="success" className="mt-4">
+                <AlertDescription>
+                  Roof area successfully mapped!
+                </AlertDescription>
+              </Alert>
+            )}
+          </div>
         );
       case 3:
         return (
-          <div className="text-center">
-            <p className="text-2xl font-semibold mb-4">
-              Estimated Panels:{" "}
-              <span className="text-green-500">{panelCount}</span>
-            </p>
+          <div className="text-center space-y-6">
+            <h2 className="text-2xl font-semibold mb-4">Panel Estimate</h2>
+            <div className="p-6 rounded-lg border-2">
+              <p className="text-4xl font-bold text-green-600 mb-2">
+                {panelCount}
+              </p>
+              <p className="text-gray-600">Estimated Panels</p>
+            </div>
             <Button
               onClick={handleCalculateSavings}
               className="w-full max-w-md"
@@ -300,7 +303,8 @@ const SolarEstimation = () => {
       case 4:
         return (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <h2 className="text-2xl font-semibold mb-4">Your Solar Savings</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <SavingsCard
                 title="Monthly Savings"
                 oldValue={savings.oldBill}
@@ -312,8 +316,6 @@ const SolarEstimation = () => {
                 value={savings.annualSavings}
                 unit="RM"
               />
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InfoCard
                 title="Recommended System"
                 value={String(savings.recommendedKWp)}
@@ -367,12 +369,12 @@ const SolarEstimation = () => {
         </Breadcrumb>
       </div>
       <div className="container mx-auto px-4 py-12">
-        <StepIndicator
-          currentStep={step}
-          totalSteps={steps.length}
-          steps={steps}
-        />
-
+        <div className="mb-8">
+          <Progress value={(step / totalSteps) * 100} className="w-full" />
+          <p className="text-center mt-2 text-sm text-gray-600">
+            Step {step} of {totalSteps}
+          </p>
+        </div>
         {error && (
           <Alert variant="destructive" className="mb-6">
             <AlertDescription>{error}</AlertDescription>
@@ -402,24 +404,22 @@ const SolarEstimation = () => {
             variant="outline"
             className="px-6 py-2"
           >
-            <ChevronLeft className="mr-2" /> Back
+            <ArrowLeft className="mr-2" /> Back
           </Button>
           <Button
-            onClick={() => setStep((prev) => Math.min(steps.length, prev + 1))}
-            disabled={step === steps.length || !canProceedToNextStep()}
+            onClick={() => setStep((prev) => Math.min(totalSteps, prev + 1))}
+            disabled={step === totalSteps || !canProceedToNextStep()}
             className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white"
           >
-            {step === steps.length ? "Finish" : "Next"}{" "}
-            <ChevronRight className="ml-2" />
+            {step === totalSteps ? "Finish" : "Next"}{" "}
+            <ArrowRight className="ml-2" />
           </Button>
         </div>
       </div>
       <Toaster />
       <AuthDialog
         isOpen={isAuthDialogOpen}
-        onClose={() => {
-          setIsAuthDialogOpen(false);
-        }}
+        onClose={() => setIsAuthDialogOpen(false)}
         onLogin={handleLogin}
         onRegister={handleRegister}
         error={authError}
@@ -429,27 +429,28 @@ const SolarEstimation = () => {
     </div>
   );
 };
-
-// eslint-disable-next-line no-unused-vars
 const StepIndicator = ({ currentStep, totalSteps, steps }) => (
-  <div className="flex justify-between items-center mb-12">
-    {steps.map((s, index) => (
-      <div
-        key={index}
-        className={`flex flex-col items-center ${
-          index < currentStep ? "text-green-500" : "text-gray-400"
-        }`}
-      >
+  <div className="mb-12">
+    <Progress value={(currentStep / totalSteps) * 100} className="h-2 mb-6" />
+    <div className="flex justify-between items-center">
+      {steps.map((s, index) => (
         <div
-          className={`rounded-full p-3 ${
-            index < currentStep ? "bg-green-100" : "bg-gray-100"
+          key={index}
+          className={`flex flex-col items-center ${
+            index < currentStep ? "text-green-500" : "text-gray-400"
           }`}
         >
-          {s.icon}
+          <div
+            className={`rounded-full p-3 ${
+              index < currentStep ? "bg-green-100" : "bg-gray-100"
+            }`}
+          >
+            {s.icon}
+          </div>
+          <span className="text-sm mt-2 font-medium">{s.title}</span>
         </div>
-        <span className="text-sm mt-2 font-medium">{s.title}</span>
-      </div>
-    ))}
+      ))}
+    </div>
   </div>
 );
 
@@ -497,7 +498,7 @@ const NearbyCompanies = ({
 }) => (
   <Card className="overflow-hidden shadow-lg rounded-lg">
     <CardContent className="p-8">
-      <h3 className="text-2xl font-semibold mb-8 text-gray-500">
+      <h3 className="text-2xl font-semibold mb-8">
         Suggested Nearby Solar Companies
       </h3>
       {isLoading ? (
@@ -512,18 +513,18 @@ const NearbyCompanies = ({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
-              className="rounded-lg shadow-md overflow-hidden bg-secondary hover:shadow-lg transition-shadow duration-300"
+              className="rounded-lg shadow-md overflow-hidden bg-white hover:shadow-lg transition-shadow duration-300"
             >
               <div className="p-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start mb-4">
-                  <h4 className="text-xl font-semibold mb-2 sm:mb-0">
+                  <h4 className="text-xl font-semibold mb-2 sm:mb-0 text-gray-800">
                     {company.CompanyDetail.companyName}
                   </h4>
-                  <Badge variant="outline" className="text-sm px-3 py-1">
+                  <Badge className="text-sm px-3 py-1">
                     {company.distance.toFixed(1)} km
                   </Badge>
                 </div>
-                <div className="space-y-3 text-sm text-secondary-foreground">
+                <div className="space-y-3 text-sm text-gray-600">
                   <div className="flex items-center">
                     <MapPin className="w-5 h-5 mr-3 text-gray-400 flex-shrink-0" />
                     <p className="break-words">
@@ -551,7 +552,7 @@ const NearbyCompanies = ({
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col sm:flex-row px-6 py-4 gap-3">
+              <div className="flex flex-col sm:flex-row px-6 py-4 gap-3 bg-white">
                 <Button
                   className="w-full sm:w-1/2 transition-colors duration-300"
                   onClick={() => handleRequestQuotation(company.id)}
@@ -573,7 +574,7 @@ const NearbyCompanies = ({
                     className="w-full transition-colors duration-300"
                   >
                     View Profile
-                    <ChevronRight className="ml-2 w-4 h-4" />
+                    <ArrowRight className="ml-2 w-4 h-4" />
                   </Button>
                 </a>
               </div>
@@ -583,7 +584,7 @@ const NearbyCompanies = ({
       ) : (
         <p className="text-center py-8 text-gray-600">
           No nearby solar companies found. Please try to reach out to the
-          companies.
+          companies directly.
         </p>
       )}
     </CardContent>
@@ -602,7 +603,7 @@ const AuthDialog = ({
   <Dialog open={isOpen} onOpenChange={onClose}>
     <DialogContent className="sm:max-w-[425px] rounded-lg shadow-xl">
       <DialogHeader>
-        <DialogTitle className="text-2xl font-semibold">
+        <DialogTitle className="text-2xl font-semibold text-gray-500">
           Authentication Required
         </DialogTitle>
         <DialogDescription className="text-gray-500">
@@ -637,7 +638,10 @@ const LoginForm = ({ onSubmit, error }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label htmlFor="email" className="block text-sm font-medium">
+        <label
+          htmlFor="email"
+          className="block text-sm font-medium text-gray-500"
+        >
           Email
         </label>
         <input
@@ -647,11 +651,14 @@ const LoginForm = ({ onSubmit, error }) => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="mt-1 block w-full px-3 py-2 text-black rounded-md shadow-sm focus:outline-none"
+          className="mt-1 block w-full px-3 py-2 text-gray-900 bg-gray-100 rounded-md shadow-sm focus:ring-2 focus:ring-green-500 focus:outline-none"
         />
       </div>
       <div>
-        <label htmlFor="password" className="block text-sm font-medium">
+        <label
+          htmlFor="password"
+          className="block text-sm font-medium text-gray-500"
+        >
           Password
         </label>
         <input
@@ -661,7 +668,7 @@ const LoginForm = ({ onSubmit, error }) => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          className="mt-1 block w-full px-3 py-2 text-black rounded-md shadow-sm focus:outline-none"
+          className="mt-1 block w-full px-3 py-2 text-gray-900 bg-gray-100 rounded-md shadow-sm focus:ring-2 focus:ring-green-500 focus:outline-none"
         />
       </div>
       {error && <p className="text-red-500 text-sm">{error}</p>}
@@ -685,7 +692,10 @@ const RegisterForm = ({ onSubmit, error }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label htmlFor="username" className="block text-sm font-medium">
+        <label
+          htmlFor="username"
+          className="block text-sm font-medium text-gray-500"
+        >
           Username
         </label>
         <input
@@ -695,11 +705,14 @@ const RegisterForm = ({ onSubmit, error }) => {
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
-          className="mt-1 block w-full px-3 py-2 text-black rounded-md shadow-sm focus:outline-none"
+          className="mt-1 block w-full px-3 py-2 text-gray-900 bg-gray-100 rounded-md shadow-sm focus:ring-2 focus:ring-green-500 focus:outline-none"
         />
       </div>
       <div>
-        <label htmlFor="email" className="block text-sm font-medium">
+        <label
+          htmlFor="email"
+          className="block text-sm font-medium text-gray-500"
+        >
           Email
         </label>
         <input
@@ -709,11 +722,14 @@ const RegisterForm = ({ onSubmit, error }) => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="mt-1 block w-full px-3 py-2 text-black rounded-md shadow-sm focus:outline-none"
+          className="mt-1 block w-full px-3 py-2 text-gray-900 bg-gray-100 rounded-md shadow-sm focus:ring-2 focus:ring-green-500 focus:outline-none"
         />
       </div>
       <div>
-        <label htmlFor="password" className="block text-sm font-medium">
+        <label
+          htmlFor="password"
+          className="block text-sm font-medium text-gray-500"
+        >
           Password
         </label>
         <input
@@ -723,7 +739,7 @@ const RegisterForm = ({ onSubmit, error }) => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          className="mt-1 block w-full px-3 py-2 text-black rounded-md shadow-sm focus:outline-none"
+          className="mt-1 block w-full px-3 py-2 text-gray-900 bg-gray-100 rounded-md shadow-sm focus:ring-2 focus:ring-green-500 focus:outline-none"
         />
       </div>
       {error && <p className="text-red-500 text-sm">{error}</p>}
