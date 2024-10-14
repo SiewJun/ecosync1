@@ -61,11 +61,7 @@ router.get("/consumer-projects", authenticateToken, async (req, res) => {
         },
       ],
     });
-
-    if (projects.length === 0) {
-      return res.status(404).json({ message: "No projects found for this consumer." });
-    }
-
+    
     res.status(200).json({ projects });
   } catch (error) {
     console.error("Error fetching consumer projects:", error);

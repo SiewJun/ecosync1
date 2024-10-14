@@ -45,6 +45,7 @@ export default function ConsumerProjectSteps() {
       setSteps(response.data.steps);
       setCurrentStep(response.data.steps.find(step => step.status === 'PENDING'));
       setLoading(false);
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast({
         title: 'Error',
@@ -79,6 +80,7 @@ export default function ConsumerProjectSteps() {
 
       fetchProjectSteps();
       setDialogOpen(false);
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast({
         title: 'Error',

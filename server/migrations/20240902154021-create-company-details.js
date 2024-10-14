@@ -44,6 +44,15 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
+      stripeAccountId: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
+      stripeOnboardingComplete: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

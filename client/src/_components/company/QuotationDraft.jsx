@@ -35,10 +35,10 @@ import PropTypes from "prop-types";
 const QuotationPreview = ({ quotationData, costBreakdown, timeline }) => {
   return (
     <ScrollArea className="h-[80vh] w-full">
-      <div className="p-6 space-y-6">
-        <h2 className="text-2xl font-bold">Quotation Preview</h2>
+      <div className="p-4 md:p-6 space-y-4 md:space-y-6">
+        <h2 className="text-xl md:text-2xl font-bold">Quotation Preview</h2>
         <p>Quotation Version: {quotationData.id}</p>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <h3 className="font-semibold">System Size</h3>
             <p>{quotationData.systemSize}</p>
@@ -141,7 +141,6 @@ const QuotationDraft = () => {
     roi: "",
     incentives: "",
     productWarranties: "",
-    status: "",
   });
   const [costBreakdown, setCostBreakdown] = useState([
     { item: "", quantity: "", unitPrice: "", totalPrice: "" },
@@ -333,28 +332,28 @@ const QuotationDraft = () => {
   };
 
   return (
-    <div className="min-h-screen container p-6">
+    <div className="min-h-screen container px-4 py-6 md:p-6">
       <Link
         to="/company-dashboard/company-quotation"
-        className="inline-flex items-center text-primary hover:text-black dark:hover:text-white mb-8"
+        className="inline-flex items-center text-primary hover:text-black dark:hover:text-white mb-4 md:mb-8"
       >
         <ArrowLeftCircle className="mr-2" size={16} />
         Back to Quotations
       </Link>
       <Card className="w-full max-w-4xl mx-auto">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold flex items-center justify-between">
-            <span className="flex items-center">
-              <FileEdit className="mr-2 h-6 w-6" />
+          <CardTitle className="text-xl md:text-2xl font-bold flex flex-col md:flex-row items-start md:items-center justify-between">
+            <span className="flex items-center mb-2 md:mb-0">
+              <FileEdit className="mr-2 h-5 w-5 md:h-6 md:w-6" />
               {isNewQuotation ? "Create New Quotation" : "Edit Quotation"}
             </span>
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="outline">
+                <Button variant="outline" className="mt-2 md:mt-0">
                   <Eye className="mr-2 h-4 w-4" /> Preview
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-4xl">
+              <DialogContent className="w-[95vw] max-w-4xl">
                 <QuotationPreview
                   quotationData={quotationData}
                   costBreakdown={costBreakdown}
@@ -366,7 +365,7 @@ const QuotationDraft = () => {
         </CardHeader>
         <CardContent>
           <ScrollArea className="h-[calc(95vh-200px)]">
-            <div className="p-6 space-y-6">
+            <div className="p-4 md:p-6 space-y-4 md:space-y-6">
               {isNewQuotation && (
                 <Alert className="mb-6">
                   <FileEdit className="h-4 w-4" />
@@ -394,8 +393,8 @@ const QuotationDraft = () => {
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
-              <form className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <form className="space-y-4 md:space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                   {Object.entries(quotationData).map(([key, value]) => (
                     <div key={key} className="space-y-2">
                       <Label htmlFor={key}>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</Label>
@@ -412,68 +411,74 @@ const QuotationDraft = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="costBreakdown">Cost Breakdown</Label>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Item</TableHead>
-                        <TableHead>Quantity</TableHead>
-                        <TableHead>Unit Price</TableHead>
-                        <TableHead>Total Price</TableHead>
-                        <TableHead>Action</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {costBreakdown.map((item, index) => (
-                        <TableRow key={index}>
-                          <TableCell>
-                            <Input
-                              value={item.item}
-                              onChange={(e) => handleCostBreakdownChange(index, "item", e.target.value)}
-                              placeholder="Item description"
-                              disabled={isFinalized}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <Input
-                              type="number"
-                              value={item.quantity}
-                              onChange={(e) => handleCostBreakdownChange(index, "quantity", e.target.value)}
-                              placeholder="Quantity"
-                              disabled={isFinalized}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <Input
-                              type="number"
-                              value={item.unitPrice}
-                              onChange={(e) => handleCostBreakdownChange(index, "unitPrice", e.target.value)}
-                              placeholder="Unit Price"
-                              disabled={isFinalized}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <Input
-                              value={item.totalPrice}
-                              readOnly
-                              placeholder="Total Price"
-                              disabled={isFinalized}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <Button
-                              type="button"
-                              variant="destructive"
-                              size="sm"
-                              onClick={() => removeCostBreakdownRow(index)}
-                              disabled={isFinalized}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </TableCell>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Item</TableHead>
+                          <TableHead>Quantity</TableHead>
+                          <TableHead>Unit Price</TableHead>
+                          <TableHead>Total Price</TableHead>
+                          <TableHead>Action</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {costBreakdown.map((item, index) => (
+                          <TableRow key={index}>
+                            <TableCell>
+                              <Input
+                                value={item.item}
+                                onChange={(e) => handleCostBreakdownChange(index, "item", e.target.value)}
+                                placeholder="Item description"
+                                disabled={isFinalized}
+                                className="w-full"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Input
+                                type="number"
+                                value={item.quantity}
+                                onChange={(e) => handleCostBreakdownChange(index, "quantity", e.target.value)}
+                                placeholder="Quantity"
+                                disabled={isFinalized}
+                                className="w-full"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Input
+                                type="number"
+                                value={item.unitPrice}
+                                onChange={(e) => handleCostBreakdownChange(index, "unitPrice", e.target.value)}
+                                placeholder="Unit Price"
+                                disabled={isFinalized}
+                                className="w-full"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Input
+                                value={item.totalPrice}
+                                readOnly
+                                placeholder="Total Price"
+                                disabled={isFinalized}
+                                className="w-full"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => removeCostBreakdownRow(index)}
+                                disabled={isFinalized}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
                   <Button
                     type="button"
                     onClick={addCostBreakdownRow}
@@ -509,64 +514,72 @@ const QuotationDraft = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="timeline">Project Timeline</Label>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Phase</TableHead>
-                        <TableHead>Start Date</TableHead>
-                        <TableHead>End Date</TableHead>
-                        <TableHead>Description</TableHead>
-                        <TableHead>Action</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {timeline.map((phase, index) => (
-                        <TableRow key={index}>
-                          <TableCell>
-                            <Input
-                              value={phase.phase}
-                              onChange={(e) => handleTimelineChange(index, "phase", e.target.value)}
-                              placeholder="Phase name"
-                              disabled={isFinalized}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <DateInput
-                              value={phase.startDate}
-                              onChange={(e) => handleTimelineChange(index, "startDate", e.target.value)}
-                              disabled={isFinalized}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <DateInput
-                              value={phase.endDate}
-                              onChange={(e) => handleTimelineChange(index, "endDate", e.target.value)}
-                              disabled={isFinalized}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <Input
-                              value={phase.description}
-                              onChange={(e) => handleTimelineChange(index, "description", e.target.value)}
-                              placeholder="Phase description"
-                              disabled={isFinalized}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <Button
-                              type="button"
-                              variant="destructive"
-                              size="sm"
-                              onClick={() => removeTimelinePhase(index)}
-                              disabled={isFinalized}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </TableCell>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Phase</TableHead>
+                          <TableHead>Start Date</TableHead>
+                          <TableHead>End Date</TableHead>
+                          <TableHead>Description</TableHead>
+                          <TableHead>Action</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {timeline.map((phase, index) => (
+                          <TableRow key={index}>
+                            <TableCell>
+                              <Input
+                                value={phase.phase}
+                                onChange={(e) => handleTimelineChange(index, "phase", e.target.value)}
+                                placeholder="Phase name"
+                                disabled={isFinalized}
+                                className="w-full"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Input
+                                type="date"
+                                value={phase.startDate}
+                                onChange={(e) => handleTimelineChange(index, "startDate", e.target.value)}
+                                disabled={isFinalized}
+                                className="w-full"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Input
+                                type="date"
+                                value={phase.endDate}
+                                onChange={(e) => handleTimelineChange(index, "endDate", e.target.value)}
+                                disabled={isFinalized}
+                                className="w-full"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Input
+                                value={phase.description}
+                                onChange={(e) => handleTimelineChange(index, "description", e.target.value)}
+                                placeholder="Phase description"
+                                disabled={isFinalized}
+                                className="w-full"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => removeTimelinePhase(index)}
+                                disabled={isFinalized}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
                   <Button
                     type="button"
                     onClick={addTimelinePhase}
@@ -576,12 +589,13 @@ const QuotationDraft = () => {
                     <Plus className="mr-2 h-4 w-4" /> Add Phase
                   </Button>
                 </div>
-                <div className="flex justify-end space-x-4">
+                <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-4">
                   <Button
                     type="button"
                     variant="outline"
                     onClick={() => handleSubmit("save")}
                     disabled={loading || isFinalized}
+                    className="w-full md:w-auto"
                   >
                     <Save className="mr-2 h-4 w-4" /> Save as Draft
                   </Button>
@@ -589,6 +603,7 @@ const QuotationDraft = () => {
                     type="button"
                     onClick={() => handleSubmit("finalize")}
                     disabled={loading || isFinalized || !canFinalize}
+                    className="w-full md:w-auto"
                   >
                     <Send className="mr-2 h-4 w-4" /> Finalize Quotation
                   </Button>
@@ -601,6 +616,7 @@ const QuotationDraft = () => {
     </div>
   );
 };
+
 QuotationPreview.propTypes = {
   quotationData: PropTypes.shape({
     id: PropTypes.string,

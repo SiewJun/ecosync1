@@ -30,7 +30,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
 
@@ -187,7 +186,6 @@ const SolarSolutionsSection = ({ profile, BASE_URL, onDelete, navigate }) => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <ScrollArea className="h-[calc(100vh-300px)] pr-4">
               <AnimatePresence>
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {filteredSolutions.map((solution) => (
@@ -205,7 +203,6 @@ const SolarSolutionsSection = ({ profile, BASE_URL, onDelete, navigate }) => {
                   ))}
                 </div>
               </AnimatePresence>
-            </ScrollArea>
           </>
         ) : (
           <div className="flex flex-col justify-center items-center h-64 rounded-lg">

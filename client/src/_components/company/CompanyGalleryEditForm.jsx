@@ -6,7 +6,6 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { AlertCircle, ArrowLeftCircle, Asterisk, Trash } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 const CompanyGalleryEditForm = () => {
   const [images, setImages] = useState([]); // State for selected images
@@ -116,7 +115,6 @@ const CompanyGalleryEditForm = () => {
 
   return (
     <>
-      <ScrollArea className="h-screen">
         <div className="p-6">
           <Link
             to="/company-dashboard/company-profile"
@@ -204,7 +202,6 @@ const CompanyGalleryEditForm = () => {
             </Card>
           </div>
         </div>
-      </ScrollArea>
     </>
   );
 };

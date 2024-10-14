@@ -9,7 +9,6 @@ import { AlertCircle, ArrowLeftCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { loadGoogleMaps } from "../../utils/googleMaps";
 import { Link } from "react-router-dom";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 const EditForm = () => {
   const [user, setUser] = useState(null);
@@ -129,15 +128,15 @@ const EditForm = () => {
 
   return (
     <>
-      <ScrollArea className="h-screen">
-        <div className="max-w-5xl p-6">
-          <Link
-            to="/company-dashboard/company-details"
-            className="inline-flex items-center text-primary hover:text-black dark:hover:text-white mb-8"
-          >
-            <ArrowLeftCircle className="mr-2" size={16} />
-            Back to Details
-          </Link>
+      <div className="p-6">
+        <Link
+          to="/company-dashboard/company-details"
+          className="inline-flex items-center text-primary hover:text-black dark:hover:text-white mb-8"
+        >
+          <ArrowLeftCircle className="mr-2" size={16} />
+          Back to Details
+        </Link>
+        <div className="max-w-5xl p-6 mx-auto">
           <div className="flex justify-center items-center">
             <Card className="shadow-lg w-full max-w-3xl">
               <CardHeader>
@@ -246,7 +245,7 @@ const EditForm = () => {
             </Card>
           </div>
         </div>
-      </ScrollArea>
+      </div>
     </>
   );
 };

@@ -155,10 +155,6 @@ router.get("/chats/consumer", authenticateToken, async (req, res) => {
     // Filter out chats that have no messages
     const chatsWithMessages = chats.filter((chat) => chat.Messages.length > 0);
 
-    if (!chatsWithMessages.length) {
-      return res.status(404).json({ message: "No chats with messages found" });
-    }
-
     res.json({ chats: chatsWithMessages });
   } catch (error) {
     console.error("Error fetching chats:", error);

@@ -169,7 +169,7 @@ const ChatCompany = () => {
   return (
     <div className="flex flex-col h-screen">
       <header className="p-4 shadow-md border-b">
-        <div className="flex items-center justify-between max-w-4xl mx-auto">
+        <div className="flex items-center justify-between max-w-5xl mx-auto">
           <div className="flex items-center space-x-4">
             <TooltipProvider>
               <Tooltip>

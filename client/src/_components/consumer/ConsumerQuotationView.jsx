@@ -142,11 +142,13 @@ const ConsumerQuotationView = () => {
     address,
     state,
     quotationStatus,
+    project,
   } = quotation;
 
   const canAccept =
     (quotationStatus === "RECEIVED" || quotationStatus === "FINALIZED") &&
-    (status === "DRAFT" || status === "FINALIZED");
+    (status === "DRAFT" || status === "FINALIZED") &&
+    !project; // Added check for project
 
   const isAccepted = quotationStatus === "ACCEPTED";
 
@@ -184,21 +186,26 @@ const ConsumerQuotationView = () => {
               </Avatar>
             </div>
           </div>
-
           {/* Content */}
           <div className="px-8 py-6 space-y-8">
+            {/* New Alert for when a project exists */}
+            {project && (
+              <Alert className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:border-0">
+                <AlertTitle className="font-semibold text-black">Quotation Accepted</AlertTitle>
+                <AlertDescription className="text-black">
+                  You have accepted this quotation. A project has been created. Once quotation is finalized, the installation process will begin soon.
+                </AlertDescription>
+              </Alert>
+            )}
             {/* Accepted Alert */}
             {isAccepted && (
               <Alert className="bg-gradient-to-r from-green-50 to-emerald-50 dark:border-0">
                 <AlertTitle className="font-semibold text-black">Quotation Accepted</AlertTitle>
                 <AlertDescription className="text-black">
-                  You have accepted this quotation. The company will be notified
-                  and will contact you soon to discuss the next steps in the
-                  installation process.
+                  You have accepted this quotation. A project has been created. TOnce quotation is finalized, the installation process will begin soon.
                 </AlertDescription>
               </Alert>
             )}
-
             {/* Accept Button */}
             {canAccept && (
               <div className="flex justify-end">
@@ -207,7 +214,6 @@ const ConsumerQuotationView = () => {
                 </Button>
               </div>
             )}
-
             {/* Accept Confirmation Dialog */}
             <AlertDialog
               open={isAcceptDialogOpen}
@@ -231,7 +237,6 @@ const ConsumerQuotationView = () => {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-
             {/* Client and Company Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-gray-50 p-6 rounded-lg">
               <DetailSection title="Client Details">
@@ -252,7 +257,6 @@ const ConsumerQuotationView = () => {
                 <p>{company.CompanyDetail.website}</p>
               </DetailSection>
             </div>
-
             {/* System Specifications and Energy Production */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white p-6 rounded-lg border border-gray-200">
               <DetailSection
@@ -278,7 +282,6 @@ const ConsumerQuotationView = () => {
                 </p>
               </DetailSection>
             </div>
-
             {/* Financial Benefits */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 bg-gray-50 p-6 rounded-lg">
               <DetailSection
@@ -299,7 +302,6 @@ const ConsumerQuotationView = () => {
                 <p>{incentives}</p>
               </DetailSection>
             </div>
-
             {/* Cost Breakdown */}
             <div className="bg-white p-6 rounded-lg border border-gray-200">
               <DetailSection
@@ -330,7 +332,6 @@ const ConsumerQuotationView = () => {
                 </div>
               </DetailSection>
             </div>
-
             {/* Warranties and Project Timeline */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-gray-50 p-6 rounded-lg">
               <DetailSection title="Warranties" icon={<Shield size={18} />}>
@@ -368,7 +369,6 @@ const ConsumerQuotationView = () => {
                 </div>
               </DetailSection>
             </div>
-
             {/* Footer */}
             <div className="flex justify-between items-center text-sm text-gray-500 pt-6 mt-8 border-t border-gray-200">
               <p>

@@ -15,6 +15,7 @@ const quotation = require('./routes/quotation');
 const getEstimate = require('./routes/getEstimate');
 const project = require('./routes/project');
 const projectStep = require('./routes/projectStep');  
+const stripe = require('./routes/stripe')
 
 dotenv.config();
 
@@ -41,6 +42,7 @@ app.use('/api/quotation', quotation);
 app.use('/api/get-estimate', getEstimate);
 app.use('/api/project', project);
 app.use('/api/project-step', projectStep);
+app.use('/api/stripe', stripe);
 // Other middlewares and route setups
 
 app.listen(5000, () => {

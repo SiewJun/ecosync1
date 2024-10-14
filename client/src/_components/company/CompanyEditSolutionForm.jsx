@@ -8,7 +8,6 @@ import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useNavigate, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 const UpdateSolutionForm = () => {
   const { id } = useParams();
@@ -91,7 +90,6 @@ const UpdateSolutionForm = () => {
 
   return (
     <>
-      <ScrollArea className="h-screen">
         <div className="p-6">
           <Link
             to="/company-dashboard/company-profile"
@@ -224,7 +222,6 @@ const UpdateSolutionForm = () => {
             </Card>
           </div>
         </div>
-      </ScrollArea>
     </>
   );
 };

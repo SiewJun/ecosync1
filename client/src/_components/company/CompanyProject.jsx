@@ -127,7 +127,8 @@ const CompanyProjects = () => {
   }
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="min-h-screen container p-6">
+      <div className="max-w-5xl mx-auto">
       {projects.length === 0 ? (
         <Card className="bg-muted max-w-5xl mx-auto">
           <CardContent className="flex flex-col items-center justify-center h-32">
@@ -482,6 +483,7 @@ const CompanyProjects = () => {
           </div>
         </DialogContent>
       </Dialog>
+      </div>
     </div>
   );
 };

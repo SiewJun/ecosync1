@@ -341,10 +341,10 @@ const CompanyProjectStep = () => {
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-6 max-w-4xl h-screen flex flex-col">
+    <div className="flex flex-col h-screen">
       <Toaster />
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 space-y-4 md:space-y-0">
-        <div className="flex items-center space-x-4">
+      <header className="p-4 shadow-md border-b">
+        <div className="flex items-center space-x-4 max-w-4xl mx-auto">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -368,20 +368,26 @@ const CompanyProjectStep = () => {
             </p>
           </div>
         </div>
-        <div className="flex space-x-2">
-          {isEditable && (
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  onClick={() => {
-                    resetForm();
-                    setIsDialogOpen(true);
-                  }}
-                  className="shadow-sm hover:shadow-md transition-shadow"
-                >
-                  <Plus className="h-4 w-4 mr-2" /> Add New Step
-                </Button>
-              </DialogTrigger>
+      </header>
+      
+      <div className="flex-1 overflow-hidden">
+        <ScrollArea className="h-full">
+          <div className="container mx-auto p-4 md:p-6 max-w-4xl">
+            <div className="flex justify-between items-center mb-6 md:mb-8">
+              <div className="flex space-x-2">
+                {isEditable && (
+                  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button
+                        onClick={() => {
+                          resetForm();
+                          setIsDialogOpen(true);
+                        }}
+                        className="shadow-sm hover:shadow-md transition-shadow"
+                      >
+                        <Plus className="h-4 w-4 mr-2" /> Add New Step
+                      </Button>
+                    </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                   <DialogTitle>
@@ -498,112 +504,113 @@ const CompanyProjectStep = () => {
                   </Button>
                 </DialogFooter>
               </DialogContent>
-            </Dialog>
-          )}
-          {canPublish && projectStatus !== "IN_PROGRESS" && isEditable && (
-            <Button onClick={handlePublishProject}>Publish</Button>
-          )}
-        </div>
-      </div>
-      {steps.length === 0 && !loading && (
-        <Card className="mt-8">
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
-            <CardDescription className="text-center">
-              No steps have been added to this project yet.
-              <br />
-              {isEditable
-                ? 'Click the "Add New Step" button to get started.'
-                : "Steps cannot be added as the project is no longer in PENDING status."}
-            </CardDescription>
-          </CardContent>
-        </Card>
-      )}
-      <ScrollArea className="flex-grow">
-        <div className="space-y-6">
-          {steps
-            .sort((a, b) => a.stepOrder - b.stepOrder)
-            .map((step) => (
-              <Card key={step.id} className="relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-1 h-full bg-primary"></div>
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between items-center">
-                    <CardTitle className="text-lg">{step.stepName}</CardTitle>
-                    {isEditable && (
-                      <div className="flex space-x-2">
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => openEditDialog(step)}
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Edit Step</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleDeleteStep(step.id)}
-                                className="hover:bg-destructive/10 transition-colors"
-                              >
-                                <Trash className="h-4 w-4 text-destructive" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Delete Step</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </div>
-                    )}
-                  </div>
-                  <CardDescription>
-                    Step {step.stepOrder}: {step.stepType}
+              </Dialog>
+                )}
+                {canPublish && projectStatus !== "IN_PROGRESS" && isEditable && (
+                  <Button onClick={handlePublishProject}>Publish</Button>
+                )}
+              </div>
+            </div>
+            {steps.length === 0 && !loading && (
+              <Card className="mt-8">
+                <CardContent className="flex flex-col items-center justify-center py-12">
+                  <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
+                  <CardDescription className="text-center">
+                    No steps have been added to this project yet.
+                    <br />
+                    {isEditable
+                      ? 'Click the "Add New Step" button to get started.'
+                      : "Steps cannot be added as the project is no longer in PENDING status."}
                   </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-sm text-muted-foreground mb-2">
-                    {step.description}
-                  </div>
-                  <div className="flex flex-wrap gap-4 text-sm">
-                    <div className="flex items-center">
-                      <Label className="mr-2 text-muted-foreground">Due:</Label>
-                      <span>
-                        {step.dueDate
-                          ? new Date(step.dueDate).toLocaleDateString()
-                          : "N/A"}
-                      </span>
-                    </div>
-                    {step.paymentAmount && (
-                      <div className="flex items-center">
-                        <Label className="mr-2 text-muted-foreground">
-                          Payment:
-                        </Label>
-                        <span>RM{step.paymentAmount}</span>
-                      </div>
-                    )}
-                    <div className="flex items-center">
-                      <Label className="mr-2 text-muted-foreground">
-                        Mandatory:
-                      </Label>
-                      <span>{step.isMandatory ? "Yes" : "No"}</span>
-                    </div>
-                  </div>
                 </CardContent>
               </Card>
-            ))}
-        </div>
-      </ScrollArea>
+            )}
+            <div className="space-y-6">
+              {steps
+                .sort((a, b) => a.stepOrder - b.stepOrder)
+                .map((step) => (
+                  <Card key={step.id} className="relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-1 h-full bg-primary"></div>
+              <CardHeader className="pb-2">
+                <div className="flex justify-between items-center">
+                  <CardTitle className="text-lg">{step.stepName}</CardTitle>
+                  {isEditable && (
+                    <div className="flex space-x-2">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => openEditDialog(step)}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Edit Step</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleDeleteStep(step.id)}
+                              className="hover:bg-destructive/10 transition-colors"
+                            >
+                              <Trash className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Delete Step</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                  )}
+                </div>
+                <CardDescription>
+                  Step {step.stepOrder}: {step.stepType}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-sm text-muted-foreground mb-2">
+                  {step.description}
+                </div>
+                <div className="flex flex-wrap gap-4 text-sm">
+                  <div className="flex items-center">
+                    <Label className="mr-2 text-muted-foreground">Due:</Label>
+                    <span>
+                      {step.dueDate
+                        ? new Date(step.dueDate).toLocaleDateString()
+                        : "N/A"}
+                    </span>
+                  </div>
+                  {step.paymentAmount && (
+                    <div className="flex items-center">
+                      <Label className="mr-2 text-muted-foreground">
+                        Payment:
+                      </Label>
+                      <span>RM{step.paymentAmount}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center">
+                    <Label className="mr-2 text-muted-foreground">
+                      Mandatory:
+                    </Label>
+                    <span>{step.isMandatory ? "Yes" : "No"}</span>
+                  </div>
+                </div>
+              </CardContent>
+              </Card>
+                ))}
+            </div>
+          </div>
+        </ScrollArea>
+      </div>
     </div>
   );
 };

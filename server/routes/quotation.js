@@ -14,6 +14,7 @@ const {
   Project
 } = require("../models");
 const authenticateToken = require("../middleware/auth");
+const checkStripeAccount = require('../middleware/checkStripeAccount');
 
 router.post("/submit-quotation", authenticateToken, async (req, res) => {
   try {
@@ -171,6 +172,11 @@ router.get("/consumer-quotations/:versionId", authenticateToken, async (req, res
                 },
               ],
             },
+            {
+              model: Project,
+              as: "project",
+              attributes: ["id", "status", "startDate", "endDate"],
+            },
           ],
         },
       ],
@@ -182,6 +188,7 @@ router.get("/consumer-quotations/:versionId", authenticateToken, async (req, res
 
     res.status(200).json(quotationVersion);
   } catch (error) {
+    console.error("Error retrieving quotation version details:", error);
     res.status(500).json({ error: "Failed to retrieve the quotation version details." });
   }
 });
@@ -441,7 +448,6 @@ router.post("/finalize", authenticateToken, async (req, res) => {
       { transaction: t }
     );
 
-    // Update the related quotation status to "RECEIVED"
     await quotation.update(
       {
         quotationStatus: "FINALIZED",

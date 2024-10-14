@@ -45,6 +45,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    stripeAccountId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    stripeOnboardingComplete: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
   }, {
     sequelize,
     modelName: 'CompanyDetail',

@@ -44,7 +44,7 @@ const CompanyQuotation = () => {
           }
         );
         setQuotations(response.data.quotations);
-      // eslint-disable-next-line no-unused-vars
+        // eslint-disable-next-line no-unused-vars
       } catch (err) {
         setError("Failed to load quotations. Please try again later.");
       } finally {
@@ -181,35 +181,33 @@ const CompanyQuotation = () => {
   return (
     <div className="min-h-screen container p-6">
       <div className="max-w-5xl mx-auto">
-        <ScrollArea className="h-[calc(100vh-250px)]">
-          <AnimatePresence>
-            {quotations.length ? (
-              <motion.div
-                layout
-                className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
-              >
-                {quotations.map((quotation) => (
-                  <QuotationCard key={quotation.id} quotation={quotation} />
-                ))}
-              </motion.div>
-            ) : (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Card className="bg-muted">
-                  <CardContent className="flex flex-col items-center justify-center h-32">
-                    <FileText className="h-8 w-8 text-muted-foreground mb-2" />
-                    <p className="text-center text-sm text-muted-foreground">
-                      No quotations available.
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </ScrollArea>
+        <AnimatePresence>
+          {quotations.length ? (
+            <motion.div
+              layout
+              className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+            >
+              {quotations.map((quotation) => (
+                <QuotationCard key={quotation.id} quotation={quotation} />
+              ))}
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Card className="bg-muted">
+                <CardContent className="flex flex-col items-center justify-center h-32">
+                  <FileText className="h-8 w-8 text-muted-foreground mb-2" />
+                  <p className="text-center text-sm text-muted-foreground">
+                    No quotations available.
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       <Dialog open={!!selectedQuotation} onOpenChange={closeDetails}>
@@ -226,7 +224,8 @@ const CompanyQuotation = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-xl font-semibold">
-                      {selectedQuotation.consumer?.username || "Unknown Consumer"}
+                      {selectedQuotation.consumer?.username ||
+                        "Unknown Consumer"}
                     </h3>
                     <p>Quotation ID: {selectedQuotation.id}</p>
                   </div>
