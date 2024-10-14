@@ -242,6 +242,13 @@ const CompanyDetail = () => {
                 <strong>Joined On:</strong>{" "}
                 {new Date(company.createdAt).toLocaleDateString()}
               </div>
+              <div>
+                <strong>Stripe Account ID:</strong> {company.stripeAccountId}
+              </div>
+              <div>
+                <strong>Stripe Onboarding Status:</strong>{" "}
+                {company.stripeOnboardingComplete ? "Onboarded" : "Not Onboarded"}
+              </div>
             </CardContent>
           </Card>
 

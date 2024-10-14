@@ -13,7 +13,6 @@ const useStripeOnboarding = () => {
         });
         setIsOnboarded(response.data.isOnboardingComplete);
       } catch (error) {
-        console.error('Error checking onboarding status:', error);
         setIsOnboarded(false);
       } finally {
         setIsLoading(false);

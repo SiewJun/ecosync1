@@ -28,6 +28,8 @@ router.get("/company-details", authenticateToken, async (req, res) => {
           "registrationNumber",
           "businessLicense",
           "createdAt",
+          "stripeAccountId",
+          "stripeOnboardingComplete",
         ],
       },
     });

@@ -9,11 +9,7 @@ router.post('/create-stripe-account', authenticateToken, async (req, res) => {
   const { email } = req.body;
 
   try {
-    const existingCompany = await CompanyDetail.findOne({ where: { userId: req.user.id } });
-    if (existingCompany && existingCompany.stripeAccountId) {
-      return res.status(400).json({ message: 'Stripe account already exists for this company.' });
-    }
-
+    // Create a connected account
     const account = await stripe.accounts.create({
       type: 'standard',
       country: 'MY',
@@ -24,12 +20,19 @@ router.post('/create-stripe-account', authenticateToken, async (req, res) => {
       },
     });
 
-    await CompanyDetail.upsert({
-      userId: req.user.id,
-      stripeAccountId: account.id,
-      stripeOnboardingComplete: false
-    });
+    // Update the account ID and onboarding status in your database
+    await CompanyDetail.update(
+      {
+        stripeAccountId: account.id,
+        stripeOnboardingComplete: false,
+        updatedAt: new Date(),
+      },
+      {
+        where: { userId: req.user.id },
+      }
+    );
 
+    // Generate an account link for onboarding
     const accountLink = await stripe.accountLinks.create({
       account: account.id,
       refresh_url: `${process.env.FRONTEND_URL}/company-dashboard/stripe-onboarding`,

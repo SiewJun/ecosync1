@@ -280,53 +280,49 @@ const CompanyDashboard = () => {
 
         <main className="flex-1 overflow-hidden">
           <ScrollArea className="h-full">
-              <Routes>
-                <Route path="company-details" element={<CompanyDetail />} />
-                <Route
-                  path="company-details/company-edit-details"
-                  element={<CompanyEditDetailsForm />}
-                />
-                <Route path="/company-profile" element={<CompanyProfile />} />
-                <Route
-                  path="/company-profile/company-profile-edit"
-                  element={<CompanyProfileEditForm />}
-                />
-                <Route
-                  path="/company-profile/company-gallery-edit"
-                  element={<CompanyGalleryEditForm />}
-                />
-                <Route
-                  path="/company-profile/company-add-solution"
-                  element={<CompanyAddSolutionForm />}
-                />
-                <Route
-                  path="/company-profile/company-edit-solution/:id"
-                  element={<CompanyEditSolutionForm />}
-                />
-                <Route path="/company-chat" element={<ChatListCompany />} />
-                <Route
-                  path="/company-chat/:consumerId"
-                  element={<ChatCompany />}
-                />
-                <Route
-                  path="/company-quotation"
-                  element={<CompanyQuotation />}
-                />
-                <Route
-                  path="company-quotation/:quotationId"
-                  element={<QuotationDraft />}
-                />
-                <Route path="/company-project" element={<CompanyProject />} />
-                <Route
-                  path="/company-project/:projectId"
-                  element={<CompanyProjectStep />}
-                />
-                <Route
-                  path="/stripe-onboarding"
-                  element={<StripeOnboarding />}
-                />
-                {/* Add other routes here */}
-              </Routes>
+            {/* Onboarding reminder */}
+            {!isOnboarded && <div className="p-6"><OnboardingReminder /></div> }
+            <Routes>
+              <Route path="company-details" element={<CompanyDetail />} />
+              <Route
+                path="company-details/company-edit-details"
+                element={<CompanyEditDetailsForm />}
+              />
+              <Route path="/company-profile" element={<CompanyProfile />} />
+              <Route
+                path="/company-profile/company-profile-edit"
+                element={<CompanyProfileEditForm />}
+              />
+              <Route
+                path="/company-profile/company-gallery-edit"
+                element={<CompanyGalleryEditForm />}
+              />
+              <Route
+                path="/company-profile/company-add-solution"
+                element={<CompanyAddSolutionForm />}
+              />
+              <Route
+                path="/company-profile/company-edit-solution/:id"
+                element={<CompanyEditSolutionForm />}
+              />
+              <Route path="/company-chat" element={<ChatListCompany />} />
+              <Route
+                path="/company-chat/:consumerId"
+                element={<ChatCompany />}
+              />
+              <Route path="/company-quotation" element={<CompanyQuotation />} />
+              <Route
+                path="company-quotation/:quotationId"
+                element={<QuotationDraft />}
+              />
+              <Route path="/company-project" element={<CompanyProject />} />
+              <Route
+                path="/company-project/:projectId"
+                element={<CompanyProjectStep />}
+              />
+              <Route path="/stripe-onboarding" element={<StripeOnboarding />} />
+              {/* Add other routes here */}
+            </Routes>
           </ScrollArea>
         </main>
       </div>
