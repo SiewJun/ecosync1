@@ -12,6 +12,7 @@ const useStripeOnboarding = () => {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
         setIsOnboarded(response.data.isOnboardingComplete);
+      // eslint-disable-next-line no-unused-vars
       } catch (error) {
         setIsOnboarded(false);
       } finally {
