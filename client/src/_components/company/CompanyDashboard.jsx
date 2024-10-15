@@ -41,6 +41,7 @@ const CompanyDashboard = () => {
   const [user, setUser] = useState(null);
   const location = useLocation();
   const { isOnboarded, isLoading } = useStripeOnboarding();
+  const isOnboardingPage = location.pathname === '/company-dashboard/stripe-onboarding';
 
   const handleLogout = async () => {
     try {
@@ -281,7 +282,7 @@ const CompanyDashboard = () => {
         <main className="flex-1 overflow-hidden">
           <ScrollArea className="h-full">
             {/* Onboarding reminder */}
-            {!isOnboarded && <div className="p-6"><OnboardingReminder /></div> }
+            {!isOnboarded &&  !isOnboardingPage && <div className="p-6"><OnboardingReminder /></div> }
             <Routes>
               <Route path="company-details" element={<CompanyDetail />} />
               <Route
