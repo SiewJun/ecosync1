@@ -32,7 +32,7 @@ const StripeOnboarding = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+    <div className="max-w-md mx-auto mt-10 p-6 border-2 rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-4">Create Your Stripe Account</h2>
       <p className="mb-4">In order to receive payments, you need to create a Stripe account.</p>
       {error && <Alert variant="destructive" className="mb-4"><AlertDescription>{error}</AlertDescription></Alert>}

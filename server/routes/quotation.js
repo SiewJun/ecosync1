@@ -277,7 +277,7 @@ router.get("/company-quotations", authenticateToken, async (req, res) => {
   }
 });
 
-router.post("/draft", authenticateToken, async (req, res) => {
+router.post("/draft", authenticateToken, checkStripeAccount, async (req, res) => {
   const userRole = req.user.role;
 
   if (userRole !== "COMPANY") {
@@ -361,7 +361,7 @@ router.post("/draft", authenticateToken, async (req, res) => {
   }
 });
 
-router.post("/finalize", authenticateToken, async (req, res) => {
+router.post("/finalize", authenticateToken, checkStripeAccount, async (req, res) => {
   const userRole = req.user.role;
 
   if (userRole !== "COMPANY") {
@@ -470,7 +470,7 @@ router.post("/finalize", authenticateToken, async (req, res) => {
 });
 
 // New endpoint to fetch the latest quotation version
-router.get("/latest/:quotationId", authenticateToken, async (req, res) => {
+router.get("/latest/:quotationId", authenticateToken, checkStripeAccount, async (req, res) => {
   const { quotationId } = req.params;
   const userRole = req.user.role;
 

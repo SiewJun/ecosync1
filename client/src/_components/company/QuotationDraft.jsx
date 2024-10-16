@@ -123,6 +123,24 @@ const QuotationPreview = ({ quotationData, costBreakdown, timeline }) => {
   );
 };
 
+const StripeOnboardingAlert = () => (
+  <Alert variant="destructive" className="mb-6">
+    <AlertCircle className="h-4 w-4" />
+    <AlertTitle>Stripe Onboarding Required</AlertTitle>
+    <AlertDescription>
+      You can&apos;t draft or finalize quotations because you haven&apos;t
+      completed Stripe onboarding, which is important for accepting payments in
+      the future.
+      <Link
+        to="/company-dashboard/stripe-onboarding"
+        className="block mt-2 text-primary underline hover:text-foreground"
+      >
+        Complete Stripe Onboarding
+      </Link>
+    </AlertDescription>
+  </Alert>
+);
+
 const QuotationDraft = () => {
   const { quotationId } = useParams();
   const navigate = useNavigate();
@@ -139,8 +157,6 @@ const QuotationDraft = () => {
     savings: "",
     paybackPeriod: "",
     roi: "",
-    incentives: "",
-    productWarranties: "",
   });
   const [costBreakdown, setCostBreakdown] = useState([
     { item: "", quantity: "", unitPrice: "", totalPrice: "" },
@@ -148,6 +164,8 @@ const QuotationDraft = () => {
   const [timeline, setTimeline] = useState([
     { phase: "", startDate: "", endDate: "", description: "" },
   ]);
+  const [stripeOnboardingComplete, setStripeOnboardingComplete] =
+    useState(true);
 
   useEffect(() => {
     if (quotationId) {
@@ -181,11 +199,23 @@ const QuotationDraft = () => {
         setCanFinalize(canFinalize);
         setIsNewQuotation(false);
       }
-      // eslint-disable-next-line no-unused-vars
     } catch (err) {
-      setError(
-        "An error occurred while fetching the quotation. Please try again."
-      );
+      if (
+        err.response &&
+        err.response.data.redirectUrl
+      ) {
+        if (
+          err.response.data.message ===
+          "Please complete Stripe onboarding first."
+        ) {
+          setStripeOnboardingComplete(false);
+        }
+        setError(err.response.data.message);
+      } else {
+        setError(
+          "An error occurred while fetching the quotation. Please try again."
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -366,6 +396,7 @@ const QuotationDraft = () => {
         <CardContent>
           <ScrollArea className="h-[calc(95vh-200px)]">
             <div className="p-4 md:p-6 space-y-4 md:space-y-6">
+              {!stripeOnboardingComplete && <StripeOnboardingAlert />}
               {isNewQuotation && (
                 <Alert className="mb-6">
                   <FileEdit className="h-4 w-4" />
@@ -397,14 +428,18 @@ const QuotationDraft = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                   {Object.entries(quotationData).map(([key, value]) => (
                     <div key={key} className="space-y-2">
-                      <Label htmlFor={key}>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</Label>
+                      <Label htmlFor={key}>
+                        {key
+                          .replace(/([A-Z])/g, " $1")
+                          .replace(/^./, (str) => str.toUpperCase())}
+                      </Label>
                       <Input
                         id={key}
                         name={key}
                         value={value}
                         onChange={handleChange}
                         placeholder={`Enter ${key}`}
-                        disabled={isFinalized}
+                        disabled={isFinalized || !stripeOnboardingComplete}
                       />
                     </div>
                   ))}
@@ -428,9 +463,17 @@ const QuotationDraft = () => {
                             <TableCell>
                               <Input
                                 value={item.item}
-                                onChange={(e) => handleCostBreakdownChange(index, "item", e.target.value)}
+                                onChange={(e) =>
+                                  handleCostBreakdownChange(
+                                    index,
+                                    "item",
+                                    e.target.value
+                                  )
+                                }
                                 placeholder="Item description"
-                                disabled={isFinalized}
+                                disabled={
+                                  isFinalized || !stripeOnboardingComplete
+                                }
                                 className="w-full"
                               />
                             </TableCell>
@@ -438,9 +481,17 @@ const QuotationDraft = () => {
                               <Input
                                 type="number"
                                 value={item.quantity}
-                                onChange={(e) => handleCostBreakdownChange(index, "quantity", e.target.value)}
+                                onChange={(e) =>
+                                  handleCostBreakdownChange(
+                                    index,
+                                    "quantity",
+                                    e.target.value
+                                  )
+                                }
                                 placeholder="Quantity"
-                                disabled={isFinalized}
+                                disabled={
+                                  isFinalized || !stripeOnboardingComplete
+                                }
                                 className="w-full"
                               />
                             </TableCell>
@@ -448,9 +499,17 @@ const QuotationDraft = () => {
                               <Input
                                 type="number"
                                 value={item.unitPrice}
-                                onChange={(e) => handleCostBreakdownChange(index, "unitPrice", e.target.value)}
+                                onChange={(e) =>
+                                  handleCostBreakdownChange(
+                                    index,
+                                    "unitPrice",
+                                    e.target.value
+                                  )
+                                }
                                 placeholder="Unit Price"
-                                disabled={isFinalized}
+                                disabled={
+                                  isFinalized || !stripeOnboardingComplete
+                                }
                                 className="w-full"
                               />
                             </TableCell>
@@ -459,7 +518,9 @@ const QuotationDraft = () => {
                                 value={item.totalPrice}
                                 readOnly
                                 placeholder="Total Price"
-                                disabled={isFinalized}
+                                disabled={
+                                  isFinalized || !stripeOnboardingComplete
+                                }
                                 className="w-full"
                               />
                             </TableCell>
@@ -531,9 +592,17 @@ const QuotationDraft = () => {
                             <TableCell>
                               <Input
                                 value={phase.phase}
-                                onChange={(e) => handleTimelineChange(index, "phase", e.target.value)}
+                                onChange={(e) =>
+                                  handleTimelineChange(
+                                    index,
+                                    "phase",
+                                    e.target.value
+                                  )
+                                }
                                 placeholder="Phase name"
-                                disabled={isFinalized}
+                                disabled={
+                                  isFinalized || !stripeOnboardingComplete
+                                }
                                 className="w-full"
                               />
                             </TableCell>
@@ -541,8 +610,16 @@ const QuotationDraft = () => {
                               <Input
                                 type="date"
                                 value={phase.startDate}
-                                onChange={(e) => handleTimelineChange(index, "startDate", e.target.value)}
-                                disabled={isFinalized}
+                                onChange={(e) =>
+                                  handleTimelineChange(
+                                    index,
+                                    "startDate",
+                                    e.target.value
+                                  )
+                                }
+                                disabled={
+                                  isFinalized || !stripeOnboardingComplete
+                                }
                                 className="w-full"
                               />
                             </TableCell>
@@ -550,17 +627,33 @@ const QuotationDraft = () => {
                               <Input
                                 type="date"
                                 value={phase.endDate}
-                                onChange={(e) => handleTimelineChange(index, "endDate", e.target.value)}
-                                disabled={isFinalized}
+                                onChange={(e) =>
+                                  handleTimelineChange(
+                                    index,
+                                    "endDate",
+                                    e.target.value
+                                  )
+                                }
+                                disabled={
+                                  isFinalized || !stripeOnboardingComplete
+                                }
                                 className="w-full"
                               />
                             </TableCell>
                             <TableCell>
                               <Input
                                 value={phase.description}
-                                onChange={(e) => handleTimelineChange(index, "description", e.target.value)}
+                                onChange={(e) =>
+                                  handleTimelineChange(
+                                    index,
+                                    "description",
+                                    e.target.value
+                                  )
+                                }
                                 placeholder="Phase description"
-                                disabled={isFinalized}
+                                disabled={
+                                  isFinalized || !stripeOnboardingComplete
+                                }
                                 className="w-full"
                               />
                             </TableCell>
@@ -594,7 +687,9 @@ const QuotationDraft = () => {
                     type="button"
                     variant="outline"
                     onClick={() => handleSubmit("save")}
-                    disabled={loading || isFinalized}
+                    disabled={
+                      loading || isFinalized || !stripeOnboardingComplete
+                    }
                     className="w-full md:w-auto"
                   >
                     <Save className="mr-2 h-4 w-4" /> Save as Draft
@@ -602,7 +697,12 @@ const QuotationDraft = () => {
                   <Button
                     type="button"
                     onClick={() => handleSubmit("finalize")}
-                    disabled={loading || isFinalized || !canFinalize}
+                    disabled={
+                      loading ||
+                      isFinalized ||
+                      !canFinalize ||
+                      !stripeOnboardingComplete
+                    }
                     className="w-full md:w-auto"
                   >
                     <Send className="mr-2 h-4 w-4" /> Finalize Quotation
