@@ -20,7 +20,7 @@ import { loadGoogleMaps, geocodeAddress } from "@/utils/googleMaps";
 const InputWithIcon = forwardRef(({ icon: Icon, ...props }, ref) => (
   <div className="relative">
     <Icon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-    <Input {...props} ref={ref} className="pl-10 w-full border-none focus:ring-2 focus:ring-primary" />
+    <Input {...props} ref={ref} className="pl-10 w-full focus:ring-2 focus:ring-primary" />
   </div>
 ));
 
@@ -101,7 +101,7 @@ const UserDetailsForm = ({ onSubmit, initialData }) => {
               onValueChange={(value) => handleChange("salutation", value)}
               required
             >
-              <SelectTrigger className="w-full border-none focus:ring-2 focus:ring-primary">
+              <SelectTrigger className="w-full focus:ring-2 focus:ring-primary">
                 <SelectValue placeholder="Salutation" />
               </SelectTrigger>
               <SelectContent>
@@ -156,7 +156,7 @@ const UserDetailsForm = ({ onSubmit, initialData }) => {
               onValueChange={(value) => handleChange("propertyType", value)}
               required
             >
-              <SelectTrigger className="w-full border-none focus:ring-2 focus:ring-primary">
+              <SelectTrigger className="w-full focus:ring-2 focus:ring-primary">
                 <SelectValue placeholder="Property Type" />
               </SelectTrigger>
               <SelectContent>
@@ -170,7 +170,7 @@ const UserDetailsForm = ({ onSubmit, initialData }) => {
               onValueChange={(value) => handleChange("state", value)}
               required
             >
-              <SelectTrigger className="w-full border-none focus:ring-2 focus:ring-primary">
+              <SelectTrigger className="w-full focus:ring-2 focus:ring-primary">
                 <SelectValue placeholder="State" />
               </SelectTrigger>
               <SelectContent>
