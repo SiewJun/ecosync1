@@ -3,7 +3,6 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const app = express();
 const path = require('path');
-const protectedRoutes = require('./routes/protectedRoute');
 const authRoutes = require('./routes/auth');
 const companyAuthRoutes = require('./routes/companyAuth');
 const companyDetailsProfile = require('./routes/companyDetailsProfile');
@@ -32,7 +31,6 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Use the auth routes
 app.use('/api/auth', authRoutes);
 app.use('/api/auth', companyAuthRoutes);
-app.use('/api', protectedRoutes);
 app.use('/api/company', companyDetailsProfile);
 app.use('/api/consumer', consumerProfile);
 app.use('/api/company-services', companyServices);
