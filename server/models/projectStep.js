@@ -36,9 +36,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: true,  // Only for payment-related steps
     },
-    filePath: {  // For document upload steps
-      type: DataTypes.STRING,
+    filePaths: {  // Changed from filePath to filePaths
+      type: DataTypes.JSON,
       allowNull: true,
+      defaultValue: [],  // Default to an empty array
     },
     stepOrder: {
       type: DataTypes.INTEGER,

@@ -14,10 +14,14 @@ const quotation = require('./routes/quotation');
 const getEstimate = require('./routes/getEstimate');
 const project = require('./routes/project');
 const projectStep = require('./routes/projectStep');  
-const stripe = require('./routes/stripe')
+const stripe = require('./routes/stripe');
 
 dotenv.config();
 
+// Stripe webhook route should be defined before any middleware that parses the request body
+app.post('/api/stripe/webhook', express.raw({type: 'application/json'}), stripe);
+
+// Apply other middleware for all other routes
 app.use(cors());
 app.use(express.json());
 
@@ -28,7 +32,6 @@ app.get('/', (req, res) => {
 // Serve static files from the 'uploads' directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Use the auth routes
 app.use('/api/auth', authRoutes);
 app.use('/api/auth', companyAuthRoutes);
 app.use('/api/company', companyDetailsProfile);
@@ -41,7 +44,6 @@ app.use('/api/get-estimate', getEstimate);
 app.use('/api/project', project);
 app.use('/api/project-step', projectStep);
 app.use('/api/stripe', stripe);
-// Other middlewares and route setups
 
 app.listen(5000, () => {
   console.log('Server is running on port 5000');

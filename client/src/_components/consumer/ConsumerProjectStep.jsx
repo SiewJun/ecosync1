@@ -26,8 +26,7 @@ export default function ConsumerProjectSteps() {
   const [loading, setLoading] = useState(true);
   const [currentStep, setCurrentStep] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [paymentAmount, setPaymentAmount] = useState('');
-  const [documentFile, setDocumentFile] = useState(null);
+  const [documentFiles, setDocumentFiles] = useState([]);
   const { toast } = useToast();
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
@@ -56,22 +55,56 @@ export default function ConsumerProjectSteps() {
     }
   };
 
+  const handleCheckout = async () => {
+    try {
+      const response = await axios.post(
+        `http://localhost:5000/api/stripe/create-checkout-session`,
+        {
+          projectId: project.id,
+          stepId: currentStep.id,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      window.location.href = response.data.url; // Redirect to Stripe Checkout
+    // eslint-disable-next-line no-unused-vars
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to initiate checkout. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  };
+
   const handleStepCompletion = async () => {
     if (!currentStep) return;
 
     try {
-      let payload = {};
-      if (currentStep.stepType === 'DEPOSIT' || currentStep.stepType === 'FINAL_PAYMENT') {
-        payload.paymentIntentId = 'mock_payment_intent_id';
-      } else if (currentStep.stepType === 'DOCUMENT_UPLOAD') {
-        payload.documentUrl = 'https://example.com/uploaded-document.pdf';
-      }
+      if (currentStep.stepType === 'DOCUMENT_UPLOAD') {
+        const formData = new FormData();
+        documentFiles.forEach((file) => {
+          formData.append('documents', file);
+        });
 
-      await axios.post(
-        `http://localhost:5000/api/consumer/${projectId}/steps/${currentStep.id}/complete`,
-        payload,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+        await axios.post(
+          `http://localhost:5000/api/project-step/consumer/${projectId}/steps/${currentStep.id}/upload`,
+          formData,
+          { 
+            headers: { 
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'multipart/form-data'
+            } 
+          }
+        );
+      } else {
+        await axios.post(
+          `http://localhost:5000/api/consumer/${projectId}/steps/${currentStep.id}/complete`,
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      }
 
       toast({
         title: 'Success',
@@ -80,6 +113,7 @@ export default function ConsumerProjectSteps() {
 
       fetchProjectSteps();
       setDialogOpen(false);
+      setDocumentFiles([]);
     // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast({
@@ -111,7 +145,7 @@ export default function ConsumerProjectSteps() {
 
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>{project.id}</CardTitle>
+          <CardTitle></CardTitle>
         </CardHeader>
         <CardContent>
           <p className="mb-2">Company: {project.company.username}</p>
@@ -129,10 +163,10 @@ export default function ConsumerProjectSteps() {
                 <CardContent className="flex items-center p-4">
                   <div className={`flex items-center justify-center w-10 h-10 rounded-full mr-4 
                     ${step.status === 'COMPLETED' ? 'bg-green-500' : 'bg-gray-200'}`}>
-                    <StepIcon className={`h-6 w-6 ${step.status === 'COMPLETED' ? 'text-white' : 'text-gray-500'}`} />
+                    <StepIcon className={`h-6 w-6 ${step.status === 'COMPLETED' ? 'text-foreground' : 'text-gray-500'}`} />
                   </div>
                   <div className="flex-grow">
-                    <h3 className="text-lg font-semibold">{step.stepName}</h3>
+                    <h3 className={ `text-lg font-semibold ${step.status === 'COMPLETED' ? 'text-black' : 'text-gray-500'}`}>{step.stepName}</h3>
                     <p className="text-sm text-gray-600">{step.description}</p>
                   </div>
                   {step.status === 'PENDING' && step.id === currentStep?.id && (
@@ -147,22 +181,17 @@ export default function ConsumerProjectSteps() {
                         <div className="py-4">
                           {step.stepType === 'DEPOSIT' || step.stepType === 'FINAL_PAYMENT' ? (
                             <div className="space-y-4">
-                              <p>Payment Amount: ${step.paymentAmount}</p>
-                              <Input
-                                type="text"
-                                placeholder="Card number"
-                                value={paymentAmount}
-                                onChange={(e) => setPaymentAmount(e.target.value)}
-                              />
-                              <Button onClick={handleStepCompletion}>Pay Now</Button>
+                              <p>Payment Amount: RM{step.paymentAmount}</p>
+                              <Button onClick={handleCheckout}>Proceed to Payment</Button>
                             </div>
                           ) : step.stepType === 'DOCUMENT_UPLOAD' ? (
                             <div className="space-y-4">
                               <Input
                                 type="file"
-                                onChange={(e) => setDocumentFile(e.target.files[0])}
+                                multiple
+                                onChange={(e) => setDocumentFiles(Array.from(e.target.files))}
                               />
-                              <Button onClick={handleStepCompletion}>Upload Document</Button>
+                              <Button onClick={handleStepCompletion}>Upload Documents</Button>
                             </div>
                           ) : (
                             <Button onClick={handleStepCompletion}>Mark as Completed</Button>

@@ -141,13 +141,14 @@ const StripeOnboardingAlert = () => (
   </Alert>
 );
 
+
 const QuotationDraft = () => {
   const { quotationId } = useParams();
+  const [quotationVersionId, setQuotationVersionid] = useState("");
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [isNewQuotation, setIsNewQuotation] = useState(false);
-  const [quotationVersionId, setQuotationVersionId] = useState(null);
   const [isFinalized, setIsFinalized] = useState(false);
   const [canFinalize, setCanFinalize] = useState(false);
   const [quotationData, setQuotationData] = useState({
@@ -157,6 +158,8 @@ const QuotationDraft = () => {
     savings: "",
     paybackPeriod: "",
     roi: "",
+    incentives: "",
+    productWarranties: "",
   });
   const [costBreakdown, setCostBreakdown] = useState([
     { item: "", quantity: "", unitPrice: "", totalPrice: "" },
@@ -164,8 +167,7 @@ const QuotationDraft = () => {
   const [timeline, setTimeline] = useState([
     { phase: "", startDate: "", endDate: "", description: "" },
   ]);
-  const [stripeOnboardingComplete, setStripeOnboardingComplete] =
-    useState(true);
+  const [stripeOnboardingComplete, setStripeOnboardingComplete] = useState(true);
 
   useEffect(() => {
     if (quotationId) {
@@ -186,35 +188,50 @@ const QuotationDraft = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+      setQuotationVersionid(response.data.id);
       if (response.data.isNewQuotation) {
         setIsNewQuotation(true);
         setCanFinalize(false);
       } else {
-        const { costBreakdown, timeline, canFinalize, ...rest } = response.data;
-        setQuotationData(rest);
+        const {
+          costBreakdown,
+          timeline,
+          canFinalize,
+          systemSize,
+          panelSpecifications,
+          estimatedEnergyProduction,
+          savings,
+          paybackPeriod,
+          roi,
+          incentives,
+          productWarranties,
+          status,
+        } = response.data;
+        
+        setQuotationData({
+          systemSize,
+          panelSpecifications,
+          estimatedEnergyProduction,
+          savings,
+          paybackPeriod,
+          roi,
+          incentives,
+          productWarranties,
+        });
         setCostBreakdown(costBreakdown || []);
         setTimeline(timeline || []);
-        setQuotationVersionId(response.data.id);
-        setIsFinalized(response.data.status === "FINALIZED");
+        setIsFinalized(status === "FINALIZED");
         setCanFinalize(canFinalize);
         setIsNewQuotation(false);
       }
     } catch (err) {
-      if (
-        err.response &&
-        err.response.data.redirectUrl
-      ) {
-        if (
-          err.response.data.message ===
-          "Please complete Stripe onboarding first."
-        ) {
+      if (err.response && err.response.data.redirectUrl) {
+        if (err.response.data.message === "Please complete Stripe onboarding first.") {
           setStripeOnboardingComplete(false);
         }
         setError(err.response.data.message);
       } else {
-        setError(
-          "An error occurred while fetching the quotation. Please try again."
-        );
+        setError("An error occurred while fetching the quotation. Please try again.");
       }
     } finally {
       setLoading(false);
@@ -402,8 +419,7 @@ const QuotationDraft = () => {
                   <FileEdit className="h-4 w-4" />
                   <AlertTitle>New Quotation</AlertTitle>
                   <AlertDescription>
-                    You&apos;re creating a new quotation draft. Fill in the
-                    details below and save when ready.
+                    You&apos;re creating a new quotation draft. Fill in the details below and save when ready.
                   </AlertDescription>
                 </Alert>
               )}
@@ -412,8 +428,7 @@ const QuotationDraft = () => {
                   <CheckCircle className="h-4 w-4" />
                   <AlertTitle>Finalized Quotation</AlertTitle>
                   <AlertDescription>
-                    This quotation has been finalized and sent to the consumer.
-                    You cannot make further changes.
+                    This quotation has been finalized and sent to the consumer. You cannot make further changes.
                   </AlertDescription>
                 </Alert>
               )}
@@ -433,14 +448,26 @@ const QuotationDraft = () => {
                           .replace(/([A-Z])/g, " $1")
                           .replace(/^./, (str) => str.toUpperCase())}
                       </Label>
-                      <Input
-                        id={key}
-                        name={key}
-                        value={value}
-                        onChange={handleChange}
-                        placeholder={`Enter ${key}`}
-                        disabled={isFinalized || !stripeOnboardingComplete}
-                      />
+                      {key === "incentives" || key === "productWarranties" ? (
+                        <Textarea
+                          id={key}
+                          name={key}
+                          value={value}
+                          onChange={handleChange}
+                          placeholder={`Enter ${key}`}
+                          disabled={isFinalized || !stripeOnboardingComplete}
+                          rows={3}
+                        />
+                      ) : (
+                        <Input
+                          id={key}
+                          name={key}
+                          value={value}
+                          onChange={handleChange}
+                          placeholder={`Enter ${key}`}
+                          disabled={isFinalized || !stripeOnboardingComplete}
+                        />
+                      )}
                     </div>
                   ))}
                 </div>
@@ -548,30 +575,6 @@ const QuotationDraft = () => {
                   >
                     <Plus className="mr-2 h-4 w-4" /> Add Item
                   </Button>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="incentives">Incentives</Label>
-                  <Textarea
-                    id="incentives"
-                    name="incentives"
-                    value={quotationData.incentives}
-                    onChange={handleChange}
-                    placeholder="List any applicable incentives or rebates"
-                    rows={3}
-                    disabled={isFinalized}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="productWarranties">Product Warranties</Label>
-                  <Textarea
-                    id="productWarranties"
-                    name="productWarranties"
-                    value={quotationData.productWarranties}
-                    onChange={handleChange}
-                    placeholder="Describe the warranties for panels, inverters, etc."
-                    rows={3}
-                    disabled={isFinalized}
-                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="timeline">Project Timeline</Label>

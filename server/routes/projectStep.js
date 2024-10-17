@@ -2,6 +2,7 @@ const express = require('express');
 const { User, Project, ProjectStep } = require("../models");
 const router = express.Router();
 const authenticateToken = require("../middleware/auth");
+const upload = require("../middleware/multer");
 
 // POST /:projectId/steps
 router.post('/:projectId/steps', authenticateToken, async (req, res) => {
@@ -168,6 +169,43 @@ router.put('/:projectId/publish', authenticateToken, async (req, res) => {
 
     res.status(200).json({ message: 'Project successfully published and status updated to STARTED.' });
   } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// POST /consumer/:projectId/steps/:stepId/upload
+router.post('/consumer/:projectId/steps/:stepId/upload', authenticateToken, upload.array('documents', 5), async (req, res) => {
+  const { projectId, stepId } = req.params;
+
+  try {
+    // Check if the project belongs to the consumer
+    const project = await Project.findOne({
+      where: { id: projectId, consumerId: req.user.id },
+    });
+
+    if (!project) {
+      return res.status(403).json({ error: 'Unauthorized: This project does not belong to you.' });
+    }
+
+    // Find the project step
+    const step = await ProjectStep.findOne({ where: { id: stepId, projectId: project.id } });
+    if (!step) {
+      return res.status(404).json({ error: 'Step not found.' });
+    }
+
+    // Get the uploaded file paths
+    const filePaths = req.files.map(file => file.path);
+
+    // Update the step with new file paths
+    const updatedFilePaths = [...(step.filePaths || []), ...filePaths];
+    await step.update({ 
+      filePaths: updatedFilePaths,
+      status: 'COMPLETED'  // Update status to COMPLETED
+    });
+
+    res.status(200).json({ message: 'Documents uploaded successfully', step });
+  } catch (error) {
+    console.error('Error uploading documents:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });

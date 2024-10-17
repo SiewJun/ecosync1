@@ -54,9 +54,10 @@ module.exports = {
         type: Sequelize.DECIMAL(10, 2),
         allowNull: true
       },
-      filePath: {
-        type: Sequelize.STRING,
-        allowNull: true
+      filePaths: {  // Changed from filePath to filePaths
+        type: Sequelize.JSON,
+        allowNull: true,
+        defaultValue: [],  // Default to an empty array
       },
       stepOrder: {
         type: Sequelize.INTEGER,
