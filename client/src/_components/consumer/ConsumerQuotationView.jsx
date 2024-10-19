@@ -55,6 +55,7 @@ const ConsumerQuotationView = () => {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
+        console.log(response.data);
         setQuotationDetails(response.data);
       } catch (err) {
         setError(
@@ -72,7 +73,7 @@ const ConsumerQuotationView = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.post(
-        `http://localhost:5000/api/quotation/accept/${quotationDetails.quotationId}`,
+        `http://localhost:5000/api/quotation/accept/${quotationDetails.id}`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -191,9 +192,9 @@ const ConsumerQuotationView = () => {
             {/* New Alert for when a project exists */}
             {project && (
               <Alert className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:border-0">
-                <AlertTitle className="font-semibold text-black">Quotation Accepted</AlertTitle>
+                <AlertTitle className="font-semibold text-black">Quotation Accepted & Project Created</AlertTitle>
                 <AlertDescription className="text-black">
-                  You have accepted this quotation. A project has been created. Once quotation is finalized, the installation process will begin soon.
+                  A project has been created. the installation process will begin soon.
                 </AlertDescription>
               </Alert>
             )}
@@ -202,7 +203,7 @@ const ConsumerQuotationView = () => {
               <Alert className="bg-gradient-to-r from-green-50 to-emerald-50 dark:border-0">
                 <AlertTitle className="font-semibold text-black">Quotation Accepted</AlertTitle>
                 <AlertDescription className="text-black">
-                  You have accepted this quotation. A project has been created. TOnce quotation is finalized, the installation process will begin soon.
+                  You have accepted this quotation. Once quotation is finalized, the installation process will begin soon.
                 </AlertDescription>
               </Alert>
             )}

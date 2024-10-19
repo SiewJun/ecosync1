@@ -3,7 +3,7 @@ const router = express.Router();
 const Stripe = require("stripe");
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 const authenticateToken = require("../middleware/auth");
-const { CompanyDetail, Project, ProjectStep } = require("../models");
+const { User, CompanyDetail, Project, ProjectStep } = require("../models");
 
 // Webhook handler
 router.post("/webhook", async (req, res) => {
@@ -120,6 +120,15 @@ router.post("/create-stripe-account", authenticateToken, async (req, res) => {
   const { email } = req.body;
 
   try {
+    const companyId = req.user.id;
+
+    const user = await User.findByPk(companyId);
+    if (user.role !== "COMPANY") {
+      return res
+        .status(403)
+        .json({ message: "Only company should create stripe account" });
+    }
+    
     // Create a connected account
     const account = await stripe.accounts.create({
       type: "standard",
@@ -154,12 +163,10 @@ router.post("/create-stripe-account", authenticateToken, async (req, res) => {
     res.json({ url: accountLink.url });
   } catch (error) {
     console.error("Error creating Stripe account:", error);
-    res
-      .status(500)
-      .json({
-        message: "Failed to create Stripe account.",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Failed to create Stripe account.",
+      error: error.message,
+    });
   }
 });
 
@@ -191,12 +198,10 @@ router.get("/check-onboarding-status", authenticateToken, async (req, res) => {
     res.json({ isOnboardingComplete });
   } catch (error) {
     console.error("Error checking onboarding status:", error);
-    res
-      .status(500)
-      .json({
-        message: "Failed to check onboarding status.",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Failed to check onboarding status.",
+      error: error.message,
+    });
   }
 });
 
@@ -204,6 +209,17 @@ router.post("/create-checkout-session", authenticateToken, async (req, res) => {
   const { projectId, stepId } = req.body;
 
   try {
+    const consumerId = req.user.id;
+
+    // Fetch user information to check their role
+    const user = await User.findByPk(consumerId);
+
+    if (user.role !== "CONSUMER") {
+      return res
+        .status(403)
+        .json({ message: "Only consumers should make payment" });
+    }
+
     // Find the step and company information
     const projectStep = await ProjectStep.findOne({
       where: { id: stepId, projectId },
@@ -255,12 +271,10 @@ router.post("/create-checkout-session", authenticateToken, async (req, res) => {
     res.json({ url: session.url });
   } catch (error) {
     console.error("Error creating checkout session:", error);
-    res
-      .status(500)
-      .json({
-        message: "Failed to create checkout session.",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Failed to create checkout session.",
+      error: error.message,
+    });
   }
 });
 

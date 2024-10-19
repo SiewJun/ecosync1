@@ -88,6 +88,36 @@ router.get('/consumer/:projectId/steps', authenticateToken, async (req, res) => 
   }
 });
 
+// GET /company/:projectId/steps
+router.get('/company/:projectId/steps', authenticateToken, async (req, res) => {
+  const { projectId } = req.params;
+
+  try {
+    // Check if the project belongs to the company
+    const project = await Project.findOne({
+      where: { id: projectId, companyId: req.user.id },
+      include: [
+        { model: User, as: 'consumer', attributes: ['username', 'avatarUrl'] },
+      ]
+    });
+
+    if (!project) {
+      return res.status(403).json({ error: 'Unauthorized: This project does not belong to you.' });
+    }
+
+    // Fetch the steps for the project
+    const steps = await ProjectStep.findAll({
+      where: { projectId: project.id },
+      order: [['stepOrder', 'ASC']]
+    });
+
+    res.status(200).json({ project, steps });
+  } catch (error) {
+    console.error('Error fetching company project steps:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 // PUT /:projectId/steps/:stepId
 router.put('/:projectId/steps/:stepId', authenticateToken, async (req, res) => {
   const { projectId, stepId } = req.params;
@@ -178,6 +208,17 @@ router.post('/consumer/:projectId/steps/:stepId/upload', authenticateToken, uplo
   const { projectId, stepId } = req.params;
 
   try {
+    const consumerId = req.user.id;
+
+    // Fetch user information to check their role
+    const user = await User.findByPk(consumerId);
+
+    if (user.role !== "CONSUMER") {
+      return res
+        .status(403)
+        .json({ message: "Only consumers can request a quotation." });
+    }
+
     // Check if the project belongs to the consumer
     const project = await Project.findOne({
       where: { id: projectId, consumerId: req.user.id },
@@ -200,12 +241,46 @@ router.post('/consumer/:projectId/steps/:stepId/upload', authenticateToken, uplo
     const updatedFilePaths = [...(step.filePaths || []), ...filePaths];
     await step.update({ 
       filePaths: updatedFilePaths,
-      status: 'COMPLETED'  // Update status to COMPLETED
+      status: 'COMPLETED',  // Update status to COMPLETED
+      completedAt: new Date()  // Add completedAt timestamp
     });
 
     res.status(200).json({ message: 'Documents uploaded successfully', step });
   } catch (error) {
     console.error('Error uploading documents:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// PUT /:projectId/steps/:stepId/complete
+router.put('/:projectId/steps/:stepId/complete', authenticateToken, async (req, res) => {
+  const { projectId, stepId } = req.params;
+
+  try {
+    // Check if the project belongs to the company
+    const project = await Project.findOne({
+      where: { id: projectId, companyId: req.user.id },
+    });
+
+    if (!project) {
+      return res.status(403).json({ error: 'Unauthorized: You do not own this project.' });
+    }
+
+    // Find the project step
+    const step = await ProjectStep.findOne({ where: { id: stepId, projectId: project.id } });
+    if (!step) {
+      return res.status(404).json({ error: 'Step not found.' });
+    }
+
+    // Update the step status to COMPLETED and add completedAt timestamp
+    await step.update({ 
+      status: 'COMPLETED',
+      completedAt: new Date()
+    });
+
+    res.status(200).json({ message: 'Step marked as completed successfully', step });
+  } catch (error) {
+    console.error('Error marking step as completed:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
