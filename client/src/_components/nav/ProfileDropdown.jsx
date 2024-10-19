@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -12,7 +13,6 @@ import {
   User,
   MessageSquare,
   FileText,
-  ReceiptText,
   LogOut,
   LayoutDashboard,
   Building,
@@ -77,15 +77,6 @@ const ProfileDropdown = ({ user }) => {
               >
                 <ClipboardList className="h-4 w-4" />
                 Projects
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link
-                to="/consumer-dashboard/consumer-invoice"
-                className="flex items-center gap-2 p-2 rounded-md cursor-pointer"
-              >
-                <ReceiptText className="h-4 w-4" />
-                Invoice
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
@@ -214,6 +205,14 @@ const ProfileDropdown = ({ user }) => {
       </DropdownMenuContent>
     </DropdownMenu>
   );
+};
+
+ProfileDropdown.propTypes = {
+  user: PropTypes.shape({
+    role: PropTypes.string.isRequired,
+    avatarUrl: PropTypes.string.isRequired,
+    username: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
 export default ProfileDropdown;

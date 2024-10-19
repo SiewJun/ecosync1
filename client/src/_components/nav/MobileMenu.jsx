@@ -14,7 +14,6 @@ import {
   LogOut,
   LayoutDashboard,
   Building,
-  ReceiptText,
   MessageCircle,
   FileCheck,
   ClipboardList,
@@ -29,135 +28,63 @@ import {
 } from "@/components/ui/accordion";
 import { DialogTitle, DialogDescription } from "@radix-ui/react-dialog";
 
-const renderDashboardLinks = (user) => {
-  const handleLogout = async () => {
-    try {
-      localStorage.removeItem("token");
-      window.location.href = "/signin";
-    } catch (error) {
-      console.error("Error during logout:", error);
-    }
+// Helper function for logout handling
+const handleLogout = async () => {
+  try {
+    localStorage.removeItem("token");
+    window.location.href = "/signin";
+  } catch (error) {
+    console.error("Error during logout:", error);
+  }
+};
+
+// Function to render dashboard links based on the user role
+const renderDashboardLinks = (user, linkClasses) => {
+  const links = {
+    CONSUMER: [
+      { to: "/consumer-dashboard/consumer-profile", label: "Profile", icon: User },
+      { to: "/consumer-dashboard/chat", label: "Chat", icon: MessageSquare },
+      { to: "/consumer-dashboard/consumer-quotation", label: "Quotation", icon: FileText },
+      { to: "/consumer-dashboard/consumer-project", label: "Projects", icon: ClipboardList },
+    ],
+    COMPANY: [
+      { to: "/company-dashboard", label: "Dashboard", icon: LayoutDashboard },
+      { to: "/company-dashboard/company-details", label: "Company Details", icon: Building },
+      { to: "/company-dashboard/company-profile", label: "Company Profile", icon: User },
+      { to: "/company-dashboard/company-chat", label: "Chat", icon: MessageCircle },
+      { to: "/company-dashboard/company-quotation", label: "Quotation", icon: FileCheck },
+      { to: "/company-dashboard/company-project", label: "Projects", icon: ClipboardList },
+    ],
+    ADMIN: [
+      { to: "/admindashboard", label: "Dashboard", icon: LayoutDashboard },
+    ],
   };
 
-  const linkClasses =
-    "py-2 px-4 rounded-md text-muted-foreground hover:text-primary-foreground hover:bg-primary transition-colors cursor-pointer";
-
-  switch (user?.role) {
-    case "CONSUMER":
-      return (
-        <>
-          <Link to="/consumer-dashboard/consumer-profile">
-            <li className={linkClasses}>
-              <User className="inline-block mr-2" />
-              Profile
-            </li>
-          </Link>
-          <Link to="/consumer-dashboard/chat">
-            <li className={linkClasses}>
-              <MessageSquare className="inline-block mr-2" />
-              Chat
-            </li>
-          </Link>
-          <Link to="/consumer-dashboard/consumer-quotation">
-            <li className={linkClasses}>
-              <FileText className="inline-block mr-2" />
-              Quotation
-            </li>
-          </Link>
-          <Link to="/consumer-dashboard/order">
-            <li className={linkClasses}>
-              <ClipboardList className="inline-block mr-2" />
-              Projects
-            </li>
-          </Link>
-          <Link to="/consumer-dashboard/invoice">
-            <li className={linkClasses}>
-              <ReceiptText className="inline-block mr-2" />
-              Invoice
-            </li>
-          </Link>
-          <li
-            className="py-2 px-4 rounded-md text-red-600 hover:text-red-800 hover:bg-red-100 font-semibold cursor-pointer transition-colors"
-            onClick={handleLogout}
-          >
-            <LogOut className="inline-block mr-2" />
-            Logout
+  return (
+    <>
+      {links[user?.role]?.map(({ to, label, icon: Icon }) => (
+        <Link key={to} to={to}>
+          <li className={linkClasses}>
+            <Icon className="inline-block mr-2" />
+            {label}
           </li>
-        </>
-      );
-    case "COMPANY":
-      return (
-        <>
-          <Link to="/company-dashboard">
-            <li className={linkClasses}>
-              <LayoutDashboard className="inline-block mr-2" />
-              Dashboard
-            </li>
-          </Link>
-          <Link to="/company-dashboard/company-details">
-            <li className={linkClasses}>
-              <Building className="inline-block mr-2" />
-              Company Details
-            </li>
-          </Link>
-          <Link to="/company-dashboard/company-profile">
-            <li className={linkClasses}>
-              <User className="inline-block mr-2" />
-              Company Profile
-            </li>
-          </Link>
-          <Link to="/company-dashboard/chat">
-            <li className={linkClasses}>
-              <MessageCircle className="inline-block mr-2" />
-              Chat
-            </li>
-          </Link>
-          <Link to="/company-dashboard/company-quotation">
-            <li className={linkClasses}>
-              <FileCheck className="inline-block mr-2" />
-              Quotation
-            </li>
-          </Link>
-          <Link to="/company-dashboard/projects">
-            <li className={linkClasses}>
-              <ClipboardList className="inline-block mr-2" />
-              Projects
-            </li>
-          </Link>
-          <li
-            className="py-2 px-4 rounded-md text-red-600 hover:text-red-800 hover:bg-red-100 font-semibold cursor-pointer transition-colors"
-            onClick={handleLogout}
-          >
-            <LogOut className="inline-block mr-2" />
-            Logout
-          </li>
-        </>
-      );
-    case "ADMIN":
-      return (
-        <>
-          <Link to="/admindashboard">
-            <li className={linkClasses}>
-              <LayoutDashboard className="inline-block mr-2" />
-              Dashboard
-            </li>
-          </Link>
-          <li
-            className="py-2 px-4 rounded-md text-red-600 hover:text-red-800 hover:bg-red-100 font-semibold cursor-pointer transition-colors"
-            onClick={handleLogout}
-          >
-            <LogOut className="inline-block mr-2" />
-            Logout
-          </li>
-        </>
-      );
-    default:
-      return null;
-  }
+        </Link>
+      ))}
+      <li
+        className="py-2 px-4 rounded-md text-red-600 hover:text-red-800 hover:bg-red-100 font-semibold cursor-pointer transition-colors"
+        onClick={handleLogout}
+      >
+        <LogOut className="inline-block mr-2" />
+        Logout
+      </li>
+    </>
+  );
 };
 
 const MobileMenu = ({ user }) => {
   const [open, setOpen] = useState(false);
+  const linkClasses =
+    "py-2 px-4 rounded-md text-muted-foreground hover:text-primary-foreground hover:bg-primary transition-colors cursor-pointer";
 
   return (
     <div className="flex h-14 items-center gap-4">
@@ -168,12 +95,15 @@ const MobileMenu = ({ user }) => {
             <span className="sr-only">Toggle navigation menu</span>
           </Button>
         </SheetTrigger>
+
         <SheetContent side="right" className="flex flex-col p-4">
           <DialogTitle className="sr-only">Navigation Menu</DialogTitle>
           <DialogDescription className="sr-only">
-            This is the mobile navigation menu for the Ecosync website.
+            Mobile navigation menu for the Ecosync website.
           </DialogDescription>
-          <nav className="space-y-4 mt-10 text-lg font-medium">
+
+          {/* Main Navigation */}
+          <nav className="space-y-4 mt-8 text-lg font-medium">
             <Accordion type="single" collapsible>
               <AccordionItem value="services">
                 <AccordionTrigger className="flex items-center gap-2">
@@ -182,19 +112,17 @@ const MobileMenu = ({ user }) => {
                 </AccordionTrigger>
                 <AccordionContent>
                   <ul className="pl-4 mt-2 space-y-2">
-                    <li className="py-2 px-4 rounded-md text-muted-foreground hover:text-primary-foreground hover:bg-primary transition-colors">
+                    <li className={linkClasses}>
                       <Link to="/about">About Ecosync</Link>
                     </li>
-                    <li className="py-2 px-4 rounded-md text-muted-foreground hover:text-primary-foreground hover:bg-primary transition-colors">
+                    <li className={linkClasses}>
                       <Link to="/solar-estimation">Get Estimate</Link>
                     </li>
-                    <li className="py-2 px-4 rounded-md text-muted-foreground hover:text-primary-foreground hover:bg-primary transition-colors">
+                    <li className={linkClasses}>
                       <Link to="/installers">Search Solar Installers</Link>
                     </li>
-                    <li className="py-2 px-4 rounded-md text-muted-foreground hover:text-primary-foreground hover:bg-primary transition-colors">
-                      <Link to="/solar-solutions">
-                        Search/Compare Solar Solutions
-                      </Link>
+                    <li className={linkClasses}>
+                      <Link to="/solar-solutions">Search/Compare Solar Solutions</Link>
                     </li>
                   </ul>
                 </AccordionContent>
@@ -206,7 +134,9 @@ const MobileMenu = ({ user }) => {
                   Calculator
                 </AccordionTrigger>
                 <AccordionContent>
-                  <ul className="pl-4 mt-2 space-y-2"></ul>
+                  <ul className="pl-4 mt-2 space-y-2">
+                    {/* Add Calculator Links if needed */}
+                  </ul>
                 </AccordionContent>
               </AccordionItem>
 
@@ -218,7 +148,7 @@ const MobileMenu = ({ user }) => {
                 <AccordionContent>
                   <ul className="pl-4 mt-2 space-y-2">
                     {user ? (
-                      renderDashboardLinks(user)
+                      renderDashboardLinks(user, linkClasses)
                     ) : (
                       <Link to="/signin">
                         <li className="py-2 px-4 rounded-md text-muted-foreground transition-colors">

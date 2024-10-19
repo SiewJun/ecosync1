@@ -36,7 +36,7 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
 const ConsumerQuotationView = () => {
   const { versionId } = useParams();
@@ -192,18 +192,24 @@ const ConsumerQuotationView = () => {
             {/* New Alert for when a project exists */}
             {project && (
               <Alert className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:border-0">
-                <AlertTitle className="font-semibold text-black">Quotation Accepted & Project Created</AlertTitle>
+                <AlertTitle className="font-semibold text-black">
+                  Quotation Accepted & Project Created
+                </AlertTitle>
                 <AlertDescription className="text-black">
-                  A project has been created. the installation process will begin soon.
+                  A project has been created. the installation process will
+                  begin soon.
                 </AlertDescription>
               </Alert>
             )}
             {/* Accepted Alert */}
             {isAccepted && (
               <Alert className="bg-gradient-to-r from-green-50 to-emerald-50 dark:border-0">
-                <AlertTitle className="font-semibold text-black">Quotation Accepted</AlertTitle>
+                <AlertTitle className="font-semibold text-black">
+                  Quotation Accepted
+                </AlertTitle>
                 <AlertDescription className="text-black">
-                  You have accepted this quotation. Once quotation is finalized, the installation process will begin soon.
+                  You have accepted this quotation. Once quotation is finalized,
+                  the installation process will begin soon.
                 </AlertDescription>
               </Alert>
             )}
@@ -242,7 +248,9 @@ const ConsumerQuotationView = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-gray-50 p-6 rounded-lg">
               <DetailSection title="Client Details">
                 <p className="mb-1">
-                  <span className="font-semibold">{salutation} {name}</span>
+                  <span className="font-semibold">
+                    {salutation} {name}
+                  </span>
                 </p>
                 <p className="mb-1">{email}</p>
                 <p className="mb-1">{phoneNumber}</p>
@@ -252,7 +260,9 @@ const ConsumerQuotationView = () => {
               </DetailSection>
               <DetailSection title="Company Details">
                 <p className="mb-1">
-                  <span className="font-semibold">{company.CompanyDetail.companyName}</span>
+                  <span className="font-semibold">
+                    {company.CompanyDetail.companyName}
+                  </span>
                 </p>
                 <p className="mb-1">{company.CompanyDetail.phoneNumber}</p>
                 <p>{company.CompanyDetail.website}</p>
@@ -265,10 +275,12 @@ const ConsumerQuotationView = () => {
                 icon={<Sun size={18} />}
               >
                 <p className="mb-2">
-                  <span className="font-semibold">System Size:</span> {systemSize}
+                  <span className="font-semibold">System Size:</span>{" "}
+                  {systemSize}
                 </p>
                 <p>
-                  <span className="font-semibold">Panel Specifications:</span> {panelSpecifications}
+                  <span className="font-semibold">Panel Specifications:</span>{" "}
+                  {panelSpecifications}
                 </p>
               </DetailSection>
               <DetailSection
@@ -276,10 +288,14 @@ const ConsumerQuotationView = () => {
                 icon={<Battery size={18} />}
               >
                 <p className="mb-2">
-                  <span className="font-semibold">Estimated Production:</span> {estimatedEnergyProduction}
+                  <span className="font-semibold">Estimated Production:</span>{" "}
+                  {estimatedEnergyProduction}
                 </p>
                 <p>
-                  <span className="font-semibold">Current Avg. Monthly Bill:</span> RM{averageMonthlyElectricityBill}
+                  <span className="font-semibold">
+                    Current Avg. Monthly Bill:
+                  </span>{" "}
+                  RM{averageMonthlyElectricityBill}
                 </p>
               </DetailSection>
             </div>
@@ -304,7 +320,7 @@ const ConsumerQuotationView = () => {
               </DetailSection>
             </div>
             {/* Cost Breakdown */}
-            <div className="bg-white p-6 rounded-lg border border-gray-200">
+            <div className="md:flex grid grid-cols-1 md:grid-cols-2 gap-8 bg-gray-50 p-6 rounded-lg">
               <DetailSection
                 title="Cost Breakdown"
                 icon={<DollarSign size={18} />}
@@ -314,8 +330,12 @@ const ConsumerQuotationView = () => {
                     <TableHeader>
                       <TableRow>
                         <TableHead className="font-semibold">Item</TableHead>
-                        <TableHead className="font-semibold">Quantity</TableHead>
-                        <TableHead className="font-semibold">Unit Price</TableHead>
+                        <TableHead className="font-semibold">
+                          Quantity
+                        </TableHead>
+                        <TableHead className="font-semibold">
+                          Unit Price
+                        </TableHead>
                         <TableHead className="font-semibold">Total</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -347,9 +367,15 @@ const ConsumerQuotationView = () => {
                     <TableHeader>
                       <TableRow>
                         <TableHead className="font-semibold">Phase</TableHead>
-                        <TableHead className="font-semibold">Start Date</TableHead>
-                        <TableHead className="font-semibold">End Date</TableHead>
-                        <TableHead className="font-semibold">Description</TableHead>
+                        <TableHead className="font-semibold">
+                          Start Date
+                        </TableHead>
+                        <TableHead className="font-semibold">
+                          End Date
+                        </TableHead>
+                        <TableHead className="font-semibold">
+                          Description
+                        </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>

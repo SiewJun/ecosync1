@@ -29,7 +29,6 @@ import {
 } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-
 import PropTypes from "prop-types";
 
 const QuotationPreview = ({ quotationData, costBreakdown, timeline }) => {

@@ -1,10 +1,8 @@
 import { Link, Routes, Route, useLocation } from "react-router-dom";
 import {
-  Home,
   User,
   MessageSquare,
   FileText,
-  ReceiptText,
   Menu,
   LogOut,
   ClipboardList,
@@ -81,15 +79,6 @@ const ConsumerDashboard = () => {
         </div>
         <nav className="flex-1 overflow-y-auto px-2 py-4">
           <Link
-            to="/consumer-dashboard"
-            className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
-              "/consumer-dashboard"
-            )}`}
-          >
-            <Home className="h-4 w-4" />
-            Dashboard
-          </Link>
-          <Link
             to="/consumer-dashboard/consumer-profile"
             className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
               "/consumer-dashboard/consumer-profile"
@@ -113,9 +102,7 @@ const ConsumerDashboard = () => {
             to="/consumer-dashboard/consumer-quotation"
             className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
               "/consumer-dashboard/consumer-quotation"
-            )} ${getLinkClasses(
-              "/consumer-dashboard/consumer-quotation/:id"
-            )}`}
+            )} ${getLinkClasses("/consumer-dashboard/consumer-quotation/:id")}`}
           >
             <FileText className="h-4 w-4" />
             Quotation
@@ -124,21 +111,10 @@ const ConsumerDashboard = () => {
             to="/consumer-dashboard/consumer-project"
             className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
               "/consumer-dashboard/consumer-project"
-            )} ${getLinkClasses(
-              "/consumer-dashboard/consumer-project/:id"
-            )}`}
+            )} ${getLinkClasses("/consumer-dashboard/consumer-project/:id")}`}
           >
             <ClipboardList className="h-4 w-4" />
             Projects
-          </Link>
-          <Link
-            to="/consumer-dashboard/company-quotation"
-            className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
-              "/consumer-dashboard/company-quotation"
-            )}`}
-          >
-            <ReceiptText className="h-4 w-4" />
-            Invoice
           </Link>
         </nav>
         <div className="p-4">
@@ -171,18 +147,9 @@ const ConsumerDashboard = () => {
                 <Description>Menu for navigating the dashboard</Description>
               </div>
               <nav className="flex flex-col flex-1 gap-2 text-lg font-medium">
-                <div className="flex items-center gap-2 text-lg font-semibold">
+                <div className="flex items-center gap-2 text-lg font-semibold mb-6">
                   <EcoSyncLogo />
                 </div>
-                <Link
-                  to="/consumer-dashboard"
-                  className={`mx-[-0.65rem] flex items-center gap-4 mt-5 rounded-xl px-3 py-2 ${getLinkClasses(
-                    "/consumer-dashboard"
-                  )}`}
-                >
-                  <Home className="h-5 w-5" />
-                  Dashboard
-                </Link>
                 <Link
                   to="/consumer-dashboard/consumer-profile"
                   className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
@@ -225,16 +192,6 @@ const ConsumerDashboard = () => {
                   <ClipboardList className="h-4 w-4" />
                   Projects
                 </Link>
-                <Link
-                  to="/consumer-dashboard/company-quotation"
-                  className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
-                    "/consumer-dashboard/company-quotation"
-                  )}`}
-                >
-                  <ReceiptText className="h-4 w-4" />
-                  Invoice
-                </Link>
-
                 {/* Add mt-auto here to push the logout button to the bottom */}
                 <div
                   className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-red-600 hover:text-red-800 hover:bg-red-100 cursor-pointer transition-colors mt-auto"
@@ -247,7 +204,7 @@ const ConsumerDashboard = () => {
             </SheetContent>
           </Sheet>
           <div className="ml-auto">
-            <ProfileDropdown user={user} />
+            {user ? <ProfileDropdown user={user} /> : <div>Loading...</div>}
           </div>
         </header>
 
