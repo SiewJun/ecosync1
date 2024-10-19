@@ -322,7 +322,7 @@ const CompanyQuotation = () => {
                   </div>
                 </div>
 
-                <div className="mt-12 flex justify-end space-x-4">
+                <div className="mt-12 flex-col justify-end space-x-4">
                   <Button
                     className="bg-black text-white dark:bg-white dark:text-gray-700 hover:bg-gray-800 dark:hover:bg-gray-200"
                     onClick={closeDetails}

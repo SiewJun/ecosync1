@@ -539,7 +539,7 @@ const ConsumerQuotation = () => {
               </div>
             </ScrollArea>
           )}
-          <div className="mt-6 flex justify-end space-x-2">
+          <div className="mt-6 flex-col justify-end space-x-2 space-y-2">
             <Button variant="outline" onClick={closeDetails}>
               Close
             </Button>

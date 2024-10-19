@@ -234,7 +234,7 @@ export default function ConsumerProjectSteps() {
                     </div>
                     <div className="flex-grow">
                       <h3
-                        className={`text-lg font-semibold ${
+                        className={`text-base font-semibold ${
                           step.status === "COMPLETED"
                             ? "text-green-700"
                             : isCurrentStep

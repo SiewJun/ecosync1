@@ -649,7 +649,7 @@ const CompanyProjectStep = () => {
                       </div>
                       <div className="flex-grow">
                         <h3
-                          className={`text-lg font-semibold ${
+                          className={`text-base font-semibold ${
                             step.status === "COMPLETED"
                               ? "text-green-500"
                               : step.status === "PENDING" && isCompanyStep
@@ -681,11 +681,11 @@ const CompanyProjectStep = () => {
                             variant="outline"
                             className={`${
                               step.status === "PENDING" && isCompanyStep
-                                ? "text-background"
+                                ? "text-black"
                                 : "text-foreground"
                             } ${
                               step.status === "COMPLETED"
-                                && "text-background"
+                                && "text-black"
                             }`}
                           >
                             Due: {new Date(step.dueDate).toLocaleDateString()}

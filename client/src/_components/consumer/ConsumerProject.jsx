@@ -126,6 +126,20 @@ const ConsumerProjects = () => {
     );
   }
 
+  const sortSteps = (steps) => {
+    return steps.sort((a, b) => {
+      // First, sort by stepOrder if it exists
+      if (a.stepOrder !== undefined && b.stepOrder !== undefined) {
+        return a.stepOrder - b.stepOrder;
+      }
+
+      // If stepOrder doesn't exist, sort by due date
+      const dateA = new Date(a.dueDate);
+      const dateB = new Date(b.dueDate);
+      return dateA - dateB;
+    });
+  };
+
   return (
     <div className="container p-6 ">
       <div className="max-w-5xl mx-auto">
@@ -404,38 +418,40 @@ const ConsumerProjects = () => {
                       ) : selectedProject.steps &&
                         selectedProject.steps.length > 0 ? (
                         <div className="space-y-4">
-                          {selectedProject.steps.map((step, index) => (
-                            <div
-                              key={index}
-                              className="flex items-start border-l-2 pl-4 pb-4"
-                            >
-                              <div className="mr-4">
-                                {getStepIcon(step.status)}
-                              </div>
-                              <div>
-                                <p className="font-medium">{step.stepName}</p>
-                                <p className="text-sm text-muted-foreground">
-                                  {step.status}
-                                </p>
-                                {step.dueDate && (
+                          {sortSteps(selectedProject.steps).map(
+                            (step, index) => (
+                              <div
+                                key={index}
+                                className="flex items-start border-l-2 pl-4 pb-4"
+                              >
+                                <div className="mr-4">
+                                  {getStepIcon(step.status)}
+                                </div>
+                                <div>
+                                  <p className="font-medium">{step.stepName}</p>
                                   <p className="text-sm text-muted-foreground">
-                                    Due:{" "}
-                                    {new Date(
-                                      step.dueDate
-                                    ).toLocaleDateString()}
+                                    {step.status}
                                   </p>
-                                )}
-                                {step.completedAt && (
-                                  <p className="text-sm text-muted-foreground">
-                                    Completed:{" "}
-                                    {new Date(
-                                      step.completedAt
-                                    ).toLocaleDateString()}
-                                  </p>
-                                )}
+                                  {step.dueDate && (
+                                    <p className="text-sm text-muted-foreground">
+                                      Due:{" "}
+                                      {new Date(
+                                        step.dueDate
+                                      ).toLocaleDateString()}
+                                    </p>
+                                  )}
+                                  {step.completedAt && (
+                                    <p className="text-sm text-muted-foreground">
+                                      Completed:{" "}
+                                      {new Date(
+                                        step.completedAt
+                                      ).toLocaleDateString()}
+                                    </p>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          ))}
+                            )
+                          )}
                         </div>
                       ) : (
                         <p className="text-sm text-muted-foreground">
@@ -499,8 +515,8 @@ const ConsumerProjects = () => {
                   )
                 }
                 disabled={
-                  selectedProject?.quotation.latestVersion.status !== "FINALIZED" ||
-                  selectedProject?.status == "PENDING"
+                  selectedProject?.quotation.latestVersion.status !==
+                    "FINALIZED" || selectedProject?.status == "PENDING"
                 }
               >
                 View Full Project
