@@ -210,7 +210,7 @@ const ProfileDropdown = ({ user }) => {
 ProfileDropdown.propTypes = {
   user: PropTypes.shape({
     role: PropTypes.string.isRequired,
-    avatarUrl: PropTypes.string.isRequired,
+    avatarUrl: PropTypes.string,
     username: PropTypes.string.isRequired,
   }).isRequired,
 };

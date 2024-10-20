@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
 import {
   MessageSquare,
   User,
@@ -49,6 +50,9 @@ const ChatListCompany = () => {
     return (
       <div className="text-center py-8 text-red-500">
         <p>{error}</p>
+        <Button variant="destructive"className="mt-4" onClick={() => window.location.reload()}>
+          Try Again
+        </Button>
       </div>
     );
   }

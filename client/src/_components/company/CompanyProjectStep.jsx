@@ -12,7 +12,9 @@ import {
   Upload,
   CreditCard,
   CheckCircle,
+  File,
   PenTool,
+  Eye,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -93,9 +95,10 @@ const CompanyProjectStep = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [completedSteps, setCompletedSteps] = useState([]);
-
   const isEditable = projectStatus === "PENDING";
   const isInProgress = projectStatus === "IN_PROGRESS";
+  const [isDocumentDialogOpen, setIsDocumentDialogOpen] = useState(false);
+  const [currentDocuments, setCurrentDocuments] = useState([]);
 
   const checkCanPublish = useCallback(() => {
     const sortedSteps = [...steps].sort((a, b) => a.stepOrder - b.stepOrder);
@@ -322,6 +325,13 @@ const CompanyProjectStep = () => {
     }
   };
 
+  const handleViewDocuments = (step) => {
+    if (step.stepType === "DOCUMENT_UPLOAD" && step.status === "COMPLETED") {
+      setCurrentDocuments(step.filePaths || []);
+      setIsDocumentDialogOpen(true);
+    }
+  };
+
   const handleChange = (name, value) => {
     setNewStep((prevState) => ({
       ...prevState,
@@ -358,7 +368,7 @@ const CompanyProjectStep = () => {
   const handleMarkStepComplete = async (stepId) => {
     if (!isInProgress) return;
     try {
-      await axios.put(
+      const response = await axios.put(
         `http://localhost:5000/api/project-step/${projectId}/steps/${stepId}/complete`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
@@ -368,11 +378,24 @@ const CompanyProjectStep = () => {
       );
       setSteps(updatedSteps);
       setCompletedSteps([...completedSteps, stepId]);
-      toast({
-        title: "Success",
-        description: "Step marked as completed successfully.",
-      });
-      // eslint-disable-next-line no-unused-vars
+
+      // Check if the project status has been updated to COMPLETED
+      if (response.data.projectStatus === "COMPLETED") {
+        setProjectStatus("COMPLETED");
+        toast({
+          title: "Success",
+          description: "Project has been marked as completed!",
+        });
+      } else {
+        toast({
+          title: "Success",
+          description: "Step marked as completed successfully.",
+        });
+      }
+
+      // Refresh project data to get the latest status
+      fetchProjectData();
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast({
         title: "Error",
@@ -667,7 +690,7 @@ const CompanyProjectStep = () => {
                             Payment Amount: RM{step.paymentAmount}
                           </p>
                         )}
-                        <div className="flex items-center mt-2 space-x-2">
+                        <div className="flex-col items-center mt-2 sm:space-x-2">
                           <Badge
                             variant={
                               step.status === "COMPLETED"
@@ -683,10 +706,7 @@ const CompanyProjectStep = () => {
                               step.status === "PENDING" && isCompanyStep
                                 ? "text-black"
                                 : "text-foreground"
-                            } ${
-                              step.status === "COMPLETED"
-                                && "text-black"
-                            }`}
+                            } ${step.status === "COMPLETED" && "text-black"}`}
                           >
                             Due: {new Date(step.dueDate).toLocaleDateString()}
                           </Badge>
@@ -747,6 +767,17 @@ const CompanyProjectStep = () => {
                           Not available
                         </Badge>
                       )}
+                      {step.stepType === "DOCUMENT_UPLOAD" &&
+                        step.status === "COMPLETED" && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleViewDocuments(step)}
+                            className="ml-2"
+                          >
+                            <Eye/>
+                          </Button>
+                        )}
                     </CardContent>
                   </Card>
                 );
@@ -754,6 +785,27 @@ const CompanyProjectStep = () => {
           </div>
         </div>
       </ScrollArea>
+
+      <Dialog open={isDocumentDialogOpen} onOpenChange={setIsDocumentDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Uploaded Documents</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4">
+            {currentDocuments.map((doc, index) => (
+              <div key={index} className="flex items-center space-x-2">
+                <File className="h-6 w-6" />
+                <a href={`http://localhost:5000/${doc}`} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                  Document {index + 1}
+                </a>
+              </div>
+            ))}
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setIsDocumentDialogOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

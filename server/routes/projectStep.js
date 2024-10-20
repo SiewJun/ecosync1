@@ -252,7 +252,6 @@ router.post('/consumer/:projectId/steps/:stepId/upload', authenticateToken, uplo
   }
 });
 
-// PUT /:projectId/steps/:stepId/complete
 router.put('/:projectId/steps/:stepId/complete', authenticateToken, async (req, res) => {
   const { projectId, stepId } = req.params;
 
@@ -278,7 +277,26 @@ router.put('/:projectId/steps/:stepId/complete', authenticateToken, async (req, 
       completedAt: new Date()
     });
 
-    res.status(200).json({ message: 'Step marked as completed successfully', step });
+    // Check if this is the COMPLETION step
+    if (step.stepType === 'COMPLETION') {
+      // Check if all other steps are completed
+      const allSteps = await ProjectStep.findAll({ where: { projectId: project.id } });
+      const allCompleted = allSteps.every(s => s.status === 'COMPLETED');
+
+      if (allCompleted) {
+        // Update project status to COMPLETED
+        await project.update({ 
+          status: 'COMPLETED',
+          endDate: new Date()
+        });
+      }
+    }
+
+    res.status(200).json({ 
+      message: 'Step marked as completed successfully', 
+      step,
+      projectStatus: project.status 
+    });
   } catch (error) {
     console.error('Error marking step as completed:', error);
     res.status(500).json({ error: 'Internal Server Error' });

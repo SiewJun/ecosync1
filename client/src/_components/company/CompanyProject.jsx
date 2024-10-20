@@ -119,7 +119,7 @@ const CompanyProjects = () => {
     return (
       <div className="text-center py-8 text-red-500">
         <p>{error}</p>
-        <Button className="mt-4" onClick={() => window.location.reload()}>
+        <Button variant="destructive"className="mt-4" onClick={() => window.location.reload()}>
           Try Again
         </Button>
       </div>

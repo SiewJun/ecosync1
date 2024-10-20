@@ -64,7 +64,7 @@ export default function ConsumerProjectSteps() {
       );
       setCurrentStep(pendingSteps.length > 0 ? pendingSteps[0] : null);
       setLoading(false);
-      // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast({
         title: "Error",
@@ -94,7 +94,7 @@ export default function ConsumerProjectSteps() {
         }
       );
       window.location.href = response.data.url;
-      // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast({
         title: "Error",
@@ -106,6 +106,15 @@ export default function ConsumerProjectSteps() {
 
   const handleStepCompletion = async () => {
     if (!currentStep) return;
+
+    if (currentStep.stepType === "DOCUMENT_UPLOAD" && documentFiles.length === 0) {
+      toast({
+        title: "Error",
+        description: "Please upload the required documents before completing the step.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     try {
       if (currentStep.stepType === "DOCUMENT_UPLOAD") {
@@ -134,7 +143,7 @@ export default function ConsumerProjectSteps() {
       fetchProjectSteps();
       setDialogOpen(false);
       setDocumentFiles([]);
-      // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast({
         title: "Error",
