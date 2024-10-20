@@ -304,6 +304,18 @@ const SolarEstimation = () => {
         return (
           <div className="space-y-6">
             <h2 className="text-2xl font-semibold mb-4">Your Solar Savings</h2>
+            <Alert
+              className="mt-6"
+              variant={savings.coversFullBill ? "success" : "info"}
+            >
+              <AlertDescription>
+                {savings.coversFullBill
+                  ? "Your solar installation will cover your entire electricity bill!"
+                  : `Your solar installation will cover ${Math.round(
+                      (savings.newBill / savings.oldBill) * 100
+                    )}% of your bill.`}
+              </AlertDescription>
+            </Alert>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <SavingsCard
                 title="Monthly Savings"
@@ -327,18 +339,6 @@ const SolarEstimation = () => {
                 unit="panels"
               />
             </div>
-            <Alert
-              className="mt-6"
-              variant={savings.coversFullBill ? "success" : "info"}
-            >
-              <AlertDescription>
-                {savings.coversFullBill
-                  ? "Your solar installation will cover your entire electricity bill!"
-                  : `Your solar installation will cover ${Math.round(
-                      (savings.newBill / savings.oldBill) * 100
-                    )}% of your bill.`}
-              </AlertDescription>
-            </Alert>
             <NearbyCompanies
               companies={nearbyCompanies}
               isLoading={isLoadingCompanies}
@@ -455,7 +455,7 @@ const StepIndicator = ({ currentStep, totalSteps, steps }) => (
 );
 
 const SavingsCard = ({ title, oldValue, newValue, value, unit }) => (
-  <Card className="shadow-lg rounded-lg overflow-hidden">
+  <Card className="border-0 overflow-hidden">
     <CardContent className="p-6">
       <h3 className="text-xl font-semibold mb-4 text-gray-500">{title}</h3>
       {oldValue && newValue ? (
@@ -480,7 +480,7 @@ const SavingsCard = ({ title, oldValue, newValue, value, unit }) => (
 );
 
 const InfoCard = ({ title, value, unit }) => (
-  <Card className="shadow-lg rounded-lg overflow-hidden">
+  <Card className="border-0 overflow-hidden">
     <CardContent className="p-6">
       <h3 className="text-xl font-semibold mb-4 text-gray-500">{title}</h3>
       <span className="text-3xl font-bold text-blue-600">
@@ -496,99 +496,95 @@ const NearbyCompanies = ({
   handleRequestQuotation,
   submittedQuotations,
 }) => (
-  <Card className="overflow-hidden shadow-lg rounded-lg">
-    <CardContent className="p-8">
-      <h3 className="text-2xl font-semibold mb-8">
-        Suggested Nearby Solar Companies
-      </h3>
-      {isLoading ? (
-        <div className="flex justify-center items-center h-32">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
-        </div>
-      ) : companies.length > 0 ? (
-        <ul className="space-y-8">
-          {companies.map((company, index) => (
-            <motion.li
-              key={company.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
-              className="rounded-lg shadow-md overflow-hidden bg-white hover:shadow-lg transition-shadow duration-300"
-            >
-              <div className="p-6">
-                <div className="flex flex-col sm:flex-row justify-between items-start mb-4">
-                  <h4 className="text-xl font-semibold mb-2 sm:mb-0 text-gray-800">
-                    {company.CompanyDetail.companyName}
-                  </h4>
-                  <Badge className="text-sm px-3 py-1">
-                    {company.distance.toFixed(1)} km
-                  </Badge>
-                </div>
-                <div className="space-y-3 text-sm text-gray-600">
-                  <div className="flex items-center">
-                    <MapPin className="w-5 h-5 mr-3 text-gray-400 flex-shrink-0" />
-                    <p className="break-words">
-                      {company.CompanyDetail.address}
-                    </p>
-                  </div>
-                  <div className="flex items-center">
-                    <Phone className="w-5 h-5 mr-3 text-gray-400 flex-shrink-0" />
-                    <p>{company.CompanyDetail.phoneNumber}</p>
-                  </div>
-                  <div className="flex items-center">
-                    <Globe className="w-5 h-5 mr-3 text-gray-400 flex-shrink-0" />
-                    <a
-                      href={
-                        company.CompanyDetail.website.startsWith("http")
-                          ? company.CompanyDetail.website
-                          : `http://${company.CompanyDetail.website}`
-                      }
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-500 hover:underline break-words"
-                    >
-                      {company.CompanyDetail.website}
-                    </a>
-                  </div>
-                </div>
+  <>
+    <h3 className="text-2xl font-semibold mb-8">
+      Suggested Nearby Solar Companies
+    </h3>
+    {isLoading ? (
+      <div className="flex justify-center items-center h-32">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+      </div>
+    ) : companies.length > 0 ? (
+      <ul className="space-y-8">
+        {companies.map((company, index) => (
+          <motion.li
+            key={company.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: index * 0.1 }}
+            className="rounded-lg shadow-md border overflow-hidden hover:shadow-lg transition-shadow duration-300"
+          >
+            <div className="p-6">
+              <div className="flex flex-col sm:flex-row justify-between items-start mb-4">
+                <h4 className="text-xl font-semibold mb-2 sm:mb-0">
+                  {company.CompanyDetail.companyName}
+                </h4>
+                <Badge className="text-sm px-3 py-1">
+                  {company.distance.toFixed(1)} km
+                </Badge>
               </div>
-              <div className="flex flex-col sm:flex-row px-6 py-4 gap-3 bg-white">
-                <Button
-                  className="w-full sm:w-1/2 transition-colors duration-300"
-                  onClick={() => handleRequestQuotation(company.id)}
-                  disabled={submittedQuotations.includes(company.id)}
-                >
-                  {submittedQuotations.includes(company.id)
-                    ? "Quotation Requested"
-                    : "Request Quotation"}
-                </Button>
-                <a
-                  href={`/installers/companypublicprofile/${company.id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="w-full sm:w-1/2"
-                >
-                  <Button
-                    variant="outline"
-                    className="w-full transition-colors duration-300"
+              <div className="space-y-3 text-sm">
+                <div className="flex items-center">
+                  <MapPin className="w-5 h-5 mr-3 text-gray-400 flex-shrink-0" />
+                  <p className="break-words">{company.CompanyDetail.address}</p>
+                </div>
+                <div className="flex items-center">
+                  <Phone className="w-5 h-5 mr-3 text-gray-400 flex-shrink-0" />
+                  <p>{company.CompanyDetail.phoneNumber}</p>
+                </div>
+                <div className="flex items-center">
+                  <Globe className="w-5 h-5 mr-3 text-gray-400 flex-shrink-0" />
+                  <a
+                    href={
+                      company.CompanyDetail.website.startsWith("http")
+                        ? company.CompanyDetail.website
+                        : `http://${company.CompanyDetail.website}`
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:underline break-words"
                   >
-                    View Profile
-                    <ArrowRight className="ml-2 w-4 h-4" />
-                  </Button>
-                </a>
+                    {company.CompanyDetail.website}
+                  </a>
+                </div>
               </div>
-            </motion.li>
-          ))}
-        </ul>
-      ) : (
-        <p className="text-center py-8 text-gray-600">
-          No nearby solar companies found. Please try to reach out to the
-          companies directly.
-        </p>
-      )}
-    </CardContent>
-  </Card>
+            </div>
+            <div className="flex flex-col sm:flex-row px-6 py-4 gap-3">
+              <Button
+                className="w-full sm:w-1/2 transition-colors duration-300"
+                onClick={() => handleRequestQuotation(company.id)}
+                disabled={submittedQuotations.includes(company.id)}
+              >
+                {submittedQuotations.includes(company.id)
+                  ? "Quotation Requested"
+                  : "Request Quotation"}
+              </Button>
+              <a
+                href={`/installers/companypublicprofile/${company.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="w-full sm:w-1/2"
+              >
+                <Button
+                  variant="outline"
+                  className="w-full transition-colors duration-300"
+                >
+                  View Profile
+                  <ArrowRight className="ml-2 w-4 h-4" />
+                </Button>
+              </a>
+            </div>
+          </motion.li>
+        ))}
+      </ul>
+    ) : (
+      <p className="text-center py-8 text-gray-600">
+        No nearby solar companies found. Please try to reach out to the
+        companies directly.
+      </p>
+    )}
+  </>
 );
 
 const AuthDialog = ({
