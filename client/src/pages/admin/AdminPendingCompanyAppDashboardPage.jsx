@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import Sidebar from "@/_components/admin/Sidebar";
 import {
   useReactTable,
   getCoreRowModel,
@@ -48,7 +47,7 @@ const AdminPendingCompanyAppDashboard = () => {
   const [error, setError] = useState("");
   const [columnFilters, setColumnFilters] = useState([]);
   const [selectedDocument, setSelectedDocument] = useState(null);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchApplications = async () => {
@@ -208,6 +207,24 @@ const AdminPendingCompanyAppDashboard = () => {
     },
   ];
 
+  const handleReview = async (id, status) => {
+    try {
+      await axios.post(
+        `http://localhost:5000/api/auth/review-application/${id}`,
+        { status },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      // Refresh the application list
+      window.location.reload();
+    } catch (error) {
+      console.error("Error reviewing application:", error);
+    }
+  };
+
   const table = useReactTable({
     data: applications,
     columns,
@@ -223,18 +240,11 @@ const AdminPendingCompanyAppDashboard = () => {
 
   return (
     <>
-      <Sidebar />
-      <div className="ml-20 p-4">
+      <div className="container p-6 space-y-8">
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/">Home</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/admindashboard">
-                Admin Dashboard
-              </BreadcrumbLink>
+              <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
@@ -254,13 +264,13 @@ const AdminPendingCompanyAppDashboard = () => {
           }
           className="max-w-sm mb-4"
         />
-        <div className="rounded-md border">
-          <Table>
+        <div className="rounded-md border overflow-x-auto">
+          <Table className="min-w-full">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="p-2">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -280,7 +290,7 @@ const AdminPendingCompanyAppDashboard = () => {
                     data-state={row.getIsSelected() && "selected"}
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
+                      <TableCell key={cell.id} className="p-2">
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()
@@ -323,24 +333,6 @@ const AdminPendingCompanyAppDashboard = () => {
       </div>
     </>
   );
-};
-
-const handleReview = async (id, status) => {
-  try {
-    await axios.post(
-      `http://localhost:5000/api/auth/review-application/${id}`,
-      { status },
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
-    // Refresh the application list
-    window.location.reload();
-  } catch (error) {
-    console.error("Error reviewing application:", error);
-  }
 };
 
 export default AdminPendingCompanyAppDashboard;

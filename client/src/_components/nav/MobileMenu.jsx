@@ -56,7 +56,7 @@ const renderDashboardLinks = (user, linkClasses) => {
       { to: "/company-dashboard/company-project", label: "Projects", icon: ClipboardList },
     ],
     ADMIN: [
-      { to: "/admindashboard", label: "Dashboard", icon: LayoutDashboard },
+      { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
     ],
   };
 

@@ -9,7 +9,6 @@ import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 import CompanyRegistrationPage from "./pages/auth/CompanySignUpPage";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
-import AdminPendingCompanyAppDashboardPage from "./pages/admin/AdminPendingCompanyAppDashboardPage";
 import CompletedCompanySignUpPage from "./pages/auth/CompletedCompanySignUpPage";
 import CompanyDashboard from "./_components/company/CompanyDashboard";
 import ConsumerDashboard from "./_components/consumer/ConsumerDashboard";
@@ -58,12 +57,8 @@ const App = () => {
           <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
           <Route path="/company-signup" element={<CompanyRegistrationPage />} />
           <Route
-            path="/admindashboard"
+            path="/admin/*"
             element={<ProtectedRoute element={<AdminDashboardPage />} role="ADMIN" />}
-          />
-          <Route
-            path="/admindashboard/pendingapp"
-            element={<ProtectedRoute element={<AdminPendingCompanyAppDashboardPage />} role="ADMIN" />}
           />
           <Route path="/complete-registration" element={<CompletedCompanySignUpPage />} />
           <Route path="/company-dashboard/*" element={<ProtectedRoute element={<CompanyDashboard />} role="COMPANY" />} />

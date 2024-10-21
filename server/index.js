@@ -15,6 +15,7 @@ const getEstimate = require('./routes/getEstimate');
 const project = require('./routes/project');
 const projectStep = require('./routes/projectStep');  
 const stripe = require('./routes/stripe');
+const adminModeration = require('./routes/adminModeration');
 
 dotenv.config();
 
@@ -44,6 +45,7 @@ app.use('/api/get-estimate', getEstimate);
 app.use('/api/project', project);
 app.use('/api/project-step', projectStep);
 app.use('/api/stripe', stripe);
+app.use('/api/admin-moderation', adminModeration);
 
 app.listen(5000, () => {
   console.log('Server is running on port 5000');

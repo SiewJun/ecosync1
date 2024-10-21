@@ -18,7 +18,7 @@ const Sidebar = () => {
       <nav className="flex-1 w-full">
         <ul className="flex flex-col items-center w-full">
           <li className="mb-4 w-full">
-            <Link to="/admindashboard" className="block">
+            <Link to="/admin" className="block">
               <Button variant="ghost" className="w-full">
                 <Home className="w-6 h-6" />
               </Button>
