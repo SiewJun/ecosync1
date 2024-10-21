@@ -1,7 +1,6 @@
 import { Home, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
-import { cn } from "@/lib/utils";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -12,21 +11,15 @@ const Sidebar = () => {
   };
 
   return (
-    <div
-      className={cn(
-        "fixed top-0 left-0 h-full border-r flex flex-col items-center shadow-lg bg-background"
-      )}
-    >
-      <Link to="/">
-        <div className="flex gap-2 justify-center items-center py-4">
-          <img src="/ecosync.svg" alt="Ecosync Logo" width="30" height="30" />
-        </div>
+    <aside className="w-14 h-screen flex flex-col items-center border-r shadow-lg bg-background">
+      <Link to="/" className="py-4">
+        <img src="/ecosync.svg" alt="Ecosync Logo" width="30" height="30" />
       </Link>
       <nav className="flex-1 w-full">
         <ul className="flex flex-col items-center w-full">
           <li className="mb-4 w-full">
-            <Link to="/admindashboard">
-              <Button variant="ghost">
+            <Link to="/admindashboard" className="block">
+              <Button variant="ghost" className="w-full">
                 <Home className="w-6 h-6" />
               </Button>
             </Link>
@@ -35,11 +28,11 @@ const Sidebar = () => {
         </ul>
       </nav>
       <div className="mt-auto mb-4 w-full">
-        <Button variant="destructive" onClick={handleLogout} className="rounded-none">
+        <Button variant="destructive" onClick={handleLogout} className="w-full rounded-none">
           <LogOut className="w-6 h-6" />
         </Button>
       </div>
-    </div>
+    </aside>
   );
 };
 
