@@ -1,26 +1,47 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Tooltip } from '@/components/ui/tooltip';
-import { PencilIcon, TrashIcon } from 'lucide-react';
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Plus, Pencil, Trash2, DollarSign, Users } from "lucide-react";
+import PropTypes from "prop-types";
 
 const AdminIncentives = () => {
   const [incentives, setIncentives] = useState([]);
   const [editingIncentive, setEditingIncentive] = useState(null);
-  const [newIncentive, setNewIncentive] = useState({ title: '', description: '', amount: 0, eligibilityCriteria: '' });
+  const [newIncentive, setNewIncentive] = useState({
+    title: "",
+    description: "",
+    amount: 0,
+    eligibilityCriteria: "",
+  });
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchIncentives = async () => {
+    setIsLoading(true);
     try {
-      const response = await axios.get('http://localhost:5000/api/admin-moderation/incentives', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
-      setIncentives(response.data.incentives);
+      const response = await fetch(
+        "http://localhost:5000/api/admin-moderation/incentives",
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+      const data = await response.json();
+      setIncentives(data.incentives);
     } catch (error) {
-      console.error('Error fetching incentives:', error);
+      console.error("Error fetching incentives:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -30,186 +51,262 @@ const AdminIncentives = () => {
 
   const handleAddIncentive = async () => {
     try {
-      await axios.post('http://localhost:5000/api/admin-moderation/incentives', newIncentive, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      await axios.post(
+        "http://localhost:5000/api/admin-moderation/incentives",
+        newIncentive,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+      setNewIncentive({
+        title: "",
+        description: "",
+        amount: 0,
+        eligibilityCriteria: "",
       });
-      setNewIncentive({ title: '', description: '', amount: 0, eligibilityCriteria: '' });
       setIsAddDialogOpen(false);
       fetchIncentives();
     } catch (error) {
-      console.error('Error adding incentive:', error);
+      console.error("Error adding incentive:", error);
     }
   };
 
   const handleEditIncentive = async () => {
     try {
-      await axios.put(`http://localhost:5000/api/admin-moderation/incentives/${editingIncentive.id}`, editingIncentive, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
+      await axios.put(
+        `http://localhost:5000/api/admin-moderation/incentives/${editingIncentive.id}`,
+        editingIncentive,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
       setEditingIncentive(null);
       setIsEditDialogOpen(false);
       fetchIncentives();
     } catch (error) {
-      console.error('Error editing incentive:', error);
+      console.error("Error editing incentive:", error);
     }
   };
 
   const handleDeleteIncentive = async (id) => {
-    if (window.confirm('Are you sure you want to delete this incentive?')) {
+    if (window.confirm("Are you sure you want to delete this incentive?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/admin-moderation/incentives/${id}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-        });
+        await axios.delete(
+          `http://localhost:5000/api/admin-moderation/incentives/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
         fetchIncentives();
       } catch (error) {
-        console.error('Error deleting incentive:', error);
+        console.error("Error deleting incentive:", error);
       }
     }
   };
 
-  return (
-    <div className="p-6 sm:p-8 md:p-10 lg:p-12 xl:p-16">
-      <h1 className="text-3xl font-bold mb-6">Manage Incentives</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {incentives.map((incentive) => (
-          <Card key={incentive.id}>
-            <CardContent>
-              <h3 className="text-xl font-bold mb-2">{incentive.title}</h3>
-              <p className="text-gray-500 mb-4">{incentive.description}</p>
-              <p className="text-gray-700 font-medium mb-2">Amount: ${incentive.amount}</p>
-              <p className="text-gray-700 font-medium mb-2">Eligibility: {incentive.eligibilityCriteria}</p>
-            </CardContent>
-            <CardFooter className="flex justify-end">
-              <Tooltip content="Edit Incentive">
-                <Button onClick={() => {
-                  setEditingIncentive(incentive);
-                  setIsEditDialogOpen(true);
-                }}>
-                  <PencilIcon />
-                </Button>
-              </Tooltip>
-              <Tooltip content="Delete Incentive">
-                <Button variant="danger" onClick={() => handleDeleteIncentive(incentive.id)}>
-                  <TrashIcon />
-                </Button>
-              </Tooltip>
-            </CardFooter>
-          </Card>
-        ))}
-        <Card>
-          <CardContent className="flex justify-center items-center h-full">
-            <Button onClick={() => setIsAddDialogOpen(true)}>Add New Incentive</Button>
-          </CardContent>
-        </Card>
+  const IncentiveForm = ({ data, onChange, onSubmit, submitText }) => (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-gray-700">Title</label>
+        <Input
+          value={data.title}
+          onChange={(e) => onChange({ ...data, title: e.target.value })}
+          className="w-full"
+          placeholder="e.g., Early Bird Bonus"
+        />
       </div>
 
-      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogHeader>
-          <DialogTitle>Add New Incentive</DialogTitle>
-        </DialogHeader>
-        <DialogContent>
-          <div className="mb-4">
-            <label htmlFor="title" className="block font-medium mb-1">Title</label>
-            <input
-              id="title"
-              type="text"
-              placeholder="Incentive Title"
-              value={newIncentive.title}
-              onChange={(e) => setNewIncentive({ ...newIncentive, title: e.target.value })}
-              className="border rounded p-2 w-full"
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="description" className="block font-medium mb-1">Description</label>
-            <textarea
-              id="description"
-              placeholder="Incentive Description"
-              value={newIncentive.description}
-              onChange={(e) => setNewIncentive({ ...newIncentive, description: e.target.value })}
-              className="border rounded p-2 w-full"
-            ></textarea>
-          </div>
-          <div className="mb-4">
-            <label htmlFor="amount" className="block font-medium mb-1">Amount</label>
-            <input
-              id="amount"
-              type="number"
-              placeholder="Incentive Amount"
-              value={newIncentive.amount}
-              onChange={(e) => setNewIncentive({ ...newIncentive, amount: Number(e.target.value) })}
-              className="border rounded p-2 w-full"
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="eligibilityCriteria" className="block font-medium mb-1">Eligibility Criteria</label>
-            <input
-              id="eligibilityCriteria"
-              type="text"
-              placeholder="Eligibility Criteria"
-              value={newIncentive.eligibilityCriteria}
-              onChange={(e) => setNewIncentive({ ...newIncentive, eligibilityCriteria: e.target.value })}
-              className="border rounded p-2 w-full"
-            />
-          </div>
-          <div className="flex justify-end">
-            <Button variant="primary" onClick={handleAddIncentive}>Add Incentive</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-gray-700">Description</label>
+        <Textarea
+          value={data.description}
+          onChange={(e) => onChange({ ...data, description: e.target.value })}
+          className="w-full min-h-[100px]"
+          placeholder="Describe the incentive and its benefits..."
+        />
+      </div>
 
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogHeader>
-          <DialogTitle>Edit Incentive</DialogTitle>
-        </DialogHeader>
-        <DialogContent>
-          <div className="mb-4">
-            <label htmlFor="title" className="block font-medium mb-1">Title</label>
-            <input
-              id="title"
-              type="text"
-              placeholder="Incentive Title"
-              value={editingIncentive?.title}
-              onChange={(e) => setEditingIncentive({ ...editingIncentive, title: e.target.value })}
-              className="border rounded p-2 w-full"
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="description" className="block font-medium mb-1">Description</label>
-            <textarea
-              id="description"
-              placeholder="Incentive Description"
-              value={editingIncentive?.description}
-              onChange={(e) => setEditingIncentive({ ...editingIncentive, description: e.target.value })}
-              className="border rounded p-2 w-full"
-            ></textarea>
-          </div>
-          <div className="mb-4">
-            <label htmlFor="amount" className="block font-medium mb-1">Amount</label>
-            <input
-              id="amount"
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-gray-700">
+            Amount ($)
+          </label>
+          <div className="relative">
+            <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
+            <Input
               type="number"
-              placeholder="Incentive Amount"
-              value={editingIncentive?.amount}
-              onChange={(e) => setEditingIncentive({ ...editingIncentive, amount: Number(e.target.value) })}
-              className="border rounded p-2 w-full"
+              value={data.amount}
+              onChange={(e) =>
+                onChange({ ...data, amount: Number(e.target.value) })
+              }
+              className="pl-10"
+              placeholder="0.00"
             />
           </div>
-          <div className="mb-4">
-            <label htmlFor="eligibilityCriteria" className="block font-medium mb-1">Eligibility Criteria</label>
-            <input
-              id="eligibilityCriteria"
-              type="text"
-              placeholder="Eligibility Criteria"
-              value={editingIncentive?.eligibilityCriteria}
-              onChange={(e) => setEditingIncentive({ ...editingIncentive, eligibilityCriteria: e.target.value })}
-              className="border rounded p-2 w-full"
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-gray-700">
+            Eligibility
+          </label>
+          <div className="relative">
+            <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
+            <Input
+              value={data.eligibilityCriteria}
+              onChange={(e) =>
+                onChange({ ...data, eligibilityCriteria: e.target.value })
+              }
+              className="pl-10"
+              placeholder="Who can apply?"
             />
           </div>
-          <div className="flex justify-end">
-            <Button variant="primary" onClick={handleEditIncentive}>Update Incentive</Button>
+        </div>
+      </div>
+
+      <div className="pt-4">
+        <Button
+          onClick={onSubmit}
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+        >
+          {submitText}
+        </Button>
+      </div>
+    </div>
+  );
+  IncentiveForm.propTypes = {
+    data: PropTypes.shape({
+      title: PropTypes.string,
+      description: PropTypes.string,
+      amount: PropTypes.number,
+      eligibilityCriteria: PropTypes.string,
+    }).isRequired,
+    onChange: PropTypes.func.isRequired,
+    onSubmit: PropTypes.func.isRequired,
+    submitText: PropTypes.string.isRequired,
+  };
+
+  return (
+    <div className="container p-6">
+      <div className="mx-auto">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold font-inter">
+              Incentive Programs
+            </h1>
+            <p className="mt-2 text-gray-500">
+              Manage and track your organization&apos;s incentive offerings
+            </p>
           </div>
-        </DialogContent>
-      </Dialog>
+          <Button onClick={() => setIsAddDialogOpen(true)} variant="default">
+            <Plus className="w-4 h-4" />
+            <span>New Incentive</span>
+          </Button>
+        </div>
+
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <Card key={i} className="animate-pulse">
+                <CardContent className="h-48 bg-gray-100" />
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {incentives.map((incentive) => (
+              <Card
+                key={incentive.id}
+                className="group hover:shadow-lg transition-shadow duration-200"
+              >
+                <CardContent className="p-6">
+                  <div className="flex justify-between items-start mb-4">
+                    <h3 className="text-xl font-semibold text-gray-900">
+                      {incentive.title}
+                    </h3>
+                    <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setEditingIncentive(incentive);
+                          setIsEditDialogOpen(true);
+                        }}
+                        className="text-gray-600 hover:text-blue-600"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteIncentive(incentive.id)}
+                        className="text-gray-600 hover:text-red-600"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  <p className="text-gray-600 mb-4 line-clamp-2">
+                    {incentive.description}
+                  </p>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center text-gray-700">
+                      <DollarSign className="w-4 h-4 mr-2 text-gray-400" />
+                      <span className="font-medium">
+                        ${incentive.amount.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="flex items-center text-gray-700">
+                      <Users className="w-4 h-4 mr-2 text-gray-400" />
+                      <span className="text-sm">
+                        {incentive.eligibilityCriteria}
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>Create New Incentive</DialogTitle>
+              <DialogDescription>
+                Add a new incentive program to your organization&apos;s
+                offerings.
+              </DialogDescription>
+            </DialogHeader>
+            <IncentiveForm
+              data={newIncentive}
+              onChange={setNewIncentive}
+              onSubmit={handleAddIncentive}
+              submitText="Create Incentive"
+            />
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>Edit Incentive</DialogTitle>
+              <DialogDescription>
+                Modify the details of your existing incentive program.
+              </DialogDescription>
+            </DialogHeader>
+            <IncentiveForm
+              data={editingIncentive || {}}
+              onChange={setEditingIncentive}
+              onSubmit={handleEditIncentive}
+              submitText="Save Changes"
+            />
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   );
 };
