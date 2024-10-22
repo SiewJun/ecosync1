@@ -112,7 +112,7 @@ function NavBar() {
             : ""
         )}
       >
-        <div className="mx-auto h-full">
+        <div className="h-full">
           <div className="flex items-center justify-between px-4 h-full">
             <div className="flex-1 flex justify-start">
               <EcoSyncLogo className="transition-transform duration-200 hover:scale-105" />

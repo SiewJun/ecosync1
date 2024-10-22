@@ -166,10 +166,7 @@ const AdminIncentives = () => {
       </div>
 
       <div className="pt-4">
-        <Button
-          onClick={onSubmit}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-colors"
-        >
+        <Button onClick={onSubmit} variant="default">
           {submitText}
         </Button>
       </div>
