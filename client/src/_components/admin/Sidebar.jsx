@@ -1,4 +1,4 @@
-import { Home, LogOut, SearchCheckIcon } from "lucide-react";
+import { Home, LogOut, SearchCheckIcon, ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -21,6 +21,13 @@ const Sidebar = () => {
             <Link to="/dashboard" className="block">
               <Button variant="ghost" className="w-full">
                 <Home className="w-6 h-6" />
+              </Button>
+            </Link>
+          </li>
+          <li className="mb-4 w-full">
+            <Link to="/dashboard/pendingapp" className="block">
+              <Button variant="ghost" className="w-full">
+                <ClipboardList className="w-6 h-6" />
               </Button>
             </Link>
           </li>

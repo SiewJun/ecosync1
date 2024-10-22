@@ -46,7 +46,7 @@ const PendingApplicationsWidget = () => {
 
   return (
     <Link to="pendingapp">
-      <Card className="md:max-w-sm shadow-lg rounded-lg overflow-hidden border mt-10 bg-gradient-to-r from-[hsl(156,56%,73%)] via-[hsl(156,56%,63%)] to-[hsl(156,56%,53%)] transform transition-transform hover:scale-105">
+      <Card className="md:max-w-sm shadow-lg rounded-lg overflow-hidden border bg-gradient-to-r from-[hsl(156,56%,73%)] via-[hsl(156,56%,63%)] to-[hsl(156,56%,53%)] transform transition-transform hover:scale-105">
         <CardHeader className="p-6">
           <CardTitle className="text-2xl font-bold font-openSans text-white">
             Pending Company Applications

@@ -44,14 +44,29 @@ router.post("/incentives", authenticateToken, async (req, res) => {
     return res.status(403).json({ message: "Forbidden" });
   }
 
-  const { title, description, amount, eligibilityCriteria } = req.body;
+  const {
+    title,
+    description,
+    region,
+    eligibilityCriteria,
+    incentiveAmount,
+    expirationDate,
+    applicationLink,
+    source,
+    status
+  } = req.body;
 
   try {
     const newIncentive = await Incentive.create({
       title,
       description,
-      amount,
+      region,
       eligibilityCriteria,
+      incentiveAmount,
+      expirationDate,
+      applicationLink,
+      source,
+      status
     });
     res.status(201).json({ message: "Incentive created successfully", newIncentive });
   } catch (error) {
@@ -67,7 +82,17 @@ router.put("/incentives/:id", authenticateToken, async (req, res) => {
   }
 
   const { id } = req.params;
-  const { title, description, amount, eligibilityCriteria } = req.body;
+  const {
+    title,
+    description,
+    region,
+    eligibilityCriteria,
+    incentiveAmount,
+    expirationDate,
+    applicationLink,
+    source,
+    status
+  } = req.body;
 
   try {
     const incentive = await Incentive.findByPk(id);
@@ -77,8 +102,13 @@ router.put("/incentives/:id", authenticateToken, async (req, res) => {
 
     incentive.title = title;
     incentive.description = description;
-    incentive.amount = amount;
+    incentive.region = region;
     incentive.eligibilityCriteria = eligibilityCriteria;
+    incentive.incentiveAmount = incentiveAmount;
+    incentive.expirationDate = expirationDate;
+    incentive.applicationLink = applicationLink;
+    incentive.source = source;
+    incentive.status = status;
 
     await incentive.save();
 

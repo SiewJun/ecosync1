@@ -252,9 +252,15 @@ const AdminPendingCompanyAppDashboard = () => {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <h1 className="text-xl font-semibold mt-10 mb-6">
-          Pending Applications
-        </h1>
+        <div>
+          <h1 className="text-3xl font-bold font-inter">
+            Pending Applications
+          </h1>
+          <p className="mt-2 text-gray-500">
+            Manage and track your organization&apos;s company applications
+          </p>
+        </div>
+
         {error && <p className="text-red-500 mb-4">{error}</p>}
         <Input
           placeholder="Filter by company name..."
