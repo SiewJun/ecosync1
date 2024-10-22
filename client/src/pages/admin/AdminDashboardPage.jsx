@@ -3,7 +3,7 @@ import Sidebar from "@/_components/admin/Sidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import AdminHomeDashboardPage from "./AdminHomeDashboardPage";
 import AdminPendingCompanyAppDashboardPage from "./AdminPendingCompanyAppDashboardPage";
-import ScrapeIncentivesForm from "@/_components/admin/ScrapeIncentivesForm";
+import AdminModerationIncentives from "@/_components/admin/AdminModerationIncentives";
 
 const AdminDashboardPage = () => {
   return (
@@ -18,8 +18,8 @@ const AdminDashboardPage = () => {
               element={<AdminPendingCompanyAppDashboardPage />}
             />
             <Route
-              path="scrape-incentives"
-              element={<ScrapeIncentivesForm />}
+              path="incentives"
+              element={<AdminModerationIncentives />}
             />
           </Routes>
         </ScrollArea>

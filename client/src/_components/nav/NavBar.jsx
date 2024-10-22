@@ -13,32 +13,69 @@ import { Button } from "@/components/ui/button";
 import EcoSyncLogo from "./EcoSyncLogo";
 import MobileMenu from "@/_components/nav/MobileMenu";
 import ProfileDropdown from "./ProfileDropdown";
+import { Laptop, Users, LineChart, Sun, Building2, Search } from "lucide-react";
 import axios from "axios";
 import ThemeSwitcher from "@/_components/theme/ThemeSwitcher";
+import PropTypes from "prop-types";
 
-const components = [
+const services = [
   {
-    title: "Alert Dialog",
-    href: "/docs/primitives/alert-dialog",
+    title: "Get Estimate",
+    href: "/solar-estimation",
     description:
-      "A modal dialog that interrupts the user with important content and expects a response.",
+      "Estimate savings from solar panel installation with our advanced calculator.",
+    icon: <LineChart className="h-5 w-5 text-primary/70" />,
   },
   {
-    title: "Hover Card",
-    href: "/docs/primitives/hover-card",
-    description:
-      "For sighted users to preview content available behind a link.",
+    title: "Search Installers",
+    href: "/installers",
+    description: "Connect with certified solar professionals in your area.",
+    icon: <Users className="h-5 w-5 text-primary/70" />,
   },
   {
-    title: "Progress",
-    href: "/docs/primitives/progress",
+    title: "Solar Solutions",
+    href: "/solar-solutions",
+    description: "Compare and find the perfect solar setup for your needs.",
+    icon: <Sun className="h-5 w-5 text-primary/70" />,
+  },
+];
+
+const information = [
+  {
+    title: "About EcoSync",
+    href: "/about",
     description:
-      "Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.",
+      "Learn about our mission to make solar energy accessible to everyone.",
+    icon: <Building2 className="h-5 w-5 text-primary/70" />,
+  },
+  {
+    title: "Technology",
+    href: "/technology",
+    description:
+      "Discover the innovative technology behind our solar solutions.",
+    icon: <Laptop className="h-5 w-5 text-primary/70" />,
+  },
+  {
+    title: "Incentives",
+    href: "/Incentives",
+    description: "Access guides, articles, and tools to help you go solar.",
+    icon: <Search className="h-5 w-5 text-primary/70" />,
   },
 ];
 
 function NavBar() {
   const [user, setUser] = useState(null);
+  const [scrolled, setScrolled] = useState(false);
+  const navHeight = "h-16"; // Define a consistent height for the navbar
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -54,12 +91,10 @@ function NavBar() {
           setUser(response.data.user);
         }
       } catch (error) {
-        if (error.response && error.response.status === 403) {
-          // Handle 403 Forbidden error
-          localStorage.removeItem("token"); // Optionally remove the token
-        } else {
-          console.error("Error fetching user:", error);
+        if (error.response?.status === 403) {
+          localStorage.removeItem("token");
         }
+        console.error("Error fetching user:", error);
       }
     };
 
@@ -67,113 +102,142 @@ function NavBar() {
   }, []);
 
   return (
-    <div className="flex w-full items-center justify-between px-5 py-3 md:px-4">
-      <EcoSyncLogo />
-      <div className="md:hidden">
-        <MobileMenu user={user} />
-      </div>
-      <div className="hidden md:flex">
-        <NavigationMenu>
-          <NavigationMenuList>
-            <NavigationMenuItem>
-              <NavigationMenuTrigger>Services</NavigationMenuTrigger>
-              <NavigationMenuContent>
-                <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-                  <li className="row-span-3">
-                    <NavigationMenuLink asChild>
-                      <a
-                        className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-                        href="/"
-                      >
-                        <div className="mb-2 mt-4 text-lg font-medium">
-                          About Ecosync
-                        </div>
-                        <p className="text-sm leading-tight text-muted-foreground">
-                          Lorem ipsum dolor sit amet, consectetur adipiscing
-                          elit. Nulla rhoncus, metus at suscipit pulvinar, eros
-                          est lacinia sapien, eu blandit lacus diam sed elit.
-                        </p>
-                      </a>
-                    </NavigationMenuLink>
-                  </li>
-                  <ListItem href="/solar-estimation" title="Get Estimate">
-                    Estimate the savings of installing solar panels on your
-                    property, including the recommended solar system size.{" "}
-                  </ListItem>
-                  <ListItem href="/installers" title="Search Solar Installers">
-                    Find reliable and experienced solar installers in your area.
-                  </ListItem>
-                  <ListItem
-                    href="/solar-solutions"
-                    title="Search/Compare Solar Solutions"
-                  >
-                    Discover a wide range of solar solutions to fit your needs
-                    and budget.
-                  </ListItem>
-                </ul>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <NavigationMenuTrigger>Calculator</NavigationMenuTrigger>
-              <NavigationMenuContent>
-                <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                  {components.map((component) => (
-                    <ListItem
-                      key={component.title}
-                      title={component.title}
-                      href={component.href}
-                    >
-                      {component.description}
-                    </ListItem>
-                  ))}
-                </ul>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
-          </NavigationMenuList>
-        </NavigationMenu>
-      </div>
-      <div className="hidden md:flex items-center justify-between">
-        <ThemeSwitcher className="mr-2" />
-        {user ? (
-          <div className="ml-2">
-            <ProfileDropdown user={user} />
-          </div>
-        ) : (
-          <Link to="/signin">
-            <Button variant="outline" className="ml-2">
-              Sign in
-            </Button>
-          </Link>
+    <>
+      <div
+        className={cn(
+          "fixed top-0 w-full z-50 transition-all duration-300",
+          navHeight,
+          scrolled
+            ? "opacity-95 backdrop-blur-lg border-b shadow-sm"
+            : ""
         )}
+      >
+        <div className="mx-auto h-full">
+          <div className="flex items-center justify-between px-4 h-full">
+            <div className="flex-1 flex justify-start">
+              <EcoSyncLogo className="transition-transform duration-200 hover:scale-105" />
+            </div>
+
+            <div className="flex-1 flex justify-center">
+              <div className="hidden md:flex">
+                <NavigationMenu>
+                  <NavigationMenuList>
+                    <NavigationMenuItem>
+                      <NavigationMenuTrigger className="text-sm font-medium bg-transparent hover:bg-accent/40">
+                        Services
+                      </NavigationMenuTrigger>
+                      <NavigationMenuContent>
+                        <div className="w-[400px] p-3">
+                          <div className="grid gap-2">
+                            {services.map((service) => (
+                              <ListItem
+                                key={service.title}
+                                title={service.title}
+                                href={service.href}
+                                icon={service.icon}
+                              >
+                                {service.description}
+                              </ListItem>
+                            ))}
+                          </div>
+                        </div>
+                      </NavigationMenuContent>
+                    </NavigationMenuItem>
+
+                    <NavigationMenuItem>
+                      <NavigationMenuTrigger className="text-sm font-medium bg-transparent hover:bg-accent/40">
+                        Info
+                      </NavigationMenuTrigger>
+                      <NavigationMenuContent>
+                        <div className="w-[400px] p-3">
+                          <div className="grid gap-2">
+                            {information.map((item) => (
+                              <ListItem
+                                key={item.title}
+                                title={item.title}
+                                href={item.href}
+                                icon={item.icon}
+                              >
+                                {item.description}
+                              </ListItem>
+                            ))}
+                          </div>
+                        </div>
+                      </NavigationMenuContent>
+                    </NavigationMenuItem>
+                  </NavigationMenuList>
+                </NavigationMenu>
+              </div>
+            </div>
+
+            <div className="flex-1 flex justify-end">
+              <div className="md:hidden">
+                <MobileMenu user={user} />
+              </div>
+
+              <div className="hidden md:flex items-center space-x-3">
+                <ThemeSwitcher />
+                {user ? (
+                  <ProfileDropdown user={user} />
+                ) : (
+                  <Link to="/signin">
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className="font-medium transition-all hover:scale-105"
+                    >
+                      Sign in
+                    </Button>
+                  </Link>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+      {/* Add spacing div to prevent content overlap */}
+      <div className={navHeight} />
+    </>
   );
 }
 
 const ListItem = React.forwardRef(
-  // eslint-disable-next-line react/prop-types
-  ({ className, title, children, ...props }, ref) => {
+  ({ className, title, children, icon, ...props }, ref) => {
     return (
-      <li>
-        <NavigationMenuLink asChild>
-          <a
-            ref={ref}
-            className={cn(
-              "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-              className
-            )}
-            {...props}
-          >
-            <div className="text-sm font-medium leading-none">{title}</div>
-            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+      <NavigationMenuLink asChild>
+        <a
+          ref={ref}
+          className={cn(
+            "flex items-center gap-3 rounded-md p-2.5 transition-colors hover:bg-accent/50",
+            "no-underline outline-none",
+            className
+          )}
+          {...props}
+        >
+          <div className="flex h-9 w-9 items-center justify-center rounded-md border bg-background">
+            {icon}
+          </div>
+          <div>
+            <div className="text-sm font-medium leading-none mb-1">
+              {title}
+            </div>
+            <p className="line-clamp-2 text-xs text-muted-foreground">
               {children}
             </p>
-          </a>
-        </NavigationMenuLink>
-      </li>
+          </div>
+        </a>
+      </NavigationMenuLink>
     );
   }
 );
+
 ListItem.displayName = "ListItem";
+
+ListItem.propTypes = {
+  className: PropTypes.string,
+  title: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+  icon: PropTypes.node.isRequired,
+};
 
 export default NavBar;
