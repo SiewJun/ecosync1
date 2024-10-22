@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import EcoSyncLogo from "./EcoSyncLogo";
 import MobileMenu from "@/_components/nav/MobileMenu";
 import ProfileDropdown from "./ProfileDropdown";
-import { Laptop, Users, LineChart, Sun, Building2, Search } from "lucide-react";
+import { Laptop, Users, LineChart, Sun, Building2, SearchCheckIcon } from "lucide-react";
 import axios from "axios";
 import ThemeSwitcher from "@/_components/theme/ThemeSwitcher";
 import PropTypes from "prop-types";
@@ -59,7 +59,7 @@ const information = [
     title: "Incentives",
     href: "/Incentives",
     description: "Access guides, articles, and tools to help you go solar.",
-    icon: <Search className="h-5 w-5 text-primary/70" />,
+    icon: <SearchCheckIcon className="h-5 w-5 text-primary/70" />,
   },
 ];
 

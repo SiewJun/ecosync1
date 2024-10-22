@@ -57,7 +57,7 @@ const App = () => {
           <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
           <Route path="/company-signup" element={<CompanyRegistrationPage />} />
           <Route
-            path="/admin/*"
+            path="/dashboard/*"
             element={<ProtectedRoute element={<AdminDashboardPage />} role="ADMIN" />}
           />
           <Route path="/complete-registration" element={<CompletedCompanySignUpPage />} />

@@ -1,4 +1,4 @@
-import { Home, LogOut } from "lucide-react";
+import { Home, LogOut, SearchCheckIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -18,9 +18,16 @@ const Sidebar = () => {
       <nav className="flex-1 w-full">
         <ul className="flex flex-col items-center w-full">
           <li className="mb-4 w-full">
-            <Link to="/admin" className="block">
+            <Link to="/dashboard" className="block">
               <Button variant="ghost" className="w-full">
                 <Home className="w-6 h-6" />
+              </Button>
+            </Link>
+          </li>
+          <li className="mb-4 w-full">
+            <Link to="/dashboard/incentives" className="block">
+              <Button variant="ghost" className="w-full">
+                <SearchCheckIcon className="w-6 h-6" />
               </Button>
             </Link>
           </li>
