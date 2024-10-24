@@ -338,7 +338,7 @@ const SolarSolutionComparison = () => {
               <SolutionCard key={solution.id} solution={solution} />
             ))}
           </div>
-          <div className="flex justify-center mt-4 space-x-2">
+          <div className="flex justify-center mt-4 space-x-2 mb-24">
             <Button
               variant="outline"
               onClick={() => paginate(currentPage - 1)}
