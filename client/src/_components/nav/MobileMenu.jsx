@@ -5,7 +5,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
   Menu,
   Server,
-  Calculator,
+  BookOpenCheck,
   Settings,
   CircleGauge,
   User,
@@ -42,22 +42,52 @@ const handleLogout = async () => {
 const renderDashboardLinks = (user, linkClasses) => {
   const links = {
     CONSUMER: [
-      { to: "/consumer-dashboard/consumer-profile", label: "Profile", icon: User },
+      {
+        to: "/consumer-dashboard/consumer-profile",
+        label: "Profile",
+        icon: User,
+      },
       { to: "/consumer-dashboard/chat", label: "Chat", icon: MessageSquare },
-      { to: "/consumer-dashboard/consumer-quotation", label: "Quotation", icon: FileText },
-      { to: "/consumer-dashboard/consumer-project", label: "Projects", icon: ClipboardList },
+      {
+        to: "/consumer-dashboard/consumer-quotation",
+        label: "Quotation",
+        icon: FileText,
+      },
+      {
+        to: "/consumer-dashboard/consumer-project",
+        label: "Projects",
+        icon: ClipboardList,
+      },
     ],
     COMPANY: [
       { to: "/company-dashboard", label: "Dashboard", icon: LayoutDashboard },
-      { to: "/company-dashboard/company-details", label: "Company Details", icon: Building },
-      { to: "/company-dashboard/company-profile", label: "Company Profile", icon: User },
-      { to: "/company-dashboard/company-chat", label: "Chat", icon: MessageCircle },
-      { to: "/company-dashboard/company-quotation", label: "Quotation", icon: FileCheck },
-      { to: "/company-dashboard/company-project", label: "Projects", icon: ClipboardList },
+      {
+        to: "/company-dashboard/company-details",
+        label: "Company Details",
+        icon: Building,
+      },
+      {
+        to: "/company-dashboard/company-profile",
+        label: "Company Profile",
+        icon: User,
+      },
+      {
+        to: "/company-dashboard/company-chat",
+        label: "Chat",
+        icon: MessageCircle,
+      },
+      {
+        to: "/company-dashboard/company-quotation",
+        label: "Quotation",
+        icon: FileCheck,
+      },
+      {
+        to: "/company-dashboard/company-project",
+        label: "Projects",
+        icon: ClipboardList,
+      },
     ],
-    ADMIN: [
-      { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    ],
+    ADMIN: [{ to: "/dashboard", label: "Dashboard", icon: LayoutDashboard }],
   };
 
   return (
@@ -113,16 +143,15 @@ const MobileMenu = ({ user }) => {
                 <AccordionContent>
                   <ul className="pl-4 mt-2 space-y-2">
                     <li className={linkClasses}>
-                      <Link to="/about">About Ecosync</Link>
-                    </li>
-                    <li className={linkClasses}>
                       <Link to="/solar-estimation">Get Estimate</Link>
                     </li>
                     <li className={linkClasses}>
                       <Link to="/installers">Search Solar Installers</Link>
                     </li>
                     <li className={linkClasses}>
-                      <Link to="/solar-solutions">Search/Compare Solar Solutions</Link>
+                      <Link to="/solar-solutions">
+                        Search/Compare Solar Solutions
+                      </Link>
                     </li>
                   </ul>
                 </AccordionContent>
@@ -130,12 +159,17 @@ const MobileMenu = ({ user }) => {
 
               <AccordionItem value="calculator">
                 <AccordionTrigger className="flex items-center gap-2">
-                  <Calculator className="h-5 w-5" />
-                  Calculator
+                  <BookOpenCheck className="h-5 w-5" />
+                  Info
                 </AccordionTrigger>
                 <AccordionContent>
                   <ul className="pl-4 mt-2 space-y-2">
-                    {/* Add Calculator Links if needed */}
+                    <li className={linkClasses}>
+                      <Link to="/about">About Ecosync</Link>
+                    </li>
+                    <li className={linkClasses}>
+                      <Link to="/incentives">Incentives</Link>
+                    </li>
                   </ul>
                 </AccordionContent>
               </AccordionItem>

@@ -16,7 +16,7 @@ import SearchSolarInstallers from "./_components/services/SearchSolarInstallers"
 import CompanyPublicProfile from "./_components/company/CompanyPublicProfile";
 import SolarSolutionComparison from "./_components/services/SolarSolutionComparison";
 import SolarEstimation from "./pages/services/SolarEstimation";
-
+import IncentivesInfo from "./pages/info/IncentivesInfo";
 // Custom ProtectedRoute component
 const ProtectedRoute = ({ element, role }) => {
   const token = localStorage.getItem("token");
@@ -56,6 +56,7 @@ const App = () => {
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
           <Route path="/company-signup" element={<CompanyRegistrationPage />} />
+          <Route path="/incentives" element={<IncentivesInfo />} />
           <Route
             path="/dashboard/*"
             element={<ProtectedRoute element={<AdminDashboardPage />} role="ADMIN" />}

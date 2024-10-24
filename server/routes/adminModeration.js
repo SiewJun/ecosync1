@@ -142,4 +142,14 @@ router.delete("/incentives/:id", authenticateToken, async (req, res) => {
   }
 });
 
+router.get("/public/incentives", async (req, res) => {
+  try {
+    const incentives = await Incentive.findAll();
+    res.status(200).json({ incentives });
+  } catch (error) {
+    console.error("Error fetching incentives:", error);
+    res.status(500).json({ message: "Failed to fetch incentives." });
+  }
+});
+
 module.exports = router;
