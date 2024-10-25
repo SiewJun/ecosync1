@@ -27,8 +27,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { io } from "socket.io-client"; // Import socket.io-client
 
 const BASE_URL = "http://localhost:5000/";
+const socket = io(BASE_URL); // Initialize socket connection
 
 const ChatPage = () => {
   const { companyId } = useParams();
@@ -43,6 +45,7 @@ const ChatPage = () => {
   const lastMessageRef = useRef(null);
   const [attachment, setAttachment] = useState(null);
   const fileInputRef = useRef(null);
+  const messageIds = useRef(new Set());
 
   useEffect(() => {
     const fetchCompanyAndMessages = async () => {
@@ -61,11 +64,11 @@ const ChatPage = () => {
         ]);
 
         setCompany(companyResponse.data.company);
-        // Sort messages by createdAt timestamp
         const sortedMessages = messagesResponse.data.messages.sort(
           (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
         );
         setMessages(sortedMessages);
+        sortedMessages.forEach(msg => messageIds.current.add(msg.id));
       } catch (error) {
         if (error.response && error.response.status === 404) {
           setError("The chat or company you're looking for does not exist.");
@@ -82,11 +85,23 @@ const ChatPage = () => {
   }, [companyId]);
 
   useEffect(() => {
-    // Scroll to the bottom when messages are loaded or updated
     if (lastMessageRef.current) {
       lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
+
+  useEffect(() => {
+    socket.on("receiveMessage", (newMessage) => {
+      if (!messageIds.current.has(newMessage.id)) {
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
+        messageIds.current.add(newMessage.id);
+      }
+    });
+
+    return () => {
+      socket.off("receiveMessage");
+    };
+  }, []);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -112,7 +127,11 @@ const ChatPage = () => {
       );
 
       const newMessage = response.data.message;
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
+      socket.emit("sendMessage", newMessage); // Emit the message to the server
+      if (!messageIds.current.has(newMessage.id)) {
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
+        messageIds.current.add(newMessage.id);
+      }
       setMessage("");
       setAttachment(null);
     } catch (error) {

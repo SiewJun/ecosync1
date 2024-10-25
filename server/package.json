@@ -30,6 +30,7 @@
     "pg-hstore": "^2.3.4",
     "playwright": "^1.48.1",
     "sequelize": "^6.37.3",
+    "socket.io": "^4.8.0",
     "stripe": "^17.2.0"
   },
   "devDependencies": {

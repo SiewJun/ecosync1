@@ -5,11 +5,11 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import {
-  MessageSquare,
-  User,
-  Loader2,
-} from "lucide-react";
+import { MessageSquare, User, Loader2 } from "lucide-react";
+import { io } from "socket.io-client"; // Import socket.io-client
+
+const BASE_URL = "http://localhost:5000/";
+const socket = io('http://localhost:5000/'); // Initialize socket connection
 
 const ChatListCompany = () => {
   const [chats, setChats] = useState([]);
@@ -21,7 +21,7 @@ const ChatListCompany = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          "http://localhost:5000/api/communication/chats/company",
+          `${BASE_URL}api/communication/chats/company`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -38,6 +38,26 @@ const ChatListCompany = () => {
     fetchMessages();
   }, []);
 
+  useEffect(() => {
+    socket.on("receiveMessage", (newMessage) => {
+      // Update the chat list when a new message is received
+      setChats((prevChats) => {
+        const updatedChats = [...prevChats];
+        const chatIndex = updatedChats.findIndex(
+          (chat) => chat.consumerId === newMessage.chatId
+        );
+        if (chatIndex !== -1) {
+          updatedChats[chatIndex].Messages.push(newMessage);
+        }
+        return updatedChats;
+      });
+    });
+
+    return () => {
+      socket.off("receiveMessage");
+    };
+  }, []);
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -50,7 +70,11 @@ const ChatListCompany = () => {
     return (
       <div className="text-center py-8 text-red-500">
         <p>{error}</p>
-        <Button variant="destructive"className="mt-4" onClick={() => window.location.reload()}>
+        <Button
+          variant="destructive"
+          className="mt-4"
+          onClick={() => window.location.reload()}
+        >
           Try Again
         </Button>
       </div>
@@ -73,7 +97,7 @@ const ChatListCompany = () => {
                     <Avatar className="w-12 h-12">
                       {chat.Consumer.avatarUrl ? (
                         <AvatarImage
-                          src={`http://localhost:5000/${chat.Consumer.avatarUrl}`}
+                          src={`${BASE_URL}${chat.Consumer.avatarUrl}`}
                           alt={chat.username}
                         />
                       ) : (

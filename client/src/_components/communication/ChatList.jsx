@@ -13,6 +13,10 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { io } from "socket.io-client"; // Import socket.io-client
+
+const BASE_URL = "http://localhost:5000/";
+const socket = io('http://localhost:5000/'); // Initialize socket connection
 
 const ChatList = () => {
   const [chats, setChats] = useState([]);
@@ -25,7 +29,7 @@ const ChatList = () => {
         setLoading(true);
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          "http://localhost:5000/api/communication/chats/consumer",
+          `${BASE_URL}api/communication/chats/consumer`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -43,6 +47,26 @@ const ChatList = () => {
     };
 
     fetchChats();
+  }, []);
+
+  useEffect(() => {
+    socket.on("receiveMessage", (newMessage) => {
+      // Update the chat list when a new message is received
+      setChats((prevChats) => {
+        const updatedChats = [...prevChats];
+        const chatIndex = updatedChats.findIndex(
+          (chat) => chat.Company.id === newMessage.chatId
+        );
+        if (chatIndex !== -1) {
+          updatedChats[chatIndex].Messages.push(newMessage);
+        }
+        return updatedChats;
+      });
+    });
+
+    return () => {
+      socket.off("receiveMessage");
+    };
   }, []);
 
   if (loading) {
@@ -84,7 +108,7 @@ const ChatList = () => {
                       <Avatar className="w-12 h-12">
                         {chat.Company.avatarUrl ? (
                           <AvatarImage
-                            src={`http://localhost:5000/${chat.Company.avatarUrl}`}
+                            src={`${BASE_URL}${chat.Company.avatarUrl}`}
                             alt={chat.Company.companyName}
                           />
                         ) : (

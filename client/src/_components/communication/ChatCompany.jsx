@@ -20,8 +20,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { io } from "socket.io-client";
 
 const BASE_URL = "http://localhost:5000/";
+const socket = io('http://localhost:5000/');
 
 const ChatCompany = () => {
   const { consumerId } = useParams();
@@ -36,6 +38,7 @@ const ChatCompany = () => {
   const lastMessageRef = useRef(null);
   const [attachment, setAttachment] = useState(null);
   const fileInputRef = useRef(null);
+  const messageIds = useRef(new Set());
 
   useEffect(() => {
     const fetchCompanyAndMessages = async () => {
@@ -62,6 +65,7 @@ const ChatCompany = () => {
           (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
         );
         setMessages(sortedMessages);
+        sortedMessages.forEach(msg => messageIds.current.add(msg.id));
       } catch (error) {
         if (error.response && error.response.status === 404) {
           setError("The chat or consumer you're looking for does not exist.");
@@ -82,6 +86,19 @@ const ChatCompany = () => {
       lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
+
+  useEffect(() => {
+    socket.on("receiveMessage", (newMessage) => {
+      if (!messageIds.current.has(newMessage.id)) {
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
+        messageIds.current.add(newMessage.id);
+      }
+    });
+
+    return () => {
+      socket.off("receiveMessage");
+    };
+  }, []);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -107,7 +124,11 @@ const ChatCompany = () => {
       );
 
       const newMessage = response.data.message;
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
+      socket.emit("sendMessage", newMessage);
+      if (!messageIds.current.has(newMessage.id)) {
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
+        messageIds.current.add(newMessage.id);
+      }
       setMessage("");
       setAttachment(null);
     } catch (error) {
