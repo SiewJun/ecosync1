@@ -13,6 +13,7 @@ import {
   FileText,
   LogOut,
   LayoutDashboard,
+  Building,
   MessageCircle,
   FileCheck,
   ClipboardList,
@@ -59,6 +60,11 @@ const renderDashboardLinks = (user, linkClasses) => {
       },
     ],
     COMPANY: [
+      {
+        to: "/company-dashboard/company-details",
+        label: "Company Details",
+        icon: Building,
+      },
       {
         to: "/company-dashboard/company-profile",
         label: "Company Profile",
