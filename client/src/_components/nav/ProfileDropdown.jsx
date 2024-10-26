@@ -94,15 +94,6 @@ const ProfileDropdown = ({ user }) => {
           <>
             <DropdownMenuItem asChild>
               <Link
-                to="/company-dashboard"
-                className="flex items-center gap-2 p-2 rounded-md cursor-pointer"
-              >
-                <LayoutDashboard className="h-4 w-4" />
-                Dashboard
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link
                 to="/company-dashboard/company-details"
                 className="flex items-center gap-2 p-2 rounded-md cursor-pointer"
               >

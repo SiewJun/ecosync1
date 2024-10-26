@@ -1,10 +1,8 @@
 import { Link, Routes, Route, useLocation } from "react-router-dom";
 import {
-  Home,
   User,
   FileCheck,
   ClipboardList,
-  LayoutDashboard,
   Building,
   MessageCircle,
   Menu,
@@ -101,15 +99,6 @@ const CompanyDashboard = () => {
         </div>
         <nav className="flex-1 overflow-y-auto px-2 py-4">
           <Link
-            to="/company-dashboard"
-            className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
-              "/company-dashboard"
-            )}`}
-          >
-            <LayoutDashboard className="h-4 w-4" />
-            Dashboard
-          </Link>
-          <Link
             to="/company-dashboard/company-details"
             className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
               "/company-dashboard/company-details"
@@ -200,15 +189,6 @@ const CompanyDashboard = () => {
                 <div className="flex items-center gap-2 text-lg font-semibold">
                   <EcoSyncLogo />
                 </div>
-                <Link
-                  to="/company-dashboard"
-                  className={`mx-[-0.65rem] flex items-center gap-4 mt-5 rounded-xl px-3 py-2 ${getLinkClasses(
-                    "/company-dashboard"
-                  )}`}
-                >
-                  <Home className="h-5 w-5" />
-                  Dashboard
-                </Link>
                 <Link
                   to="/company-dashboard/company-details"
                   className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
