@@ -1,9 +1,15 @@
-import { useEffect, useRef, useState } from 'react'
-import { motion, useScroll, useTransform, useSpring, useInView } from 'framer-motion'
-import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import NavBar from '@/_components/nav/NavBar'
+import { useEffect, useRef, useState } from "react";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useSpring,
+  useInView,
+} from "framer-motion";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import NavBar from "@/_components/nav/NavBar";
 import {
   Sun,
   ArrowRight,
@@ -13,44 +19,108 @@ import {
   BarChart,
   ArrowUpRight,
   Play,
-} from 'lucide-react'
+  Mail,
+  Calculator,
+  FileText,
+  Handshake,
+  CheckCircle,
+} from "lucide-react";
+import EcoSyncLogo from "@/_components/nav/EcoSyncLogo";
+import Lottie from "lottie-react";
+import PropTypes from "prop-types";
+
+// Import the animation data
+import calculatorAnimation from "../animations/calculatorAnimation.json";
+import quoteAnimation from "../animations/quoteAnimation.json";
+import planningAnimation from "../animations/planningAnimation.json";
+import installationAnimation from "../animations/installationAnimation.json";
+
+// Component for step-specific animation or fallback
+const AnimationContainer = ({ step, stepId }) => {
+  const [animationErrors, setAnimationErrors] = useState({
+    calculator: false,
+    quote: false,
+    planning: false,
+    installation: false,
+  });
+
+  const stepAnimations = {
+    calculator: calculatorAnimation,
+    quote: quoteAnimation,
+    planning: planningAnimation,
+    installation: installationAnimation,
+  };
+
+  const handleAnimationError = (stepId) => {
+    setAnimationErrors((prev) => ({
+      ...prev,
+      [stepId]: true,
+    }));
+  };
+
+  if (animationErrors[stepId]) {
+    return (
+      <div className="h-48 mb-6 relative rounded-xl overflow-hidden bg-gradient-to-br from-primary/5 to-primary/10 flex items-center justify-center">
+        <div className="text-primary transform group-hover:scale-110 transition-transform duration-500">
+          {step.icon}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-48 mb-6 relative bg-primary/5 rounded-xl overflow-hidden">
+      <Lottie
+        animationData={stepAnimations[stepId]}
+        loop={true}
+        className="w-full h-full"
+        onError={() => handleAnimationError(stepId)}
+        rendererSettings={{
+          preserveAspectRatio: "xMidYMid slice",
+        }}
+      />
+    </div>
+  );
+};
 
 const HomePage = () => {
-  const [scrolled, setScrolled] = useState(false)
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false)
-  const heroRef = useRef(null)
-  const statsRef = useRef(null)
-  const featuresRef = useRef(null)
-  const ctaRef = useRef(null)
+  const [scrolled, setScrolled] = useState(false);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const heroRef = useRef(null);
+  const statsRef = useRef(null);
+  const featuresRef = useRef(null);
+  const ctaRef = useRef(null);
 
-  const { scrollYProgress } = useScroll()
-  const yPosAnim = useSpring(useTransform(scrollYProgress, [0, 1], [0, -50]))
+  const { scrollYProgress } = useScroll();
+  const yPosAnim = useSpring(useTransform(scrollYProgress, [0, 1], [0, -50]));
 
-  const statsInView = useInView(statsRef, { once: true, amount: 0.3 })
-  const featuresInView = useInView(featuresRef, { once: true, amount: 0.3 })
+  const statsInView = useInView(statsRef, { once: true, amount: 0.3 });
+  const featuresInView = useInView(featuresRef, { once: true, amount: 0.3 });
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50)
-    }
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const heroVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: (i) => ({
       opacity: 1,
       y: 0,
-      transition: { delay: i * 0.1, duration: 0.5, ease: 'easeOut' }
-    })
-  }
+      transition: { delay: i * 0.1, duration: 0.5, ease: "easeOut" },
+    }),
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/95">
       <NavBar
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled ? 'bg-background/80 backdrop-blur-lg shadow-sm' : 'bg-transparent'
+          scrolled
+            ? "bg-background/80 backdrop-blur-lg shadow-sm"
+            : "bg-transparent"
         }`}
       />
 
@@ -71,7 +141,7 @@ const HomePage = () => {
             className="absolute inset-0"
             style={{
               backgroundImage: 'url("/grid-pattern.svg")',
-              backgroundSize: '30px 30px',
+              backgroundSize: "30px 30px",
               y: yPosAnim,
             }}
           />
@@ -84,7 +154,7 @@ const HomePage = () => {
               initial="hidden"
               animate="visible"
               variants={{
-                visible: { transition: { staggerChildren: 0.1 } }
+                visible: { transition: { staggerChildren: 0.1 } },
               }}
             >
               <motion.div variants={heroVariants} custom={0}>
@@ -93,27 +163,27 @@ const HomePage = () => {
                 </Badge>
               </motion.div>
 
-              <motion.h1 
+              <motion.h1
                 className="text-5xl md:text-7xl font-bold mb-8 leading-tight tracking-tight"
                 variants={heroVariants}
                 custom={1}
               >
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/80 to-primary/60">
-                  The Future of
-                  <br /> Energy is Here
+                  Empowering Your
+                  <br /> Green Energy Journey
                 </span>
               </motion.h1>
 
-              <motion.p 
+              <motion.p
                 className="text-xl md:text-2xl text-muted-foreground mb-12 leading-relaxed"
                 variants={heroVariants}
                 custom={2}
               >
-                Transform your energy consumption with cutting-edge solar technology. 
-                Seamless integration, maximum efficiency.
+                Discover top solar providers within Malaysia, compare custom
+                quotes, and start your path to a sustainable future.
               </motion.p>
 
-              <motion.div 
+              <motion.div
                 className="flex flex-col sm:flex-row gap-6"
                 variants={heroVariants}
                 custom={3}
@@ -122,9 +192,9 @@ const HomePage = () => {
                   Start Your Journey
                   <ArrowUpRight className="ml-2 h-5 w-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                 </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
+                <Button
+                  size="lg"
+                  variant="outline"
                   className="group h-14 px-8 text-lg"
                   onClick={() => setIsVideoPlaying(true)}
                 >
@@ -164,7 +234,8 @@ const HomePage = () => {
               Designed for Performance
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Our solar panels combine cutting-edge technology with sleek design
+              Our partner&apos;s solar panels combine cutting-edge technology
+              with sleek design
             </p>
           </motion.div>
 
@@ -176,7 +247,7 @@ const HomePage = () => {
               viewport={{ once: true }}
             >
               <img
-                src="/api/placeholder/600/450"
+                src="/solar-design.jpg"
                 alt="Solar Panel Design"
                 className="w-full h-full object-cover"
               />
@@ -188,19 +259,26 @@ const HomePage = () => {
               viewport={{ once: true }}
             >
               <div>
-                <h3 className="text-2xl font-semibold mb-4">Premium Materials</h3>
+                <h3 className="text-2xl font-semibold mb-4">
+                  Premium Materials
+                </h3>
                 <p className="text-lg text-muted-foreground">
-                  Crafted from aerospace-grade materials for maximum durability and efficiency
+                  Crafted from aerospace-grade materials for maximum durability
+                  and efficiency
                 </p>
               </div>
               <div>
-                <h3 className="text-2xl font-semibold mb-4">Smart Integration</h3>
+                <h3 className="text-2xl font-semibold mb-4">
+                  Smart Integration
+                </h3>
                 <p className="text-lg text-muted-foreground">
                   Seamlessly connects with your home&apos;s smart ecosystem
                 </p>
               </div>
               <div>
-                <h3 className="text-2xl font-semibold mb-4">25-Year Warranty</h3>
+                <h3 className="text-2xl font-semibold mb-4">
+                  25-Year Warranty
+                </h3>
                 <p className="text-lg text-muted-foreground">
                   Backed by our comprehensive protection plan
                 </p>
@@ -216,16 +294,31 @@ const HomePage = () => {
         className="py-32 bg-gradient-to-b from-secondary/5 to-background"
       >
         <div className="container mx-auto px-4">
-          <motion.div 
+          <motion.div
             className="grid grid-cols-1 md:grid-cols-3 gap-12"
             initial={{ opacity: 0, y: 20 }}
             animate={statsInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5 }}
           >
             {[
-              { value: '5,000+', label: 'Installations', sublabel: 'Across the country', icon: <Sun className="h-8 w-8" /> },
-              { value: '98%', label: 'Satisfaction', sublabel: 'Customer happiness', icon: <BarChart className="h-8 w-8" /> },
-              { value: '30M+', label: 'kWh Generated', sublabel: 'Clean energy produced', icon: <Zap className="h-8 w-8" /> },
+              {
+                value: "5,000+",
+                label: "Installations",
+                sublabel: "Across the country",
+                icon: <Sun className="h-8 w-8" />,
+              },
+              {
+                value: "98%",
+                label: "Satisfaction",
+                sublabel: "Customer happiness",
+                icon: <BarChart className="h-8 w-8" />,
+              },
+              {
+                value: "30M+",
+                label: "kWh Generated",
+                sublabel: "Clean energy produced",
+                icon: <Zap className="h-8 w-8" />,
+              },
             ].map((stat, index) => (
               <Card key={index} className="relative overflow-hidden group">
                 <CardContent className="p-8">
@@ -240,7 +333,9 @@ const HomePage = () => {
                     <h3 className="text-4xl font-bold">{stat.value}</h3>
                     <div>
                       <div className="text-xl font-semibold">{stat.label}</div>
-                      <div className="text-sm text-muted-foreground">{stat.sublabel}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {stat.sublabel}
+                      </div>
                     </div>
                   </div>
                 </CardContent>
@@ -250,81 +345,136 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Features Grid */}
-      <section ref={featuresRef} className="py-32">
-        <div className="container mx-auto px-4">
+      {/* Solar Journey Steps */}
+      <section ref={featuresRef} className="py-32 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-secondary/5 via-background to-background" />
+
+        <div className="container mx-auto px-4 relative">
           <motion.div
             className="text-center mb-20"
             initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            animate={featuresInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5 }}
           >
-            <Badge className="mb-6" variant="secondary">Features</Badge>
+            <Badge className="mb-6" variant="secondary">
+              Simple Process
+            </Badge>
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Intelligent Energy Solutions
+              Your Journey to Solar Power
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Advanced features designed to maximize your energy independence
+              Four simple steps to transform your home into a clean energy
+              powerhouse
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
+            {/* Connected Line Background */}
+            <div className="absolute hidden lg:block top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-primary/20 via-primary/30 to-primary/20 transform -translate-y-1/2" />
+
             {[
               {
-                icon: <Sun className="h-10 w-10" />,
-                title: 'Smart Solar',
-                description: 'AI-powered panels that adapt to weather conditions',
-                image: '/api/placeholder/400/300'
+                step: "01",
+                stepId: "calculator",
+                icon: <Calculator className="h-12 w-12" />,
+                title: "Estimate Savings",
+                description:
+                  "Get an instant calculation of your potential monthly savings based on your location and energy usage",
+                action: "Calculate Savings",
+                highlight: "Average savings of RM150/month",
               },
               {
-                icon: <Shield className="h-10 w-10" />,
-                title: 'Energy Security',
-                description: 'Backup power systems for uninterrupted supply',
-                image: '/api/placeholder/400/300'
+                step: "02",
+                stepId: "quote",
+                icon: <FileText className="h-12 w-12" />,
+                title: "Request Quote",
+                description:
+                  "Receive a detailed quotation tailored to your home's specific requirements and energy needs",
+                action: "Get Quote",
+                highlight: "Free consultation included",
               },
               {
-                icon: <Zap className="h-10 w-10" />,
-                title: 'Real-time Monitoring',
-                description: 'Track performance from your smartphone',
-                image: '/api/placeholder/400/300'
+                step: "03",
+                stepId: "planning",
+                icon: <Handshake className="h-12 w-12" />,
+                title: "Project Planning",
+                description:
+                  "Our experts design your custom solar solution and handle all permits and paperwork",
+                action: "Learn Process",
+                highlight: "Hassle-free experience",
               },
-            ].map((feature, index) => (
+              {
+                step: "04",
+                stepId: "installation",
+                icon: <CheckCircle className="h-12 w-12" />,
+                title: "Installation",
+                description:
+                  "Professional installation by certified technicians, followed by system activation",
+                action: "See Timeline",
+                highlight: "1-2 days installation",
+              },
+            ].map((step, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
+                animate={featuresInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ delay: index * 0.2 }}
+                className="relative"
               >
-                <Card className="overflow-hidden group h-full hover:shadow-lg transition-shadow duration-300">
-                  <CardContent className="p-0">
-                    <div className="relative h-48 overflow-hidden">
-                      <img
-                        src={feature.image}
-                        alt={feature.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                    <div className="p-8">
-                      <div className="mb-6 text-primary">{feature.icon}</div>
-                      <h3 className="text-2xl font-semibold mb-4">{feature.title}</h3>
-                      <p className="text-muted-foreground text-lg">
-                        {feature.description}
+                {/* Step Number */}
+                <div className="absolute -top-4 -left-4 bg-primary/10 rounded-full w-12 h-12 flex items-center justify-center font-bold text-primary text-lg">
+                  {step.step}
+                </div>
+
+                <Card className="group h-full hover:shadow-xl transition-all duration-500 hover:-translate-y-2 bg-gradient-to-br from-background to-secondary/5">
+                  <CardContent className="p-6">
+                    {/* Animation Container with step-specific animation */}
+                    <AnimationContainer step={step} stepId={step.stepId} />
+
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                          {step.icon}
+                        </div>
+                        <h3 className="text-2xl font-semibold">{step.title}</h3>
+                      </div>
+
+                      <p className="text-muted-foreground text-lg leading-relaxed">
+                        {step.description}
                       </p>
+
+                      <div className="bg-primary/5 rounded-lg p-3 text-sm font-medium text-primary">
+                        {step.highlight}
+                      </div>
+
+                      <Button className="w-full group mt-4 hover:bg-primary/90">
+                        {step.action}
+                        <ArrowUpRight className="ml-2 h-4 w-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
               </motion.div>
             ))}
           </div>
+
+          {/* Bottom CTA */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={featuresInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.8 }}
+            className="mt-16 text-center"
+          >
+            <Button size="lg" className="group h-14 px-8 text-lg">
+              Start Your Solar Journey
+              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </motion.div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section
-        ref={ctaRef}
-        className="py-32 relative overflow-hidden"
-      >
+      <section ref={ctaRef} className="py-32 relative overflow-hidden">
         <motion.div
           className="absolute inset-0"
           initial={{ opacity: 0 }}
@@ -348,7 +498,9 @@ const HomePage = () => {
               viewport={{ once: true }}
             >
               <div className="text-center mb-12">
-                <Badge variant="secondary" className="mb-6">Limited Time Offer</Badge>
+                <Badge variant="secondary" className="mb-6">
+                  Limited Time Offer
+                </Badge>
                 <h2 className="text-4xl md:text-5xl font-bold mb-6">
                   Start Your Solar Journey Today
                 </h2>
@@ -365,7 +517,9 @@ const HomePage = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold mb-2">25-Year Warranty</h3>
-                      <p className="text-muted-foreground">Complete peace of mind with our comprehensive coverage</p>
+                      <p className="text-muted-foreground">
+                        Complete peace of mind with our comprehensive coverage
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
@@ -374,7 +528,10 @@ const HomePage = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold mb-2">$0 Down Payment</h3>
-                      <p className="text-muted-foreground">Start saving immediately with our flexible financing options</p>
+                      <p className="text-muted-foreground">
+                        Start saving immediately with our flexible financing
+                        options
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -386,7 +543,9 @@ const HomePage = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold mb-2">30% Tax Credit</h3>
-                      <p className="text-muted-foreground">Take advantage of federal incentives for going solar</p>
+                      <p className="text-muted-foreground">
+                        Take advantage of federal incentives for going solar
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
@@ -394,8 +553,12 @@ const HomePage = () => {
                       <BarChart className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                      <h3 className="font-semibold mb-2">Energy Independence</h3>
-                      <p className="text-muted-foreground">Break free from rising utility costs</p>
+                      <h3 className="font-semibold mb-2">
+                        Energy Independence
+                      </h3>
+                      <p className="text-muted-foreground">
+                        Break free from rising utility costs
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -444,8 +607,127 @@ const HomePage = () => {
           </motion.div>
         </motion.div>
       )}
-    </div>
-  )
-}
 
-export default HomePage
+      {/* Futuristic Footer */}
+      <footer className="relative overflow-hidden bg-gradient-to-b from-background to-background/95 pt-24 pb-12">
+        <div className="absolute inset-0">
+          <motion.div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: 'url("/grid-pattern.jpg")',
+              backgroundSize: "30px 30px",
+              opacity: 0.1,
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/95 to-transparent" />
+        </div>
+
+        <div className="container mx-auto px-4 relative">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+            <div className="space-y-6">
+              <div className="flex items-center gap-2">
+                <EcoSyncLogo />
+              </div>
+              <p className="text-muted-foreground">
+                Transforming the future of energy with innovative solar
+                solutions.
+              </p>
+              <div className="flex gap-4"></div>
+            </div>
+
+            <div className="space-y-6">
+              <h4 className="text-lg font-semibold">Services</h4>
+              <ul className="space-y-4">
+                {[
+                  "Get Estimate",
+                  "Search Solar Installers",
+                  "Explore Solar Solutions",
+                  "Smart Home",
+                ].map((item, index) => (
+                  <li key={index}>
+                    <Button
+                      variant="link"
+                      className="p-0 h-auto text-muted-foreground hover:text-primary"
+                    >
+                      {item}
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="space-y-6">
+              <h4 className="text-lg font-semibold">Company</h4>
+              <ul className="space-y-4">
+                {["About Us", "Careers", "Press", "Sustainability"].map(
+                  (item, index) => (
+                    <li key={index}>
+                      <Button
+                        variant="link"
+                        className="p-0 h-auto text-muted-foreground hover:text-primary"
+                      >
+                        {item}
+                      </Button>
+                    </li>
+                  )
+                )}
+              </ul>
+            </div>
+
+            <div className="space-y-6">
+              <h4 className="text-lg font-semibold">Contact</h4>
+              <div className="space-y-4">
+                <Button className="w-full group" variant="outline">
+                  <Mail className="mr-2 h-4 w-4" />
+                  Contact Sales
+                  <ArrowUpRight className="ml-2 h-4 w-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                </Button>
+                <p className="text-sm text-muted-foreground">
+                  Monday - Friday, 9am - 5pm EST
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  support@ecosync.com
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <motion.div
+            className="pt-8 mt-8 border-t border-border"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+              <p className="text-sm text-muted-foreground">
+                © 2024 EcoSync. All rights reserved.
+              </p>
+              <div className="flex gap-6">
+                {["Privacy Policy", "Terms of Service", "Cookie Policy"].map(
+                  (item, index) => (
+                    <Button
+                      key={index}
+                      variant="link"
+                      className="text-sm text-muted-foreground hover:text-primary p-0 h-auto"
+                    >
+                      {item}
+                    </Button>
+                  )
+                )}
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+AnimationContainer.propTypes = {
+  step: PropTypes.shape({
+    icon: PropTypes.node.isRequired,
+  }).isRequired,
+  stepId: PropTypes.string.isRequired,
+};
+
+export default HomePage;
