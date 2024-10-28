@@ -1,9 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import {
   motion,
-  useScroll,
-  useTransform,
-  useSpring,
   useInView,
 } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
@@ -28,6 +25,7 @@ import {
 import EcoSyncLogo from "@/_components/nav/EcoSyncLogo";
 import Lottie from "lottie-react";
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 
 // Import the animation data
 import calculatorAnimation from "../animations/calculatorAnimation.json";
@@ -91,9 +89,6 @@ const HomePage = () => {
   const featuresRef = useRef(null);
   const ctaRef = useRef(null);
 
-  const { scrollYProgress } = useScroll();
-  const yPosAnim = useSpring(useTransform(scrollYProgress, [0, 1], [0, -50]));
-
   const statsInView = useInView(statsRef, { once: true, amount: 0.3 });
   const featuresInView = useInView(featuresRef, { once: true, amount: 0.3 });
 
@@ -136,14 +131,6 @@ const HomePage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }}
-          />
-          <motion.div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: 'url("/grid-pattern.svg")',
-              backgroundSize: "30px 30px",
-              y: yPosAnim,
-            }}
           />
         </div>
 
@@ -188,10 +175,13 @@ const HomePage = () => {
                 variants={heroVariants}
                 custom={3}
               >
-                <Button size="lg" className="group h-14 px-8 text-lg">
-                  Start Your Journey
-                  <ArrowUpRight className="ml-2 h-5 w-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                </Button>
+                <Link to="/solar-estimation">
+                  <Button size="lg" className="group h-14 px-8 text-lg">
+                    Start Your Journey
+                    <ArrowUpRight className="ml-2 h-5 w-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                  </Button>
+                </Link>
+
                 <Button
                   size="lg"
                   variant="outline"
@@ -231,11 +221,12 @@ const HomePage = () => {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Designed for Performance
+              Trustworthy Solar Solutions
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Our partner&apos;s solar panels combine cutting-edge technology
-              with sleek design
+              High-quality, reliable solar installations using premium
+              materials, smart home integration, and pre-screened partners for
+              safety and trust.
             </p>
           </motion.div>
 
@@ -263,24 +254,24 @@ const HomePage = () => {
                   Premium Materials
                 </h3>
                 <p className="text-lg text-muted-foreground">
-                  Crafted from aerospace-grade materials for maximum durability
-                  and efficiency
+                  Aerospace-grade materials for top durability and efficiency
                 </p>
               </div>
               <div>
                 <h3 className="text-2xl font-semibold mb-4">
-                  Smart Integration
+                  Smart Home Integration
                 </h3>
                 <p className="text-lg text-muted-foreground">
-                  Seamlessly connects with your home&apos;s smart ecosystem
+                  Easily connects with your home&apos;s smart devices
                 </p>
               </div>
               <div>
                 <h3 className="text-2xl font-semibold mb-4">
-                  25-Year Warranty
+                  Verified Partners
                 </h3>
                 <p className="text-lg text-muted-foreground">
-                  Backed by our comprehensive protection plan
+                  Our platform pre-screens installers for safe and reliable
+                  solar solutions
                 </p>
               </div>
             </motion.div>
@@ -302,7 +293,7 @@ const HomePage = () => {
           >
             {[
               {
-                value: "5,000+",
+                value: "3,000+",
                 label: "Installations",
                 sublabel: "Across the country",
                 icon: <Sun className="h-8 w-8" />,
@@ -314,7 +305,7 @@ const HomePage = () => {
                 icon: <BarChart className="h-8 w-8" />,
               },
               {
-                value: "30M+",
+                value: "10M+",
                 label: "kWh Generated",
                 sublabel: "Clean energy produced",
                 icon: <Zap className="h-8 w-8" />,
@@ -379,8 +370,7 @@ const HomePage = () => {
                 icon: <Calculator className="h-12 w-12" />,
                 title: "Estimate Savings",
                 description:
-                  "Get an instant calculation of your potential monthly savings based on your location and energy usage",
-                action: "Calculate Savings",
+                  "Get an instant calculation of your potential monthly savings based on roof area and average monthly electricity bill",
                 highlight: "Average savings of RM150/month",
               },
               {
@@ -390,7 +380,6 @@ const HomePage = () => {
                 title: "Request Quote",
                 description:
                   "Receive a detailed quotation tailored to your home's specific requirements and energy needs",
-                action: "Get Quote",
                 highlight: "Free consultation included",
               },
               {
@@ -400,7 +389,6 @@ const HomePage = () => {
                 title: "Project Planning",
                 description:
                   "Our experts design your custom solar solution and handle all permits and paperwork",
-                action: "Learn Process",
                 highlight: "Hassle-free experience",
               },
               {
@@ -410,7 +398,6 @@ const HomePage = () => {
                 title: "Installation",
                 description:
                   "Professional installation by certified technicians, followed by system activation",
-                action: "See Timeline",
                 highlight: "1-2 days installation",
               },
             ].map((step, index) => (
@@ -446,11 +433,6 @@ const HomePage = () => {
                       <div className="bg-primary/5 rounded-lg p-3 text-sm font-medium text-primary">
                         {step.highlight}
                       </div>
-
-                      <Button className="w-full group mt-4 hover:bg-primary/90">
-                        {step.action}
-                        <ArrowUpRight className="ml-2 h-4 w-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                      </Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -465,10 +447,12 @@ const HomePage = () => {
             transition={{ delay: 0.8 }}
             className="mt-16 text-center"
           >
-            <Button size="lg" className="group h-14 px-8 text-lg">
-              Start Your Solar Journey
-              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
+            <Link to="/solar-estimation">
+              <Button size="lg" className="group h-14 px-8 text-lg">
+                Start Your Solar Journey
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
           </motion.div>
         </div>
       </section>
@@ -565,10 +549,12 @@ const HomePage = () => {
               </div>
 
               <div className="flex flex-col items-center">
-                <Button size="lg" className="group h-14 px-12 text-lg mb-4">
-                  Get Your Free Quote
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </Button>
+                <Link to="solar-estimation">
+                  <Button size="lg" className="group h-14 px-12 text-lg mb-4">
+                    Get Your Free Quote
+                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
                 <p className="text-sm text-muted-foreground">
                   No commitment required. Free consultation.
                 </p>
@@ -592,9 +578,10 @@ const HomePage = () => {
             animate={{ scale: 1 }}
             exit={{ scale: 0.9 }}
           >
-            <img
-              src="/api/placeholder/1280/720"
-              alt="Demo Video Placeholder"
+            <video
+              src="/demo.mp4"
+              controls
+              autoPlay
               className="w-full h-full object-cover"
             />
             <Button
@@ -629,48 +616,51 @@ const HomePage = () => {
                 <EcoSyncLogo />
               </div>
               <p className="text-muted-foreground">
-                Transforming the future of energy with innovative solar
-                solutions.
+                Empowering Your Green Energy Journey
               </p>
               <div className="flex gap-4"></div>
             </div>
-
             <div className="space-y-6">
               <h4 className="text-lg font-semibold">Services</h4>
               <ul className="space-y-4">
                 {[
-                  "Get Estimate",
-                  "Search Solar Installers",
-                  "Explore Solar Solutions",
-                  "Smart Home",
+                  { name: "Get Estimate", link: "/solar-estimation" },
+                  { name: "Search Solar Installers", link: "/installers" },
+                  { name: "Explore Solar Solutions", link: "/solar-solutions" },
                 ].map((item, index) => (
                   <li key={index}>
-                    <Button
-                      variant="link"
-                      className="p-0 h-auto text-muted-foreground hover:text-primary"
-                    >
-                      {item}
-                    </Button>
+                    <Link to={item.link}>
+                      <Button
+                        variant="link"
+                        className="p-0 h-auto text-muted-foreground hover:text-primary"
+                      >
+                        {item.name}
+                      </Button>
+                    </Link>
                   </li>
                 ))}
               </ul>
             </div>
 
             <div className="space-y-6">
-              <h4 className="text-lg font-semibold">Company</h4>
+              <h4 className="text-lg font-semibold">Information</h4>
               <ul className="space-y-4">
-                {["About Us", "Careers", "Press", "Sustainability"].map(
-                  (item, index) => (
-                    <li key={index}>
+                {[
+                  { name: "About", link: "/about" },
+                  { name: "Incentives", link: "/incentives" },
+                  { name: "Sustainability", link: "/sustainability" },
+                ].map((item, index) => (
+                  <li key={index}>
+                    <Link to={item.link}>
                       <Button
                         variant="link"
                         className="p-0 h-auto text-muted-foreground hover:text-primary"
                       >
-                        {item}
+                        {item.name}
                       </Button>
-                    </li>
-                  )
-                )}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
 
@@ -698,23 +688,10 @@ const HomePage = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="flex flex-col md:flex-row justify-end items-center gap-4">
               <p className="text-sm text-muted-foreground">
                 © 2024 EcoSync. All rights reserved.
               </p>
-              <div className="flex gap-6">
-                {["Privacy Policy", "Terms of Service", "Cookie Policy"].map(
-                  (item, index) => (
-                    <Button
-                      key={index}
-                      variant="link"
-                      className="text-sm text-muted-foreground hover:text-primary p-0 h-auto"
-                    >
-                      {item}
-                    </Button>
-                  )
-                )}
-              </div>
             </div>
           </motion.div>
         </div>
