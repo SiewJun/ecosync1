@@ -1,8 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  motion,
-  useInView,
-} from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,12 +12,13 @@ import {
   Leaf,
   BarChart,
   ArrowUpRight,
-  Play,
   Mail,
   Calculator,
   FileText,
   Handshake,
   CheckCircle,
+  Sparkles,
+  Bot,
 } from "lucide-react";
 import EcoSyncLogo from "@/_components/nav/EcoSyncLogo";
 import Lottie from "lottie-react";
@@ -32,6 +30,168 @@ import calculatorAnimation from "../animations/calculatorAnimation.json";
 import quoteAnimation from "../animations/quoteAnimation.json";
 import planningAnimation from "../animations/planningAnimation.json";
 import installationAnimation from "../animations/installationAnimation.json";
+
+const HeroSection = () => {
+  return (
+    <section className="relative min-h-screen flex items-center justify-center">
+      {/* Background Image with Parallax Effect */}
+      <motion.div
+        className="absolute inset-0 z-0"
+        initial={{ scale: 1.1 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 2 }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-background" />
+        <img
+          src="/hero.jpg"
+          alt="Solar Energy Background"
+          className="w-full h-full object-cover object-center"
+        />
+      </motion.div>
+
+      {/* Animated Grid Overlay */}
+      <div className="absolute inset-0 z-10">
+        <div
+          className="h-full w-full"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)",
+            backgroundSize: "4rem 4rem",
+            mask: "linear-gradient(to bottom, transparent, black 30%, black 70%, transparent)",
+          }}
+        />
+      </div>
+
+      {/* 3D Floating Elements */}
+      <div className="absolute inset-0 z-20 overflow-hidden">
+        <motion.div
+          className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full"
+          style={{
+            background:
+              "linear-gradient(45deg, rgba(0,255,255,0.1), rgba(0,255,255,0))",
+            filter: "blur(60px)",
+          }}
+          animate={{
+            y: [0, 50, 0],
+            rotate: [0, 360],
+            scale: [1, 1.2, 1],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+        />
+        <motion.div
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full"
+          style={{
+            background:
+              "linear-gradient(45deg, rgba(0,255,255,0), rgba(0,255,255,0.1))",
+            filter: "blur(80px)",
+          }}
+          animate={{
+            y: [50, 0, 50],
+            rotate: [360, 0],
+            scale: [1.2, 1, 1.2],
+          }}
+          transition={{
+            duration: 25,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+        />
+      </div>
+
+      {/* Main Content */}
+      <div className="container mx-auto px-4 relative z-30">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center"
+          >
+            <Badge
+              className="mb-6 py-2 px-4 bg-background backdrop-blur-lg border-white/20"
+              variant="secondary"
+            >
+              <Sparkles className="w-4 h-4 mr-2" />
+              Future of Clean Energy
+            </Badge>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-center mb-8"
+          >
+            <h1 className="text-7xl md:text-8xl font-bold mb-6 tracking-tight text-white">
+              <span className="inline-block bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-400">
+                Empower
+              </span>
+              <br />
+              <span className="relative inline-block">
+                Your Solar Future
+                <motion.div
+                  className="absolute -bottom-2 left-0 w-full h-1"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, transparent, rgba(0,255,255,0.5), transparent)",
+                  }}
+                  initial={{ width: 0, opacity: 0 }}
+                  animate={{ width: "100%", opacity: 1 }}
+                  transition={{ duration: 1.5, delay: 1 }}
+                />
+              </span>
+            </h1>
+          </motion.div>
+
+          <motion.p
+            className="text-xl md:text-2xl text-white/80 mb-12 text-center max-w-3xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            Discover sustainable solar solutions tailored to you, with trusted
+            installers ready to power your green energy journey.
+          </motion.p>
+
+          <motion.div
+            className="flex flex-col sm:flex-row gap-6 justify-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+          >
+            <Link to="/solar-estimation">
+              <Button
+                size="lg"
+                className="group h-14 px-8 text-lg relative overflow-hidden bg-foreground/10 backdrop-blur-lg hover:bg-white/20 border-white/20"
+              >
+                <span className="relative z-10 flex items-center text-white">
+                  Get Started
+                  <ArrowUpRight className="ml-2 h-5 w-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                </span>
+              </Button>
+            </Link>
+
+            <Button
+              size="lg"
+              variant="outline"
+              className="group h-14 px-8 text-lg border-white/20 bg-background hover:bg-white/10 backdrop-blur-lg"
+            >
+              <Bot className="mr-2 h-5 w-5" />
+              AI Calculator
+            </Button>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Bottom Gradient */}
+      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent z-40" />
+    </section>
+  );
+};
 
 // Component for step-specific animation or fallback
 const AnimationContainer = ({ step, stepId }) => {
@@ -83,8 +243,6 @@ const AnimationContainer = ({ step, stepId }) => {
 
 const HomePage = () => {
   const [scrolled, setScrolled] = useState(false);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-  const heroRef = useRef(null);
   const statsRef = useRef(null);
   const featuresRef = useRef(null);
   const ctaRef = useRef(null);
@@ -100,15 +258,6 @@ const HomePage = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const heroVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: (i) => ({
-      opacity: 1,
-      y: 0,
-      transition: { delay: i * 0.1, duration: 0.5, ease: "easeOut" },
-    }),
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/95">
       <NavBar
@@ -120,96 +269,7 @@ const HomePage = () => {
       />
 
       {/* Hero Section */}
-      <section
-        ref={heroRef}
-        className="relative min-h-screen flex items-center justify-center pt-20"
-      >
-        {/* Hero Background */}
-        <div className="absolute inset-0 overflow-hidden">
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-b from-primary/5 via-primary/10 to-background/95"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1 }}
-          />
-        </div>
-
-        <div className="relative z-10 container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <motion.div
-              className="max-w-2xl"
-              initial="hidden"
-              animate="visible"
-              variants={{
-                visible: { transition: { staggerChildren: 0.1 } },
-              }}
-            >
-              <motion.div variants={heroVariants} custom={0}>
-                <Badge className="mb-6 py-2 px-4 text-sm" variant="secondary">
-                  Redefining Clean Energy
-                </Badge>
-              </motion.div>
-
-              <motion.h1
-                className="text-5xl md:text-7xl font-bold mb-8 leading-tight tracking-tight"
-                variants={heroVariants}
-                custom={1}
-              >
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/80 to-primary/60">
-                  Empowering Your
-                  <br /> Green Energy Journey
-                </span>
-              </motion.h1>
-
-              <motion.p
-                className="text-xl md:text-2xl text-muted-foreground mb-12 leading-relaxed"
-                variants={heroVariants}
-                custom={2}
-              >
-                Discover top solar providers within Malaysia, compare custom
-                quotes, and start your path to a sustainable future.
-              </motion.p>
-
-              <motion.div
-                className="flex flex-col sm:flex-row gap-6"
-                variants={heroVariants}
-                custom={3}
-              >
-                <Link to="/solar-estimation">
-                  <Button size="lg" className="group h-14 px-8 text-lg">
-                    Start Your Journey
-                    <ArrowUpRight className="ml-2 h-5 w-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                  </Button>
-                </Link>
-
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="group h-14 px-8 text-lg"
-                  onClick={() => setIsVideoPlaying(true)}
-                >
-                  <Play className="mr-2 h-5 w-5" />
-                  Watch Demo
-                </Button>
-              </motion.div>
-            </motion.div>
-
-            <motion.div
-              className="relative aspect-square rounded-3xl overflow-hidden shadow-2xl"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <img
-                src="/hero.jpg"
-                alt="Solar Installation"
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent" />
-            </motion.div>
-          </div>
-        </div>
-      </section>
+      <HeroSection />
 
       {/* Product Showcase */}
       <section className="py-32 overflow-hidden">
@@ -563,37 +623,6 @@ const HomePage = () => {
           </div>
         </div>
       </section>
-
-      {/* Video Modal */}
-      {isVideoPlaying && (
-        <motion.div
-          className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          <motion.div
-            className="relative w-full max-w-4xl aspect-video bg-secondary rounded-2xl overflow-hidden"
-            initial={{ scale: 0.9 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0.9 }}
-          >
-            <video
-              src="/demo.mp4"
-              controls
-              autoPlay
-              className="w-full h-full object-cover"
-            />
-            <Button
-              variant="ghost"
-              className="absolute top-4 right-4"
-              onClick={() => setIsVideoPlaying(false)}
-            >
-              Close
-            </Button>
-          </motion.div>
-        </motion.div>
-      )}
 
       {/* Futuristic Footer */}
       <footer className="relative overflow-hidden bg-gradient-to-b from-background to-background/95 pt-24 pb-12">
