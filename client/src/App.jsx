@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import PropTypes from "prop-types";
 import HomePage from "./pages/HomePage";
@@ -17,6 +17,8 @@ import CompanyPublicProfile from "./_components/company/CompanyPublicProfile";
 import SolarSolutionComparison from "./_components/services/SolarSolutionComparison";
 import SolarEstimation from "./pages/services/SolarEstimation";
 import IncentivesInfo from "./pages/info/IncentivesInfo";
+import Footer from "./pages/Footer";
+
 // Custom ProtectedRoute component
 const ProtectedRoute = ({ element, role }) => {
   const token = localStorage.getItem("token");
@@ -46,30 +48,34 @@ const ProtectedRoute = ({ element, role }) => {
 };
 
 const App = () => {
+  const location = useLocation();
+  const noFooterRoutes = ["/dashboard", "/company-dashboard", "/consumer-dashboard"];
+
+  const shouldShowFooter = !noFooterRoutes.some(route => location.pathname.startsWith(route));
+
   return (
     <div>
-      <Router>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/signin" element={<SignInPage />} />
-          <Route path="/signup" element={<SignUpPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
-          <Route path="/company-signup" element={<CompanyRegistrationPage />} />
-          <Route path="/incentives" element={<IncentivesInfo />} />
-          <Route
-            path="/dashboard/*"
-            element={<ProtectedRoute element={<AdminDashboardPage />} role="ADMIN" />}
-          />
-          <Route path="/complete-registration" element={<CompletedCompanySignUpPage />} />
-          <Route path="/company-dashboard/*" element={<ProtectedRoute element={<CompanyDashboard />} role="COMPANY" />} />
-          <Route path="/consumer-dashboard/*" element={<ProtectedRoute element={<ConsumerDashboard />} role="CONSUMER" />} />
-          <Route path="/installers" element={<SearchSolarInstallers />} />
-          <Route path="/installers/companypublicprofile/:companyId" element={<CompanyPublicProfile />} />
-          <Route path="/solar-solutions" element={<SolarSolutionComparison />} />
-          <Route path="/solar-estimation" element={<SolarEstimation />} />
-        </Routes>
-      </Router>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/signin" element={<SignInPage />} />
+        <Route path="/signup" element={<SignUpPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+        <Route path="/company-signup" element={<CompanyRegistrationPage />} />
+        <Route path="/incentives" element={<IncentivesInfo />} />
+        <Route
+          path="/dashboard/*"
+          element={<ProtectedRoute element={<AdminDashboardPage />} role="ADMIN" />}
+        />
+        <Route path="/complete-registration" element={<CompletedCompanySignUpPage />} />
+        <Route path="/company-dashboard/*" element={<ProtectedRoute element={<CompanyDashboard />} role="COMPANY" />} />
+        <Route path="/consumer-dashboard/*" element={<ProtectedRoute element={<ConsumerDashboard />} role="CONSUMER" />} />
+        <Route path="/installers" element={<SearchSolarInstallers />} />
+        <Route path="/installers/companypublicprofile/:companyId" element={<CompanyPublicProfile />} />
+        <Route path="/solar-solutions" element={<SolarSolutionComparison />} />
+        <Route path="/solar-estimation" element={<SolarEstimation />} />
+      </Routes>
+      {shouldShowFooter && <Footer />}
     </div>
   );
 };
@@ -81,7 +87,9 @@ ProtectedRoute.propTypes = {
 
 const AppWrapper = () => (
   <ThemeProvider>
-    <App />
+    <Router>
+      <App />
+    </Router>
   </ThemeProvider>
 );
 
