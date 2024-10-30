@@ -80,7 +80,8 @@ const CompanySignUpForm = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 shadow-lg rounded-lg mt-10 mb-10 border">
+    <div className="flex items-center justify-center h-screen">
+    <div className="max-w-2xl mx-auto p-12 shadow-lg rounded-lg border">
       <h2 className="text-3xl font-bold mb-16 text-center">Company Application</h2>
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="col-span-1">
@@ -137,6 +138,7 @@ const CompanySignUpForm = () => {
           </div>
         )}
       </form>
+    </div>
     </div>
   );
 };
