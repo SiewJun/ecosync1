@@ -18,7 +18,6 @@ import {
   Handshake,
   CheckCircle,
   Sparkles,
-  Bot,
 } from "lucide-react";
 import EcoSyncLogo from "@/_components/nav/EcoSyncLogo";
 import Lottie from "lottie-react";
@@ -33,7 +32,7 @@ import installationAnimation from "../animations/installationAnimation.json";
 
 const HeroSection = () => {
   return (
-    <section className="relative min-h-screen flex items-center justify-center">
+    <section className="relative min-h-screen flex items-center justify-center py-24">
       {/* Background Image with Parallax Effect */}
       <motion.div
         className="absolute inset-0 z-0"
@@ -109,10 +108,10 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-center"
+            className="text-center mb-12"
           >
             <Badge
-              className="mb-6 py-2 px-4 bg-background backdrop-blur-lg border-white/20"
+              className="mb-8 py-2 px-4 bg-background backdrop-blur-lg border-white/20"
               variant="secondary"
             >
               <Sparkles className="w-4 h-4 mr-2" />
@@ -124,10 +123,10 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-center mb-8"
+            className="text-center mb-12"
           >
-            <h1 className="text-7xl md:text-8xl font-bold mb-6 tracking-tight text-white">
-              <span className="inline-block bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-400">
+            <h1 className="text-7xl md:text-8xl font-bold mb-8 tracking-tight text-white">
+              <span className="inline-block bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-400/60">
                 Empower
               </span>
               <br />
@@ -148,7 +147,7 @@ const HeroSection = () => {
           </motion.div>
 
           <motion.p
-            className="text-xl md:text-2xl text-white/80 mb-12 text-center max-w-3xl mx-auto"
+            className="text-xl md:text-2xl text-white/80 mb-16 text-center max-w-3xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
@@ -158,7 +157,7 @@ const HeroSection = () => {
           </motion.p>
 
           <motion.div
-            className="flex flex-col sm:flex-row gap-6 justify-center"
+            className="flex flex-col sm:flex-row gap-8 justify-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
@@ -166,29 +165,20 @@ const HeroSection = () => {
             <Link to="/solar-estimation">
               <Button
                 size="lg"
-                className="group h-14 px-8 text-lg relative overflow-hidden bg-foreground/10 backdrop-blur-lg hover:bg-white/20 border-white/20"
+                className="group h-16 px-10 text-lg relative overflow-hidden bg-foreground/10 backdrop-blur-lg hover:bg-white/20 border-white/20"
               >
                 <span className="relative z-10 flex items-center text-white">
                   Get Started
-                  <ArrowUpRight className="ml-2 h-5 w-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                  <ArrowUpRight className="ml-3 h-6 w-6 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                 </span>
               </Button>
             </Link>
-
-            <Button
-              size="lg"
-              variant="outline"
-              className="group h-14 px-8 text-lg border-white/20 bg-background hover:bg-white/10 backdrop-blur-lg"
-            >
-              <Bot className="mr-2 h-5 w-5" />
-              AI Calculator
-            </Button>
           </motion.div>
         </div>
       </div>
 
       {/* Bottom Gradient */}
-      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent z-40" />
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent z-40" />
     </section>
   );
 };
@@ -218,7 +208,7 @@ const AnimationContainer = ({ step, stepId }) => {
 
   if (animationErrors[stepId]) {
     return (
-      <div className="h-48 mb-6 relative rounded-xl overflow-hidden bg-gradient-to-br from-primary/5 to-primary/10 flex items-center justify-center">
+      <div className="h-56 mb-8 relative rounded-xl overflow-hidden bg-gradient-to-br from-primary/5 to-primary/10 flex items-center justify-center">
         <div className="text-primary transform group-hover:scale-110 transition-transform duration-500">
           {step.icon}
         </div>
@@ -227,7 +217,7 @@ const AnimationContainer = ({ step, stepId }) => {
   }
 
   return (
-    <div className="h-48 mb-6 relative bg-primary/5 rounded-xl overflow-hidden">
+    <div className="h-56 mb-8 relative bg-primary/5 rounded-xl overflow-hidden">
       <Lottie
         animationData={stepAnimations[stepId]}
         loop={true}
@@ -272,15 +262,15 @@ const HomePage = () => {
       <HeroSection />
 
       {/* Product Showcase */}
-      <section className="py-32 overflow-hidden">
+      <section className="py-52 overflow-hidden">
         <div className="container mx-auto px-4">
           <motion.div
-            className="text-center mb-20"
+            className="text-center mb-24"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            <h2 className="text-4xl md:text-5xl font-bold mb-8">
               Trustworthy Solar Solutions
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -290,7 +280,7 @@ const HomePage = () => {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
             <motion.div
               className="relative aspect-[4/3] rounded-3xl overflow-hidden"
               initial={{ opacity: 0, x: -50 }}
@@ -304,7 +294,7 @@ const HomePage = () => {
               />
             </motion.div>
             <motion.div
-              className="space-y-8"
+              className="space-y-12"
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
@@ -342,11 +332,11 @@ const HomePage = () => {
       {/* Stats Section */}
       <section
         ref={statsRef}
-        className="py-32 bg-gradient-to-b from-secondary/5 to-background"
+        className="py-40 bg-gradient-to-b from-secondary/5 to-background"
       >
         <div className="container mx-auto px-4">
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-3 gap-12"
+            className="grid grid-cols-1 md:grid-cols-3 gap-16"
             initial={{ opacity: 0, y: 20 }}
             animate={statsInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5 }}
@@ -356,38 +346,39 @@ const HomePage = () => {
                 value: "3,000+",
                 label: "Installations",
                 sublabel: "Across the country",
-                icon: <Sun className="h-8 w-8" />,
+                icon: <Sun className="h-10 w-10" />,
               },
               {
                 value: "98%",
                 label: "Satisfaction",
                 sublabel: "Customer happiness",
-                icon: <BarChart className="h-8 w-8" />,
+                icon: <BarChart className="h-10 w-10" />,
               },
               {
                 value: "10M+",
                 label: "kWh Generated",
                 sublabel: "Clean energy produced",
-                icon: <Zap className="h-8 w-8" />,
+                icon: <Zap className="h-10 w-10" />,
               },
             ].map((stat, index) => (
               <Card key={index} className="relative overflow-hidden group">
-                <CardContent className="p-8">
+                <CardContent className="p-10">
                   <motion.div
                     className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent"
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
                   />
-                  <div className="relative space-y-4">
+                  <div className="relative space-y-6">
                     <div className="text-primary">{stat.icon}</div>
-                    <h3 className="text-4xl font-bold">{stat.value}</h3>
+                    <h3 className="text-5xl font-bold">{stat.value}</h3>
                     <div>
-                      <div className="text-xl font-semibold">{stat.label}</div>
-                      <div className="text-sm text-muted-foreground">
+                      <div className="text-2xl font-semibold">{stat.label}</div>
+                      <div className="text-lg text-muted-foreground">
                         {stat.sublabel}
                       </div>
                     </div>
+                  
                   </div>
                 </CardContent>
               </Card>
@@ -397,20 +388,20 @@ const HomePage = () => {
       </section>
 
       {/* Solar Journey Steps */}
-      <section ref={featuresRef} className="py-32 relative overflow-hidden">
+      <section ref={featuresRef} className="py-40 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-secondary/5 via-background to-background" />
 
         <div className="container mx-auto px-4 relative">
           <motion.div
-            className="text-center mb-20"
+            className="text-center mb-24"
             initial={{ opacity: 0, y: 20 }}
             animate={featuresInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5 }}
           >
-            <Badge className="mb-6" variant="secondary">
+            <Badge className="mb-8" variant="secondary">
               Simple Process
             </Badge>
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            <h2 className="text-4xl md:text-5xl font-bold mb-8">
               Your Journey to Solar Power
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -419,7 +410,7 @@ const HomePage = () => {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 relative">
             {/* Connected Line Background */}
             <div className="absolute hidden lg:block top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-primary/20 via-primary/30 to-primary/20 transform -translate-y-1/2" />
 
@@ -427,7 +418,7 @@ const HomePage = () => {
               {
                 step: "01",
                 stepId: "calculator",
-                icon: <Calculator className="h-12 w-12" />,
+                icon: <Calculator className="h-14 w-14" />,
                 title: "Estimate Savings",
                 description:
                   "Get an instant calculation of your potential monthly savings based on roof area and average monthly electricity bill",
@@ -436,7 +427,7 @@ const HomePage = () => {
               {
                 step: "02",
                 stepId: "quote",
-                icon: <FileText className="h-12 w-12" />,
+                icon: <FileText className="h-14 w-14" />,
                 title: "Request Quote",
                 description:
                   "Receive a detailed quotation tailored to your home's specific requirements and energy needs",
@@ -445,7 +436,7 @@ const HomePage = () => {
               {
                 step: "03",
                 stepId: "planning",
-                icon: <Handshake className="h-12 w-12" />,
+                icon: <Handshake className="h-14 w-14" />,
                 title: "Project Planning",
                 description:
                   "Our experts design your custom solar solution and handle all permits and paperwork",
@@ -454,7 +445,7 @@ const HomePage = () => {
               {
                 step: "04",
                 stepId: "installation",
-                icon: <CheckCircle className="h-12 w-12" />,
+                icon: <CheckCircle className="h-14 w-14" />,
                 title: "Installation",
                 description:
                   "Professional installation by certified technicians, followed by system activation",
@@ -469,18 +460,18 @@ const HomePage = () => {
                 className="relative"
               >
                 {/* Step Number */}
-                <div className="absolute -top-4 -left-4 bg-primary/10 rounded-full w-12 h-12 flex items-center justify-center font-bold text-primary text-lg">
+                <div className="absolute -top-6 -left-6 bg-primary/10 rounded-full w-16 h-16 flex items-center justify-center font-bold text-primary text-xl">
                   {step.step}
                 </div>
 
                 <Card className="group h-full hover:shadow-xl transition-all duration-500 hover:-translate-y-2 bg-gradient-to-br from-background to-secondary/5">
-                  <CardContent className="p-6">
+                  <CardContent className="p-8">
                     {/* Animation Container with step-specific animation */}
                     <AnimationContainer step={step} stepId={step.stepId} />
 
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-4 mb-6">
+                        <div className="p-3 bg-primary/10 rounded-lg text-primary">
                           {step.icon}
                         </div>
                         <h3 className="text-2xl font-semibold">{step.title}</h3>
@@ -490,7 +481,7 @@ const HomePage = () => {
                         {step.description}
                       </p>
 
-                      <div className="bg-primary/5 rounded-lg p-3 text-sm font-medium text-primary">
+                      <div className="bg-primary/5 rounded-lg p-4 text-sm font-medium text-primary">
                         {step.highlight}
                       </div>
                     </div>
@@ -505,12 +496,12 @@ const HomePage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={featuresInView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.8 }}
-            className="mt-16 text-center"
+            className="mt-24 text-center"
           >
             <Link to="/solar-estimation">
-              <Button size="lg" className="group h-14 px-8 text-lg">
+              <Button size="lg" className="group h-16 px-10 text-lg">
                 Start Your Solar Journey
-                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
           </motion.div>
@@ -518,7 +509,7 @@ const HomePage = () => {
       </section>
 
       {/* CTA Section */}
-      <section ref={ctaRef} className="py-32 relative overflow-hidden">
+      <section ref={ctaRef} className="py-40 relative overflow-hidden">
         <motion.div
           className="absolute inset-0"
           initial={{ opacity: 0 }}
@@ -536,16 +527,16 @@ const HomePage = () => {
         <div className="container mx-auto px-4 relative">
           <div className="max-w-4xl mx-auto">
             <motion.div
-              className="bg-background/95 backdrop-blur-lg rounded-3xl p-12 md:p-16"
+              className="bg-background/70 backdrop-blur-lg rounded-3xl p-16 md:p-20"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <div className="text-center mb-12">
-                <Badge variant="secondary" className="mb-6">
+              <div className="text-center mb-16">
+                <Badge variant="secondary" className="mb-8">
                   Limited Time Offer
                 </Badge>
-                <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                <h2 className="text-4xl md:text-5xl font-bold mb-8">
                   Start Your Solar Journey Today
                 </h2>
                 <p className="text-xl text-muted-foreground">
@@ -553,25 +544,25 @@ const HomePage = () => {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-                <div className="space-y-6">
-                  <div className="flex items-start gap-4">
-                    <div className="bg-primary/10 p-2 rounded-lg">
-                      <Shield className="h-6 w-6 text-primary" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
+                <div className="space-y-8">
+                  <div className="flex items-start gap-6">
+                    <div className="bg-primary/10 p-3 rounded-lg">
+                      <Shield className="h-8 w-8 text-primary" />
                     </div>
                     <div>
-                      <h3 className="font-semibold mb-2">25-Year Warranty</h3>
+                      <h3 className="text-xl font-semibold mb-3">25-Year Warranty</h3>
                       <p className="text-muted-foreground">
                         Complete peace of mind with our comprehensive coverage
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-4">
-                    <div className="bg-primary/10 p-2 rounded-lg">
-                      <Zap className="h-6 w-6 text-primary" />
+                  <div className="flex items-start gap-6">
+                    <div className="bg-primary/10 p-3 rounded-lg">
+                      <Zap className="h-8 w-8 text-primary" />
                     </div>
                     <div>
-                      <h3 className="font-semibold mb-2">$0 Down Payment</h3>
+                      <h3 className="text-xl font-semibold mb-3">$0 Down Payment</h3>
                       <p className="text-muted-foreground">
                         Start saving immediately with our flexible financing
                         options
@@ -580,24 +571,24 @@ const HomePage = () => {
                   </div>
                 </div>
 
-                <div className="space-y-6">
-                  <div className="flex items-start gap-4">
-                    <div className="bg-primary/10 p-2 rounded-lg">
-                      <Leaf className="h-6 w-6 text-primary" />
+                <div className="space-y-8">
+                  <div className="flex items-start gap-6">
+                    <div className="bg-primary/10 p-3 rounded-lg">
+                      <Leaf className="h-8 w-8 text-primary" />
                     </div>
                     <div>
-                      <h3 className="font-semibold mb-2">30% Tax Credit</h3>
+                      <h3 className="text-xl font-semibold mb-3">30% Tax Credit</h3>
                       <p className="text-muted-foreground">
                         Take advantage of federal incentives for going solar
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-4">
-                    <div className="bg-primary/10 p-2 rounded-lg">
-                      <BarChart className="h-6 w-6 text-primary" />
+                  <div className="flex items-start gap-6">
+                    <div className="bg-primary/10 p-3 rounded-lg">
+                      <BarChart className="h-8 w-8 text-primary" />
                     </div>
                     <div>
-                      <h3 className="font-semibold mb-2">
+                      <h3 className="text-xl font-semibold mb-3">
                         Energy Independence
                       </h3>
                       <p className="text-muted-foreground">
@@ -610,9 +601,9 @@ const HomePage = () => {
 
               <div className="flex flex-col items-center">
                 <Link to="solar-estimation">
-                  <Button size="lg" className="group h-14 px-12 text-lg mb-4">
+                  <Button size="lg" className="group h-16 px-12 text-lg mb-6">
                     Get Your Free Quote
-                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </Link>
                 <p className="text-sm text-muted-foreground">
@@ -625,7 +616,7 @@ const HomePage = () => {
       </section>
 
       {/* Futuristic Footer */}
-      <footer className="relative overflow-hidden bg-gradient-to-b from-background to-background/95 pt-24 pb-12">
+      <footer className="relative overflow-hidden bg-gradient-to-b from-background to-background/95 pt-32 pb-16">
         <div className="absolute inset-0">
           <motion.div
             className="absolute inset-0"
@@ -639,19 +630,19 @@ const HomePage = () => {
         </div>
 
         <div className="container mx-auto px-4 relative">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-            <div className="space-y-6">
-              <div className="flex items-center gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
+            <div className="space-y-8">
+              <div className="flex items-center gap-3">
                 <EcoSyncLogo />
               </div>
               <p className="text-muted-foreground">
                 Empowering Your Green Energy Journey
               </p>
-              <div className="flex gap-4"></div>
+              <div className="flex gap-6"></div>
             </div>
-            <div className="space-y-6">
-              <h4 className="text-lg font-semibold">Services</h4>
-              <ul className="space-y-4">
+            <div className="space-y-8">
+              <h4 className="text-xl font-semibold">Services</h4>
+              <ul className="space-y-6">
                 {[
                   { name: "Get Estimate", link: "/solar-estimation" },
                   { name: "Search Solar Installers", link: "/installers" },
@@ -671,9 +662,9 @@ const HomePage = () => {
               </ul>
             </div>
 
-            <div className="space-y-6">
-              <h4 className="text-lg font-semibold">Information</h4>
-              <ul className="space-y-4">
+            <div className="space-y-8">
+              <h4 className="text-xl font-semibold">Information</h4>
+              <ul className="space-y-6">
                 {[
                   { name: "About", link: "/about" },
                   { name: "Incentives", link: "/incentives" },
@@ -693,13 +684,13 @@ const HomePage = () => {
               </ul>
             </div>
 
-            <div className="space-y-6">
-              <h4 className="text-lg font-semibold">Contact</h4>
-              <div className="space-y-4">
+            <div className="space-y-8">
+              <h4 className="text-xl font-semibold">Contact</h4>
+              <div className="space-y-6">
                 <Button className="w-full group" variant="outline">
-                  <Mail className="mr-2 h-4 w-4" />
+                  <Mail className="mr-3 h-5 w-5" />
                   Contact Sales
-                  <ArrowUpRight className="ml-2 h-4 w-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                  <ArrowUpRight className="ml-3 h-5 w-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                 </Button>
                 <p className="text-sm text-muted-foreground">
                   Monday - Friday, 9am - 5pm EST
@@ -712,12 +703,12 @@ const HomePage = () => {
           </div>
 
           <motion.div
-            className="pt-8 mt-8 border-t border-border"
+            className="pt-10 mt-10 border-t border-border"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <div className="flex flex-col md:flex-row justify-end items-center gap-4">
+            <div className="flex flex-col md:flex-row justify-end items-center gap-6">
               <p className="text-sm text-muted-foreground">
                 © 2024 EcoSync. All rights reserved.
               </p>
