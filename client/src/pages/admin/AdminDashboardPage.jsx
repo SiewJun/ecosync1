@@ -4,6 +4,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import AdminHomeDashboardPage from "./AdminHomeDashboardPage";
 import AdminPendingCompanyAppDashboardPage from "./AdminPendingCompanyAppDashboardPage";
 import AdminModerationIncentives from "@/_components/admin/AdminModerationIncentives";
+import NotFoundPage from "@/pages/NotFoundPage";
 
 const AdminDashboardPage = () => {
   return (
@@ -17,10 +18,8 @@ const AdminDashboardPage = () => {
               path="pendingapp"
               element={<AdminPendingCompanyAppDashboardPage />}
             />
-            <Route
-              path="incentives"
-              element={<AdminModerationIncentives />}
-            />
+            <Route path="incentives" element={<AdminModerationIncentives />} />
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </ScrollArea>
       </main>

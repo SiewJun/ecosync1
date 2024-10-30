@@ -34,6 +34,7 @@ import CompanyProjectStep from "./CompanyProjectStep";
 import StripeOnboarding from "./StripeOnboarding";
 import useStripeOnboarding from "../../hooks/useStripeOnboarding";
 import OnboardingReminder from "./OnboardingReminder";
+import NotFoundPage from "@/pages/NotFoundPage";
 
 const CompanyDashboard = () => {
   const [user, setUser] = useState(null);
@@ -302,6 +303,7 @@ const CompanyDashboard = () => {
                 element={<CompanyProjectStep />}
               />
               <Route path="/stripe-onboarding" element={<StripeOnboarding />} />
+              <Route path="*" element={<NotFoundPage />} />
               {/* Add other routes here */}
             </Routes>
           </ScrollArea>

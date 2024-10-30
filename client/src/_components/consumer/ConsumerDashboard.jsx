@@ -24,6 +24,7 @@ import ConsumerQuotationView from "./ConsumerQuotationView";
 import ConsumerProject from "./ConsumerProject";
 import ConsumerProjectStep from "./ConsumerProjectStep";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import NotFoundPage from "@/pages/NotFoundPage";
 
 const ConsumerDashboard = () => {
   const [user, setUser] = useState(null);
@@ -231,6 +232,7 @@ const ConsumerDashboard = () => {
                 path="/consumer-project/:projectId"
                 element={<ConsumerProjectStep />}
               />
+              <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </ScrollArea>
         </main>
