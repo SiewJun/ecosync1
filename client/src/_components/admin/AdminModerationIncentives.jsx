@@ -12,13 +12,15 @@ import {
 } from "@/components/ui/table";
 import {
   Dialog,
+  DialogDescription,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Plus, Pencil, Trash2, Filter } from "lucide-react";
+import { Plus, Pencil, Trash2, Filter, Eye } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -41,6 +43,10 @@ const IncentivesManagement = () => {
   const [currentIncentive, setCurrentIncentive] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedIncentive, setSelectedIncentive] = useState(null);
+  const [incentiveToDelete, setIncentiveToDelete] = useState(null);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -118,26 +124,43 @@ const IncentivesManagement = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this incentive?")) {
-      try {
-        const response = await fetch(
-          `http://localhost:5000/api/admin-moderation/incentives/${id}`,
-          {
-            method: "DELETE",
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
+  const handleView = (incentive) => {
+    setSelectedIncentive(incentive);
+    setIsViewDialogOpen(true);
+  };
 
-        if (response.ok) {
-          fetchIncentives();
+  const handleDeleteClick = (incentive) => {
+    setIncentiveToDelete(incentive);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!incentiveToDelete?.id) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/admin-moderation/incentives/${incentiveToDelete.id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
-      } catch (error) {
-        console.error("Error deleting incentive:", error);
+      );
+
+      if (response.ok) {
+        await fetchIncentives();
+        setIsDeleteDialogOpen(false);
+        setIncentiveToDelete(null);
       }
+    } catch (error) {
+      console.error("Error deleting incentive:", error);
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setIsDeleteDialogOpen(false);
+    setIncentiveToDelete(null);
   };
 
   const handleEdit = (incentive) => {
@@ -375,6 +398,113 @@ const IncentivesManagement = () => {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* View Dialog */}
+      <Dialog
+        open={isViewDialogOpen}
+        onOpenChange={(open) => {
+          setIsViewDialogOpen(open);
+          if (!open) setSelectedIncentive(null);
+        }}
+      >
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold">
+              View Incentive Details
+            </DialogTitle>
+          </DialogHeader>
+          {selectedIncentive && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label>Title</Label>
+                <p className="text-sm">{selectedIncentive.title}</p>
+              </div>
+              <div className="space-y-2">
+                <Label>Region</Label>
+                <p className="text-sm">{selectedIncentive.region}</p>
+              </div>
+              <div className="space-y-2">
+                <Label>Incentive Amount</Label>
+                <p className="text-sm">{selectedIncentive.incentiveAmount}</p>
+              </div>
+              <div className="space-y-2">
+                <Label>Expiration Date</Label>
+                <p className="text-sm">
+                  {selectedIncentive.expirationDate
+                    ? new Date(
+                        selectedIncentive.expirationDate
+                      ).toLocaleDateString()
+                    : "No expiration"}
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label>Application Link</Label>
+                <p className="text-sm">
+                  {selectedIncentive.applicationLink || "Not available"}
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label>Source</Label>
+                <p className="text-sm">{selectedIncentive.source}</p>
+              </div>
+              <div className="space-y-2 col-span-2">
+                <Label>Description</Label>
+                <p className="text-sm whitespace-pre-wrap">
+                  {selectedIncentive.description}
+                </p>
+              </div>
+              <div className="space-y-2 col-span-2">
+                <Label>Eligibility Criteria</Label>
+                <p className="text-sm whitespace-pre-wrap">
+                  {selectedIncentive.eligibilityCriteria}
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label>Status </Label>
+                <span
+                  className={`text-xs font-medium ${
+                    selectedIncentive.status === "ACTIVE"
+                      ? "text-green-800"
+                      : selectedIncentive.status === "INACTIVE"
+                      ? "text-gray-800"
+                      : "text-red-800"
+                  }`}
+                >
+                  {selectedIncentive.status}
+                </span>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={isDeleteDialogOpen}
+        onOpenChange={(open) => {
+          setIsDeleteDialogOpen(open);
+          if (!open) setIncentiveToDelete(null);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this incentive? This action cannot
+              be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={handleDeleteCancel}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteConfirm}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <div className="mb-6 flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
           <Input
@@ -449,10 +579,18 @@ const IncentivesManagement = () => {
                       <Button
                         variant="outline"
                         size="icon"
-                        onClick={() => handleDelete(incentive.id)}
+                        onClick={() => handleDeleteClick(incentive)}
                         className="hover:bg-gray-100 hover:text-red-600"
                       >
                         <Trash2 className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleView(incentive)}
+                        className="hover:bg-gray-100 hover:text-blue-600"
+                      >
+                        <Eye className="w-4 h-4" />
                       </Button>
                     </div>
                   </TableCell>
