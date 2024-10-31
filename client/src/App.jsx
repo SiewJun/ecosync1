@@ -20,6 +20,7 @@ import IncentivesInfo from "./pages/info/IncentivesInfo";
 import Footer from "./pages/Footer";
 import NotFoundPage from "./pages/NotFoundPage";
 import AboutPage from "./pages/info/AboutPage";
+import AdminSigninForm from "./_components/auth/AdminSigninForm";
 
 // Custom ProtectedRoute component
 const ProtectedRoute = ({ element, role }) => {
@@ -59,6 +60,7 @@ const App = () => {
     <div>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/admin-signin" element={<AdminSigninForm />} />
         <Route path="/signin" element={<SignInPage />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />

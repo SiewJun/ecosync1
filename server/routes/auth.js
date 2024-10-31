@@ -60,6 +60,43 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
+    if (user.role !== "CONSUMER" && user.role !== "COMPANY") {
+      return res
+        .status(403)
+        .json({ message: "Invalid credentials or insufficient permissions" });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    res.json({ message: "Login successful", token });
+  } catch (error) {
+    console.error("Error during user login:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.post("/admin-login", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    if (user.role !== "ADMIN" && user.role !== "SUPERADMIN") {
+      return res
+        .status(403)
+        .json({ message: "Invalid credentials or insufficient permissions" });
+    }
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({ message: "Invalid email or password" });
@@ -140,46 +177,46 @@ router.post("/reset-password", async (req, res) => {
   }
 });
 
-router.post('/change-password', authenticateToken, async (req, res) => {
+router.post("/change-password", authenticateToken, async (req, res) => {
   const { currentPassword, newPassword } = req.body;
 
   try {
     const user = await User.findByPk(req.user.id);
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
     const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: 'Current password is incorrect' });
+      return res.status(400).json({ message: "Current password is incorrect" });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedPassword;
     await user.save();
 
-    res.json({ message: 'Password updated successfully' });
+    res.json({ message: "Password updated successfully" });
   } catch (error) {
-    console.error('Error updating password:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Error updating password:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
-router.get('/me', authenticateToken, async (req, res) => {
+router.get("/me", authenticateToken, async (req, res) => {
   try {
     const user = await User.findByPk(req.user.id, {
-      attributes: ['cuid', 'username', 'email', 'role', 'avatarUrl'], // Add more fields as needed
+      attributes: ["cuid", "username", "email", "role", "avatarUrl"], // Add more fields as needed
     });
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
     res.json({ user });
   } catch (error) {
-    console.error('Error fetching user data:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Error fetching user data:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
