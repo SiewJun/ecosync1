@@ -464,10 +464,10 @@ const IncentivesManagement = () => {
                 <span
                   className={`text-xs font-medium ${
                     selectedIncentive.status === "ACTIVE"
-                      ? "text-green-800"
+                      ? "text-green-500"
                       : selectedIncentive.status === "INACTIVE"
-                      ? "text-gray-800"
-                      : "text-red-800"
+                      ? "text-gray-500"
+                      : "text-red-500"
                   }`}
                 >
                   {selectedIncentive.status}

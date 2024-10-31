@@ -87,6 +87,7 @@ const renderDashboardLinks = (user, linkClasses) => {
       },
     ],
     ADMIN: [{ to: "/dashboard", label: "Dashboard", icon: LayoutDashboard }],
+    SUPERADMIN: [{ to: "/dashboard", label: "Dashboard", icon: LayoutDashboard }],
   };
 
   return (

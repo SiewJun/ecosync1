@@ -169,6 +169,28 @@ const ProfileDropdown = ({ user }) => {
             </DropdownMenuItem>
           </>
         );
+      case "SUPERADMIN":
+        return (
+          <>
+            <DropdownMenuItem asChild>
+              <Link
+                to="/dashboard"
+                className="flex items-center gap-2 p-2 rounded-md cursor-pointer"
+              >
+                <LayoutDashboard className="h-4 w-4" />
+                Dashboard
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="flex items-center gap-2 p-2 text-red-600 hover:text-red-800 hover:bg-red-100 rounded-md font-semibold cursor-pointer transition-colors"
+              onClick={handleLogout}
+            >
+              <LogOut className="h-4 w-4" />
+              Logout
+            </DropdownMenuItem>
+          </>
+        );
       default:
         return null;
     }
