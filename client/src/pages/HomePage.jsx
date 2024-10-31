@@ -160,23 +160,25 @@ const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
           >
-            <Link to="/solar-estimation">
-              <Button
-                size="lg"
-                className="group h-16 px-10 text-lg relative overflow-hidden bg-foreground/10 backdrop-blur-lg hover:bg-white/20 border-white/20"
-              >
-                <span className="relative z-10 flex items-center text-white">
-                  Get Started
-                  <ArrowUpRight className="ml-3 h-6 w-6 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                </span>
-              </Button>
-            </Link>
+            <div className="flex justify-center items-center">
+              <Link to="/solar-estimation">
+                <Button
+                  size="lg"
+                  className="group h-16 px-10 text-lg relative overflow-hidden bg-foreground/10 backdrop-blur-lg hover:bg-foreground/20 border-foreground/20"
+                >
+                  <span className="relative z-10 flex items-center text-foreground">
+                    Get Started
+                    <ArrowUpRight className="ml-3 h-6 w-6 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                  </span>
+                </Button>
+              </Link>
+            </div>
           </motion.div>
         </div>
       </div>
 
       {/* Bottom Gradient */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent z-40" />
+      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent z-40" />
     </section>
   );
 };

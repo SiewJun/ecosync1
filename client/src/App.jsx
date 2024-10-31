@@ -19,6 +19,7 @@ import SolarEstimation from "./pages/services/SolarEstimation";
 import IncentivesInfo from "./pages/info/IncentivesInfo";
 import Footer from "./pages/Footer";
 import NotFoundPage from "./pages/NotFoundPage";
+import AboutPage from "./pages/info/AboutPage";
 
 // Custom ProtectedRoute component
 const ProtectedRoute = ({ element, role }) => {
@@ -75,6 +76,7 @@ const App = () => {
         <Route path="/installers/companypublicprofile/:companyId" element={<CompanyPublicProfile />} />
         <Route path="/solar-solutions" element={<SolarSolutionComparison />} />
         <Route path="/solar-estimation" element={<SolarEstimation />} />
+        <Route path="/about" element={<AboutPage />} />
         {/* Catch-all route for unmatched paths */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
