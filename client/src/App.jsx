@@ -1,4 +1,10 @@
-import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import PropTypes from "prop-types";
 import HomePage from "./pages/HomePage";
@@ -23,7 +29,7 @@ import AboutPage from "./pages/info/AboutPage";
 import AdminSigninForm from "./_components/auth/AdminSigninForm";
 
 // Custom ProtectedRoute component
-const ProtectedRoute = ({ element, role }) => {
+const ProtectedRoute = ({ element, roles }) => {
   const token = localStorage.getItem("token");
 
   if (!token) {
@@ -35,7 +41,7 @@ const ProtectedRoute = ({ element, role }) => {
     const currentTime = Date.now() / 1000; // current time in seconds
 
     if (decodedToken.exp && decodedToken.exp > currentTime) {
-      if (!role || decodedToken.role === role) {
+      if (!roles || roles.includes(decodedToken.role)) {
         return element;
       }
       return <Navigate to="/signin" />;
@@ -52,9 +58,15 @@ const ProtectedRoute = ({ element, role }) => {
 
 const App = () => {
   const location = useLocation();
-  const noFooterRoutes = ["/dashboard", "/company-dashboard", "/consumer-dashboard"];
+  const noFooterRoutes = [
+    "/dashboard",
+    "/company-dashboard",
+    "/consumer-dashboard",
+  ];
 
-  const shouldShowFooter = !noFooterRoutes.some(route => location.pathname.startsWith(route));
+  const shouldShowFooter = !noFooterRoutes.some((route) =>
+    location.pathname.startsWith(route)
+  );
 
   return (
     <div>
@@ -69,13 +81,40 @@ const App = () => {
         <Route path="/incentives" element={<IncentivesInfo />} />
         <Route
           path="/dashboard/*"
-          element={<ProtectedRoute element={<AdminDashboardPage />} role="ADMIN" />}
+          element={
+            <ProtectedRoute
+              element={<AdminDashboardPage />}
+              roles={["ADMIN", "SUPERADMIN"]}
+            />
+          }
         />
-        <Route path="/complete-registration" element={<CompletedCompanySignUpPage />} />
-        <Route path="/company-dashboard/*" element={<ProtectedRoute element={<CompanyDashboard />} role="COMPANY" />} />
-        <Route path="/consumer-dashboard/*" element={<ProtectedRoute element={<ConsumerDashboard />} role="CONSUMER" />} />
+        <Route
+          path="/complete-registration"
+          element={<CompletedCompanySignUpPage />}
+        />
+        <Route
+          path="/company-dashboard/*"
+          element={
+            <ProtectedRoute
+              element={<CompanyDashboard />}
+              roles={["COMPANY"]}
+            />
+          }
+        />
+        <Route
+          path="/consumer-dashboard/*"
+          element={
+            <ProtectedRoute
+              element={<ConsumerDashboard />}
+              roles={["CONSUMER"]}
+            />
+          }
+        />
         <Route path="/installers" element={<SearchSolarInstallers />} />
-        <Route path="/installers/companypublicprofile/:companyId" element={<CompanyPublicProfile />} />
+        <Route
+          path="/installers/companypublicprofile/:companyId"
+          element={<CompanyPublicProfile />}
+        />
         <Route path="/solar-solutions" element={<SolarSolutionComparison />} />
         <Route path="/solar-estimation" element={<SolarEstimation />} />
         <Route path="/about" element={<AboutPage />} />
@@ -89,7 +128,7 @@ const App = () => {
 
 ProtectedRoute.propTypes = {
   element: PropTypes.element.isRequired,
-  role: PropTypes.string,
+  roles: PropTypes.arrayOf(PropTypes.string),
 };
 
 const AppWrapper = () => (

@@ -5,7 +5,7 @@ const authenticateToken = require("../middleware/auth");
 
 // Get all incentives
 router.get("/incentives", authenticateToken, async (req, res) => {
-  if (req.user.role !== "ADMIN") {
+  if (req.user.role !== "ADMIN" && req.user.role !== "SUPERADMIN") {
     return res.status(403).json({ message: "Forbidden" });
   }
 
@@ -20,7 +20,7 @@ router.get("/incentives", authenticateToken, async (req, res) => {
 
 // Get a single incentive by ID
 router.get("/incentives/:id", authenticateToken, async (req, res) => {
-  if (req.user.role !== "ADMIN") {
+  if (req.user.role !== "ADMIN" && req.user.role !== "SUPERADMIN") {
     return res.status(403).json({ message: "Forbidden" });
   }
 
@@ -40,7 +40,7 @@ router.get("/incentives/:id", authenticateToken, async (req, res) => {
 
 // Create a new incentive
 router.post("/incentives", authenticateToken, async (req, res) => {
-  if (req.user.role !== "ADMIN") {
+  if (req.user.role !== "ADMIN" && req.user.role !== "SUPERADMIN") {
     return res.status(403).json({ message: "Forbidden" });
   }
 
@@ -53,7 +53,7 @@ router.post("/incentives", authenticateToken, async (req, res) => {
     expirationDate,
     applicationLink,
     source,
-    status
+    status,
   } = req.body;
 
   try {
@@ -66,9 +66,11 @@ router.post("/incentives", authenticateToken, async (req, res) => {
       expirationDate,
       applicationLink,
       source,
-      status
+      status,
     });
-    res.status(201).json({ message: "Incentive created successfully", newIncentive });
+    res
+      .status(201)
+      .json({ message: "Incentive created successfully", newIncentive });
   } catch (error) {
     console.error("Error creating incentive:", error);
     res.status(500).json({ message: "Failed to create incentive." });
@@ -77,7 +79,7 @@ router.post("/incentives", authenticateToken, async (req, res) => {
 
 // Update an existing incentive
 router.put("/incentives/:id", authenticateToken, async (req, res) => {
-  if (req.user.role !== "ADMIN") {
+  if (req.user.role !== "ADMIN" && req.user.role !== "SUPERADMIN") {
     return res.status(403).json({ message: "Forbidden" });
   }
 
@@ -91,7 +93,7 @@ router.put("/incentives/:id", authenticateToken, async (req, res) => {
     expirationDate,
     applicationLink,
     source,
-    status
+    status,
   } = req.body;
 
   try {
@@ -112,7 +114,9 @@ router.put("/incentives/:id", authenticateToken, async (req, res) => {
 
     await incentive.save();
 
-    res.status(200).json({ message: "Incentive updated successfully", incentive });
+    res
+      .status(200)
+      .json({ message: "Incentive updated successfully", incentive });
   } catch (error) {
     console.error("Error updating incentive:", error);
     res.status(500).json({ message: "Failed to update incentive." });
@@ -121,7 +125,7 @@ router.put("/incentives/:id", authenticateToken, async (req, res) => {
 
 // Delete an incentive
 router.delete("/incentives/:id", authenticateToken, async (req, res) => {
-  if (req.user.role !== "ADMIN") {
+  if (req.user.role !== "ADMIN" && req.user.role !== "SUPERADMIN") {
     return res.status(403).json({ message: "Forbidden" });
   }
 

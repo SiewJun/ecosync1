@@ -4,12 +4,17 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const cuid = require("cuid");
 const router = express.Router();
-const { User, CompanyDetail, CompanyApplication, CompanyProfile } = require("../models");
+const {
+  User,
+  CompanyDetail,
+  CompanyApplication,
+  CompanyProfile,
+} = require("../models");
 const authenticateToken = require("../middleware/auth");
 require("dotenv").config();
 const { Op } = require("sequelize");
 const JWT_SECRET = process.env.JWT_SECRET;
-const upload = require('../middleware/multer'); 
+const upload = require("../middleware/multer");
 
 // Set up Nodemailer transporter
 const transporter = nodemailer.createTransport({
@@ -103,7 +108,7 @@ router.post(
 );
 
 router.get("/pending-applications", authenticateToken, async (req, res) => {
-  if (req.user.role !== "ADMIN") {
+  if (req.user.role !== "ADMIN" && req.user.role !== "SUPERADMIN") {
     return res.status(403).json({ message: "Forbidden" });
   }
 
@@ -139,7 +144,7 @@ router.get("/pending-applications", authenticateToken, async (req, res) => {
 });
 
 router.post("/review-application/:id", authenticateToken, async (req, res) => {
-  if (req.user.role !== "ADMIN") {
+  if (req.user.role !== "ADMIN" && req.user.role !== "SUPERADMIN") {
     return res.status(403).json({ message: "Forbidden" });
   }
 
@@ -246,6 +251,5 @@ router.post("/complete-registration", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
-
 
 module.exports = router;
