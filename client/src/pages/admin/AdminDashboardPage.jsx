@@ -5,6 +5,8 @@ import AdminHomeDashboardPage from "./AdminHomeDashboardPage";
 import AdminPendingCompanyAppDashboardPage from "./AdminPendingCompanyAppDashboardPage";
 import AdminModerationIncentives from "@/_components/admin/AdminModerationIncentives";
 import NotFoundPage from "@/pages/NotFoundPage";
+import ProtectedRoute from "@/ProtectedRoute";
+import SuperAdminUsersManagement from "@/pages/admin/SuperAdminUsersManagement";
 
 const AdminDashboardPage = () => {
   return (
@@ -19,6 +21,15 @@ const AdminDashboardPage = () => {
               element={<AdminPendingCompanyAppDashboardPage />}
             />
             <Route path="incentives" element={<AdminModerationIncentives />} />
+            <Route
+              path="users-management"
+              element={
+                <ProtectedRoute
+                  element={<SuperAdminUsersManagement />}
+                  roles={["SUPERADMIN"]}
+                />
+              }
+            />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </ScrollArea>

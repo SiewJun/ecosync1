@@ -2,11 +2,8 @@ import {
   BrowserRouter as Router,
   Route,
   Routes,
-  Navigate,
   useLocation,
 } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
-import PropTypes from "prop-types";
 import HomePage from "./pages/HomePage";
 import ThemeProvider from "./context/ThemeContext";
 import SignInPage from "./pages/auth/SignInPage";
@@ -27,34 +24,7 @@ import Footer from "./pages/Footer";
 import NotFoundPage from "./pages/NotFoundPage";
 import AboutPage from "./pages/info/AboutPage";
 import AdminSigninForm from "./_components/auth/AdminSigninForm";
-
-// Custom ProtectedRoute component
-const ProtectedRoute = ({ element, roles }) => {
-  const token = localStorage.getItem("token");
-
-  if (!token) {
-    return <Navigate to="/signin" />;
-  }
-
-  try {
-    const decodedToken = jwtDecode(token);
-    const currentTime = Date.now() / 1000; // current time in seconds
-
-    if (decodedToken.exp && decodedToken.exp > currentTime) {
-      if (!roles || roles.includes(decodedToken.role)) {
-        return element;
-      }
-      return <Navigate to="/signin" />;
-    } else {
-      localStorage.removeItem("token"); // remove expired token
-      return <Navigate to="/signin" />;
-    }
-  } catch (error) {
-    console.error("Invalid token:", error);
-    localStorage.removeItem("token"); // remove invalid token
-    return <Navigate to="/signin" />;
-  }
-};
+import ProtectedRoute from "./ProtectedRoute";
 
 const App = () => {
   const location = useLocation();
@@ -124,11 +94,6 @@ const App = () => {
       {shouldShowFooter && <Footer />}
     </div>
   );
-};
-
-ProtectedRoute.propTypes = {
-  element: PropTypes.element.isRequired,
-  roles: PropTypes.arrayOf(PropTypes.string),
 };
 
 const AppWrapper = () => (

@@ -31,6 +31,7 @@ const project = require('./routes/project');
 const projectStep = require('./routes/projectStep');
 const stripe = require('./routes/stripe');
 const adminModeration = require('./routes/adminModeration');
+const superAdminModeration = require('./routes/superAdminModeration');
 
 dotenv.config();
 
@@ -61,6 +62,7 @@ app.use('/api/project', project);
 app.use('/api/project-step', projectStep);
 app.use('/api/stripe', stripe);
 app.use('/api/admin-moderation', adminModeration);
+app.use('/api/superadmin-moderation', superAdminModeration);
 
 // Socket.IO connection
 io.on('connection', (socket) => {
