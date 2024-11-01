@@ -1,9 +1,30 @@
+import { useEffect, useState } from "react";
 import { Home, LogOut, SearchCheckIcon, ClipboardList, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Sidebar = () => {
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (token) {
+          const response = await axios.get("http://localhost:5000/api/auth/me", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setUser(response.data.user);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -38,13 +59,15 @@ const Sidebar = () => {
               </Button>
             </Link>
           </li>
-          <li className="mb-4 w-full">
-            <Link to="/dashboard/users-management" className="block">
-              <Button variant="ghost" className="w-full">
-                <User className="w-6 h-6" />
-              </Button>
-            </Link>
-          </li>
+          {user?.role === "SUPERADMIN" && (
+            <li className="mb-4 w-full">
+              <Link to="/dashboard/users-management" className="block">
+                <Button variant="ghost" className="w-full">
+                  <User className="w-6 h-6" />
+                </Button>
+              </Link>
+            </li>
+          )}
           {/* Add other navigation items here */}
         </ul>
       </nav>
