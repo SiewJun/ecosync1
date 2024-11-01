@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -16,7 +16,6 @@ import {
   DialogTitle,
   DialogDescription,
   DialogTrigger,
-  DialogClose,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -25,7 +24,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MoreVertical, Trash2, UserPlus, UserMinus } from "lucide-react";
+import {
+  MoreVertical,
+  Trash2,
+  UserPlus,
+  UserMinus,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
@@ -42,12 +48,16 @@ const SuperAdminUsersManagement = () => {
   const [roleFilter, setRoleFilter] = useState("ALL");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [confirmationInput, setConfirmationInput] = useState("");
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [isCreateAdminOpen, setIsCreateAdminOpen] = useState(false);
+  const [actionType, setActionType] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const usersPerPage = 10;
 
-  // Ref for dialog close
-  const dialogCloseRef = useRef(null);
-
-  // State for create admin form
   const [createAdminForm, setCreateAdminForm] = useState({
     username: "",
     email: "",
@@ -57,7 +67,6 @@ const SuperAdminUsersManagement = () => {
   const [createAdminError, setCreateAdminError] = useState("");
 
   useEffect(() => {
-    // Fetch users from backend
     const fetchUsers = async () => {
       try {
         const response = await fetch(
@@ -79,15 +88,12 @@ const SuperAdminUsersManagement = () => {
   }, []);
 
   useEffect(() => {
-    // Apply filters
     let result = users;
 
-    // Role filter
     if (roleFilter !== "ALL") {
       result = result.filter((user) => user.role === roleFilter);
     }
 
-    // Search filter
     if (searchTerm) {
       result = result.filter(
         (user) =>
@@ -100,7 +106,6 @@ const SuperAdminUsersManagement = () => {
     setCurrentPage(1);
   }, [users, roleFilter, searchTerm]);
 
-  // Pagination
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
@@ -110,7 +115,6 @@ const SuperAdminUsersManagement = () => {
     e.preventDefault();
     setCreateAdminError("");
 
-    // Validation
     if (createAdminForm.password !== createAdminForm.confirmPassword) {
       setCreateAdminError("Passwords do not match");
       return;
@@ -136,27 +140,67 @@ const SuperAdminUsersManagement = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // Add new admin to users list
-        setUsers((prev) => [...prev, { ...data.admin, role: 'ADMIN' }]);
-
-        // Reset form
+        setUsers((prev) => [...prev, { ...data.admin, role: "ADMIN" }]);
         setCreateAdminForm({
           username: "",
           email: "",
           password: "",
           confirmPassword: "",
         });
-
-        // Close dialog programmatically
-        if (dialogCloseRef.current) {
-          dialogCloseRef.current.click();
-        }
+        setIsCreateAdminOpen(false);
       } else {
         setCreateAdminError(data.message || "Failed to create admin");
       }
     } catch (error) {
       console.error("Error creating admin:", error);
       setCreateAdminError("An unexpected error occurred");
+    }
+  };
+
+  const renderRoleBadge = (role) => {
+    const badgeVariants = {
+      SUPERADMIN: "destructive",
+      ADMIN: "secondary",
+      COMPANY: "outline",
+      CONSUMER: "default",
+    };
+
+    return <Badge variant={badgeVariants[role] || "default"}>{role}</Badge>;
+  };
+
+  const resetConfirmationDialog = () => {
+    setSelectedUser(null);
+    setConfirmationInput("");
+    setActionType(null);
+    setIsConfirmDialogOpen(false);
+    setDropdownOpen(false);
+  };
+
+  const handleActionConfirmation = (user, type) => {
+    setSelectedUser(user);
+    setActionType(type);
+    setConfirmationInput("");
+    setIsConfirmDialogOpen(true);
+    setDropdownOpen(false);
+  };
+
+  const handleConfirmAction = async () => {
+    if (!selectedUser) return;
+
+    const expectedConfirmation = `${selectedUser.username} ${selectedUser.email}`;
+    if (confirmationInput !== expectedConfirmation) {
+      return;
+    }
+
+    try {
+      if (actionType === "demote") {
+        await handleDemoteAdmin(selectedUser.id);
+      } else if (actionType === "delete") {
+        await handleDeleteUser(selectedUser.id);
+      }
+      resetConfirmationDialog();
+    } catch (error) {
+      console.error(`Error ${actionType}ing user:`, error);
     }
   };
 
@@ -173,7 +217,6 @@ const SuperAdminUsersManagement = () => {
       );
 
       if (response.ok) {
-        // Update users list
         const updatedUsers = users.map((user) =>
           user.id === userId ? { ...user, role: "CONSUMER" } : user
         );
@@ -197,7 +240,6 @@ const SuperAdminUsersManagement = () => {
       );
 
       if (response.ok) {
-        // Remove user from list
         const updatedUsers = users.filter((user) => user.id !== userId);
         setUsers(updatedUsers);
       }
@@ -206,23 +248,12 @@ const SuperAdminUsersManagement = () => {
     }
   };
 
-  const renderRoleBadge = (role) => {
-    const badgeVariants = {
-      SUPERADMIN: "destructive",
-      ADMIN: "secondary",
-      COMPANY: "outline",
-      CONSUMER: "default",
-    };
-
-    return <Badge variant={badgeVariants[role] || "default"}>{role}</Badge>;
-  };
-
   return (
     <Card>
       <CardHeader>
         <div className="flex justify-between items-center">
           <CardTitle>User Management</CardTitle>
-          <Dialog>
+          <Dialog open={isCreateAdminOpen} onOpenChange={setIsCreateAdminOpen}>
             <DialogTrigger asChild>
               <Button variant="default">
                 <UserPlus className="mr-2 h-4 w-4" /> Create Admin
@@ -267,43 +298,77 @@ const SuperAdminUsersManagement = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="password">Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    value={createAdminForm.password}
-                    onChange={(e) =>
-                      setCreateAdminForm((prev) => ({
-                        ...prev,
-                        password: e.target.value,
-                      }))
-                    }
-                    required
-                  />
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      value={createAdminForm.password}
+                      onChange={(e) =>
+                        setCreateAdminForm((prev) => ({
+                          ...prev,
+                          password: e.target.value,
+                        }))
+                      }
+                      required
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-0 top-0"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="confirmPassword">Confirm Password</Label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    value={createAdminForm.confirmPassword}
-                    onChange={(e) =>
-                      setCreateAdminForm((prev) => ({
-                        ...prev,
-                        confirmPassword: e.target.value,
-                      }))
-                    }
-                    required
-                  />
+                  <div className="relative">
+                    <Input
+                      id="confirmPassword"
+                      type={showConfirmPassword ? "text" : "password"}
+                      value={createAdminForm.confirmPassword}
+                      onChange={(e) =>
+                        setCreateAdminForm((prev) => ({
+                          ...prev,
+                          confirmPassword: e.target.value,
+                        }))
+                      }
+                      required
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-0 top-0"
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
                 </div>
                 {createAdminError && (
                   <p className="text-red-500 text-sm">{createAdminError}</p>
                 )}
                 <div className="flex justify-end space-x-2">
-                  <DialogClose asChild>
-                    <Button type="button" variant="outline" ref={dialogCloseRef}>
-                      Cancel
-                    </Button>
-                  </DialogClose>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsCreateAdminOpen(false)}
+                  >
+                    Cancel
+                  </Button>
                   <Button type="submit">Create Admin</Button>
                 </div>
               </form>
@@ -348,43 +413,101 @@ const SuperAdminUsersManagement = () => {
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{renderRoleBadge(user.role)}</TableCell>
                 <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      {user.role === "ADMIN" && (
+                  {user.role !== "SUPERADMIN" && (
+                    <DropdownMenu
+                      open={dropdownOpen && selectedUser?.id === user.id}
+                      onOpenChange={(open) => {
+                        setDropdownOpen(open);
+                        if (open) setSelectedUser(user);
+                      }}
+                    >
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        {user.role === "ADMIN" && (
+                          <DropdownMenuItem
+                            onSelect={(e) => {
+                              e.preventDefault();
+                              handleActionConfirmation(user, "demote");
+                            }}
+                          >
+                            <UserMinus className="mr-2 h-4 w-4" />
+                            Demote Admin
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem
                           onSelect={(e) => {
                             e.preventDefault();
-                            handleDemoteAdmin(user.id);
+                            handleActionConfirmation(user, "delete");
                           }}
+                          className="text-red-600 focus:text-red-600"
                         >
-                          <UserMinus className="mr-2 h-4 w-4" />
-                          Demote Admin
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Delete User
                         </DropdownMenuItem>
-                      )}
-                      <DropdownMenuItem
-                        onSelect={(e) => {
-                          e.preventDefault();
-                          handleDeleteUser(user.id);
-                        }}
-                        className="text-red-600 focus:text-red-600"
-                      >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Delete User
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
 
-        {/* Pagination Controls */}
+        <Dialog
+          open={isConfirmDialogOpen}
+          onOpenChange={(open) => {
+            if (!open) {
+              resetConfirmationDialog();
+            }
+          }}
+        >
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>
+                Confirm{" "}
+                {actionType === "demote" ? "Admin Demotion" : "User Deletion"}
+              </DialogTitle>
+              <DialogDescription>
+                This action cannot be undone. To confirm, please type{" "}
+                <span className="font-bold">
+                  {selectedUser?.username} {selectedUser?.email}
+                </span>
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <Input
+                value={confirmationInput}
+                onChange={(e) => setConfirmationInput(e.target.value)}
+                placeholder="Type to confirm"
+              />
+              <div className="flex justify-end space-x-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={resetConfirmationDialog}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  variant={actionType === "delete" ? "destructive" : "default"}
+                  onClick={handleConfirmAction}
+                  disabled={
+                    confirmationInput !==
+                    `${selectedUser?.username} ${selectedUser?.email}`
+                  }
+                >
+                  {actionType === "demote" ? "Demote Admin" : "Delete User"}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
         <div className="flex justify-between items-center mt-4">
           <Button
             variant="outline"
