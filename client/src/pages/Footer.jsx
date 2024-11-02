@@ -77,7 +77,13 @@ const Footer = () => {
           <div className="space-y-8">
             <h4 className="text-xl font-semibold">Contact</h4>
             <div className="space-y-6">
-              <Button className="w-full group" variant="outline">
+              <Button
+                className="w-full group"
+                variant="outline"
+                onClick={() =>
+                  window.open("https://wa.me/601139847577", "_blank")
+                }
+              >
                 <Mail className="mr-3 h-5 w-5" />
                 Contact Sales
                 <ArrowUpRight className="ml-3 h-5 w-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
@@ -86,7 +92,7 @@ const Footer = () => {
                 Monday - Friday, 9am - 5pm EST
               </p>
               <p className="text-sm text-muted-foreground">
-                support@ecosync.com
+                siewkhaijun57@gmail.com
               </p>
             </div>
           </div>
