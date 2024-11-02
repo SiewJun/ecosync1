@@ -111,7 +111,7 @@ const AboutPage = () => {
             <Link to="/solar-estimation">
               <Button
                 size="lg"
-                className="group h-16 px-12 text-lg rounded-2xl hover:scale-105 transition-transform duration-300"
+                className="group h-16 px-12 text-lg rounded-md hover:scale-105 transition-transform duration-300"
               >
                 Get Started
                 <motion.span
