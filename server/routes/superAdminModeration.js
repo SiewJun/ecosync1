@@ -85,7 +85,7 @@ router.put("/demote-admin/:id", authenticateToken, async (req, res) => {
       return res.status(400).json({ message: "User is not an admin." });
     }
 
-    user.role = "USER";
+    user.role = "CONSUMER";
     await user.save();
 
     res.status(200).json({ message: "Admin demoted to regular user." });
