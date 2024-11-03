@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Shield, AlertCircle, Eye, EyeOff } from "lucide-react";
+import { Shield, AlertCircle, Eye, EyeOff, Loader2 } from "lucide-react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import axios from "axios";
 
@@ -39,7 +39,9 @@ const AdminSignInForm = () => {
           <div className="bg-primary/10 p-3 rounded-full">
             <Shield className="h-6 w-6 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">Administrator Access</h1>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Administrator Access
+          </h1>
           <p className="text-sm text-muted-foreground">
             Secure login portal for system administrators
           </p>
@@ -61,7 +63,7 @@ const AdminSignInForm = () => {
                 autoComplete="username"
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="password" className="text-sm font-medium">
                 Password
@@ -103,7 +105,11 @@ const AdminSignInForm = () => {
               className="w-full h-11 text-base font-medium"
               disabled={isLoading}
             >
-              {isLoading ? "Authenticating..." : "Sign In as Admin"}
+              {isLoading ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                "Sign In as Admin"
+              )}
             </Button>
 
             <p className="text-center text-sm text-muted-foreground">
