@@ -395,7 +395,7 @@ const CompanyProjectStep = () => {
 
       // Refresh project data to get the latest status
       fetchProjectData();
-    // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast({
         title: "Error",
@@ -721,8 +721,15 @@ const CompanyProjectStep = () => {
                                   variant="ghost"
                                   size="icon"
                                   onClick={() => openEditDialog(step)}
+                                  className={`${
+                                    isCompanyStep ? "dark:hover:bg-black/20" : ""
+                                  }`}
                                 >
-                                  <Edit className="h-4 w-4" />
+                                  <Edit
+                                    className={`h-4 w-4 ${
+                                      isCompanyStep ? "dark:text-black" : ""
+                                    }`}
+                                  />
                                 </Button>
                               </TooltipTrigger>
                               <TooltipContent>
@@ -775,7 +782,7 @@ const CompanyProjectStep = () => {
                             onClick={() => handleViewDocuments(step)}
                             className="ml-2"
                           >
-                            <Eye/>
+                            <Eye />
                           </Button>
                         )}
                     </CardContent>
@@ -786,7 +793,10 @@ const CompanyProjectStep = () => {
         </div>
       </ScrollArea>
 
-      <Dialog open={isDocumentDialogOpen} onOpenChange={setIsDocumentDialogOpen}>
+      <Dialog
+        open={isDocumentDialogOpen}
+        onOpenChange={setIsDocumentDialogOpen}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Uploaded Documents</DialogTitle>
@@ -795,14 +805,21 @@ const CompanyProjectStep = () => {
             {currentDocuments.map((doc, index) => (
               <div key={index} className="flex items-center space-x-2">
                 <File className="h-6 w-6" />
-                <a href={`http://localhost:5000/${doc}`} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                <a
+                  href={`http://localhost:5000/${doc}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:underline"
+                >
                   Document {index + 1}
                 </a>
               </div>
             ))}
           </div>
           <DialogFooter>
-            <Button onClick={() => setIsDocumentDialogOpen(false)}>Close</Button>
+            <Button onClick={() => setIsDocumentDialogOpen(false)}>
+              Close
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
