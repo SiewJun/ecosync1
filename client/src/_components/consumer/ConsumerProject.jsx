@@ -35,6 +35,7 @@ import {
   TrendingUp,
   AlertTriangle,
 } from "lucide-react";
+import PropTypes from "prop-types";
 
 const ConsumerProjects = () => {
   const [projects, setProjects] = useState([]);
@@ -528,8 +529,6 @@ const ConsumerProjects = () => {
     </div>
   );
 };
-
-import PropTypes from "prop-types";
 
 const InfoItem = ({ label, value }) => (
   <div className="flex flex-wrap">
