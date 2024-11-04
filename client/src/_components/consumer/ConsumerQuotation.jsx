@@ -47,7 +47,7 @@ const ConsumerQuotation = () => {
   const [error, setError] = useState(null);
   const [selectedQuotation, setSelectedQuotation] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(6);
+  const [itemsPerPage] = useState(9);
   const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
 
   const navigate = useNavigate();

@@ -45,7 +45,7 @@ const ConsumerProjects = () => {
   const [selectedProject, setSelectedProject] = useState(null);
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const itemsPerPage = 9;
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentProjects = projects.slice(indexOfFirstItem, indexOfLastItem);
