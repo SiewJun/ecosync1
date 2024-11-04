@@ -8,6 +8,7 @@ import {
   Menu,
   LogOut,
   Loader2,
+  Construction,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -40,7 +41,8 @@ const CompanyDashboard = () => {
   const [user, setUser] = useState(null);
   const location = useLocation();
   const { isOnboarded, isLoading } = useStripeOnboarding();
-  const isOnboardingPage = location.pathname === '/company-dashboard/stripe-onboarding';
+  const isOnboardingPage =
+    location.pathname === "/company-dashboard/stripe-onboarding";
 
   const handleLogout = async () => {
     try {
@@ -156,6 +158,15 @@ const CompanyDashboard = () => {
             <ClipboardList className="h-4 w-4" />
             Projects
           </Link>
+          <Link
+            to="/company-dashboard/company-maintenance"
+            className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
+              "/company-dashboard/company-maintenance"
+            )}`}
+          >
+            <Construction className="h-4 w-4" />
+            Maintenance
+          </Link>
         </nav>
         <div className="p-4">
           <button
@@ -243,6 +254,15 @@ const CompanyDashboard = () => {
                   <ClipboardList className="h-4 w-4" />
                   Project
                 </Link>
+                <Link
+                  to="/company-dashboard/company-maintenance"
+                  className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
+                    "/company-dashboard/company-maintenance"
+                  )}`}
+                >
+                  <Construction className="h-4 w-4" />
+                  Maintenance
+                </Link>
 
                 {/* Add mt-auto here to push the logout button to the bottom */}
                 <div
@@ -263,7 +283,11 @@ const CompanyDashboard = () => {
         <main className="flex-1 overflow-hidden">
           <ScrollArea className="h-full">
             {/* Onboarding reminder */}
-            {!isOnboarded &&  !isOnboardingPage && <div className="p-6"><OnboardingReminder /></div> }
+            {!isOnboarded && !isOnboardingPage && (
+              <div className="p-6">
+                <OnboardingReminder />
+              </div>
+            )}
             <Routes>
               <Route path="company-details" element={<CompanyDetail />} />
               <Route
@@ -312,4 +336,5 @@ const CompanyDashboard = () => {
     </div>
   );
 };
+
 export default CompanyDashboard;
