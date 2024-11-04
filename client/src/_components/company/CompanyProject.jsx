@@ -29,19 +29,31 @@ import {
   XCircle,
   AlertCircle,
   ChevronRight,
+  ChevronLeft,
   FileText,
   DollarSign,
   Zap,
   TrendingUp,
   AlertTriangle,
 } from "lucide-react";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+
+const ITEMS_PER_PAGE = 9;
 
 const CompanyProjects = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
+
+  const totalPages = Math.ceil(projects.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState("ALL");
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -68,6 +80,24 @@ const CompanyProjects = () => {
 
     fetchProjects();
   }, []);
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
+  
+  const handleFilterChange = (value) => {
+    setFilterStatus(value);
+    setCurrentPage(1);
+  };
+
+  const filteredProjects = projects.filter((project) => {
+    const matchesSearch = project.consumer?.username.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = filterStatus === "ALL" || project.status === filterStatus;
+    return matchesSearch && matchesFilter;
+  });
+  
+  const currentProjects = filteredProjects.slice(startIndex, endIndex);
 
   const handleProjectClick = (project) => {
     setSelectedProject(project);
@@ -130,6 +160,48 @@ const CompanyProjects = () => {
     );
   }
 
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const Pagination = () => {
+    if (totalPages <= 1) return null;
+
+    return (
+      <div className="flex items-center justify-center mt-8 gap-2">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+
+        {[...Array(totalPages)].map((_, index) => (
+          <Button
+            key={index + 1}
+            variant={currentPage === index + 1 ? "default" : "outline"}
+            size="icon"
+            onClick={() => handlePageChange(index + 1)}
+          >
+            {index + 1}
+          </Button>
+        ))}
+
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      </div>
+    );
+  };
+
   const sortSteps = (steps) => {
     return steps.sort((a, b) => {
       // First, sort by stepOrder if it exists
@@ -147,7 +219,27 @@ const CompanyProjects = () => {
   return (
     <div className="min-h-screen container p-6">
       <div className="max-w-5xl mx-auto">
-        {projects.length === 0 ? (
+        <div className="flex justify-between items-center mb-6">
+          <Input
+            placeholder="Search by consumer name..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+            className="w-1/3"
+          />
+          <Select value={filterStatus} onValueChange={handleFilterChange}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">All Status</SelectItem>
+              <SelectItem value="PENDING">Pending</SelectItem>
+              <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
+              <SelectItem value="COMPLETED">Completed</SelectItem>
+              <SelectItem value="DELAYED">Delayed</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        {filteredProjects.length === 0 ? (
           <Card className="bg-muted max-w-5xl mx-auto">
             <CardContent className="flex flex-col items-center justify-center h-32">
               <Building2 className="h-8 w-8 text-muted-foreground mb-2" />
@@ -157,83 +249,87 @@ const CompanyProjects = () => {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <AnimatePresence>
-              {projects.map((project) => (
-                <motion.div
-                  key={project.id}
-                  layout
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <Card
-                    className="h-full cursor-pointer hover:shadow-lg transition-shadow duration-300"
-                    onClick={() => handleProjectClick(project)}
+          <>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <AnimatePresence>
+                {currentProjects.map((project) => (
+                  <motion.div
+                    key={project.id}
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.5 }}
                   >
-                    <CardHeader className="pb-2">
-                      <div className="flex justify-between items-center">
-                        <Avatar className="h-12 w-12">
-                          <AvatarImage
-                            src={`http://localhost:5000/${project.consumer.avatarUrl}`}
-                            alt={project.consumer.username}
-                          />
-                          <AvatarFallback>
-                            {project.consumer.username.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <Badge className={`${getStatusColor(project.status)}`}>
-                          {project.status}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <CardTitle className="mb-2">
-                        {project.consumer.username}
-                      </CardTitle>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Project started on{" "}
-                        {new Date(project.startDate).toLocaleDateString()}
-                      </p>
-                      <div className="space-y-2">
-                        <div className="flex items-center text-sm">
-                          <Zap className="h-4 w-4 mr-2 text-yellow-500" />
-                          <span>
-                            System Size:{" "}
-                            {project.quotation.latestVersion.systemSize}
-                          </span>
+                    <Card
+                      className="h-full cursor-pointer hover:shadow-lg transition-shadow duration-300"
+                      onClick={() => handleProjectClick(project)}
+                    >
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-center">
+                          <Avatar className="h-12 w-12">
+                            <AvatarImage
+                              src={`http://localhost:5000/${project.consumer.avatarUrl}`}
+                              alt={project.consumer.username}
+                            />
+                            <AvatarFallback>
+                              {project.consumer.username.charAt(0)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <Badge
+                            className={`${getStatusColor(project.status)}`}
+                          >
+                            {project.status}
+                          </Badge>
                         </div>
-                        <div className="flex items-center text-sm">
-                          <DollarSign className="h-4 w-4 mr-2 text-green-500" />
-                          <span>
-                            Savings: {project.quotation.latestVersion.savings}
-                          </span>
+                      </CardHeader>
+                      <CardContent>
+                        <CardTitle className="mb-2">
+                          {project.consumer.username}
+                        </CardTitle>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Project started on{" "}
+                          {new Date(project.startDate).toLocaleDateString()}
+                        </p>
+                        <div className="space-y-2">
+                          <div className="flex items-center text-sm">
+                            <Zap className="h-4 w-4 mr-2 text-yellow-500" />
+                            <span>
+                              System Size:{" "}
+                              {project.quotation.latestVersion.systemSize}
+                            </span>
+                          </div>
+                          <div className="flex items-center text-sm">
+                            <DollarSign className="h-4 w-4 mr-2 text-green-500" />
+                            <span>
+                              Savings: {project.quotation.latestVersion.savings}
+                            </span>
+                          </div>
+                          <div className="flex items-center text-sm">
+                            <TrendingUp className="h-4 w-4 mr-2 text-blue-500" />
+                            <span>
+                              ROI: {project.quotation.latestVersion.roi}
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex items-center text-sm">
-                          <TrendingUp className="h-4 w-4 mr-2 text-blue-500" />
-                          <span>
-                            ROI: {project.quotation.latestVersion.roi}
-                          </span>
-                        </div>
-                      </div>
-                    </CardContent>
-                    <CardFooter>
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-between"
-                      >
-                        View Details
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
+                      </CardContent>
+                      <CardFooter>
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-between"
+                        >
+                          View Details
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+            <Pagination />
+          </>
         )}
-
         <Dialog open={!!selectedProject} onOpenChange={closeDetails}>
           <DialogContent className="max-w-4xl">
             <DialogHeader>
@@ -259,7 +355,6 @@ const CompanyProjects = () => {
                       </AlertDescription>
                     </Alert>
                   )}
-
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
                     <div>
                       <h3 className="text-xl font-semibold">
@@ -276,7 +371,6 @@ const CompanyProjects = () => {
                       {selectedProject.status}
                     </Badge>
                   </div>
-
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <Card>
                       <CardHeader>
@@ -303,7 +397,6 @@ const CompanyProjects = () => {
                         />
                       </CardContent>
                     </Card>
-
                     <Card>
                       <CardHeader>
                         <CardTitle>System Details</CardTitle>
@@ -335,7 +428,6 @@ const CompanyProjects = () => {
                         />
                       </CardContent>
                     </Card>
-
                     <Card>
                       <CardHeader>
                         <CardTitle>Financial Information</CardTitle>
@@ -366,7 +458,6 @@ const CompanyProjects = () => {
                         />
                       </CardContent>
                     </Card>
-
                     <Card>
                       <CardHeader>
                         <CardTitle>Cost Breakdown</CardTitle>
@@ -406,7 +497,6 @@ const CompanyProjects = () => {
                       </CardContent>
                     </Card>
                   </div>
-
                   <Card>
                     <CardHeader>
                       <CardTitle>Project Timeline</CardTitle>

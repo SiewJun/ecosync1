@@ -13,6 +13,8 @@ import {
   AlertTriangle,
   ThumbsUp,
   Loader2,
+  ChevronLeft,
+  ChevronRight as ChevronRightIcon,
 } from "lucide-react";
 import axios from "axios";
 import PropTypes from "prop-types";
@@ -24,13 +26,24 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+
+const ITEMS_PER_PAGE = 9;
 
 const CompanyQuotation = () => {
   const [quotations, setQuotations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedQuotation, setSelectedQuotation] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState("ALL");
   const navigate = useNavigate();
+
+  const totalPages = Math.ceil(quotations.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
 
   useEffect(() => {
     const fetchQuotations = async () => {
@@ -44,7 +57,7 @@ const CompanyQuotation = () => {
           }
         );
         setQuotations(response.data.quotations);
-        // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line no-unused-vars
       } catch (err) {
         setError("Failed to load quotations. Please try again later.");
       } finally {
@@ -54,6 +67,66 @@ const CompanyQuotation = () => {
 
     fetchQuotations();
   }, []);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleFilterChange = (value) => {
+    setFilterStatus(value);
+    setCurrentPage(1);
+  };
+
+  const filteredQuotations = quotations.filter((quotation) => {
+    const matchesSearch = quotation.consumer?.username.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = filterStatus === "ALL" || quotation.quotationStatus === filterStatus;
+    return matchesSearch && matchesFilter;
+  });
+
+  const currentQuotations = filteredQuotations.slice(startIndex, endIndex);
+
+  const Pagination = () => {
+    if (totalPages <= 1) return null;
+
+    return (
+      <div className="flex items-center justify-center mt-8 gap-2">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+
+        {[...Array(totalPages)].map((_, index) => (
+          <Button
+            key={index + 1}
+            variant={currentPage === index + 1 ? "default" : "outline"}
+            size="icon"
+            onClick={() => handlePageChange(index + 1)}
+          >
+            {index + 1}
+          </Button>
+        ))}
+
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          <ChevronRightIcon className="h-4 w-4" />
+        </Button>
+      </div>
+    );
+  };
 
   const handleQuotationClick = (quotation) => {
     setSelectedQuotation(quotation);
@@ -181,16 +254,40 @@ const CompanyQuotation = () => {
   return (
     <div className="min-h-screen container p-6">
       <div className="max-w-5xl mx-auto">
+        <div className="flex justify-between items-center mb-6">
+          <Input
+            placeholder="Search by consumer name..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+            className="w-1/3"
+          />
+          <Select value={filterStatus} onValueChange={handleFilterChange}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">All Status</SelectItem>
+              <SelectItem value="PENDING">Pending</SelectItem>
+              <SelectItem value="RECEIVED">Received</SelectItem>
+              <SelectItem value="FINALIZED">Finalized</SelectItem>
+              <SelectItem value="REJECTED">Rejected</SelectItem>
+              <SelectItem value="ACCEPTED">Accepted</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
         <AnimatePresence>
-          {quotations.length ? (
-            <motion.div
-              layout
-              className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
-            >
-              {quotations.map((quotation) => (
-                <QuotationCard key={quotation.id} quotation={quotation} />
-              ))}
-            </motion.div>
+          {filteredQuotations.length ? (
+            <>
+              <motion.div
+                layout
+                className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+              >
+                {currentQuotations.map((quotation) => (
+                  <QuotationCard key={quotation.id} quotation={quotation} />
+                ))}
+              </motion.div>
+              <Pagination />
+            </>
           ) : (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
