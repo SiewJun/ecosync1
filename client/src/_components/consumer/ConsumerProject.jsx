@@ -34,6 +34,7 @@ import {
   Zap,
   TrendingUp,
   AlertTriangle,
+  ChevronLeft,
 } from "lucide-react";
 import PropTypes from "prop-types";
 
@@ -43,6 +44,11 @@ const ConsumerProjects = () => {
   const [error, setError] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentProjects = projects.slice(indexOfFirstItem, indexOfLastItem);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -108,6 +114,41 @@ const ConsumerProjects = () => {
     }
   };
 
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const Pagination = () => {
+    const totalPages = Math.ceil(projects.length / itemsPerPage);
+    if (totalPages <= 1) return null;
+
+    return (
+      <div className="flex justify-center mt-8 space-x-2">
+        <Button
+          onClick={() => paginate(currentPage - 1)}
+          disabled={currentPage === 1}
+          variant="outline"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+        {Array.from({ length: totalPages }, (_, index) => (
+          <Button
+            key={index + 1}
+            onClick={() => paginate(index + 1)}
+            variant={currentPage === index + 1 ? "default" : "outline"}
+          >
+            {index + 1}
+          </Button>
+        ))}
+        <Button
+          onClick={() => paginate(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          variant="outline"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      </div>
+    );
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -154,83 +195,88 @@ const ConsumerProjects = () => {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <AnimatePresence>
-              {projects.map((project) => (
-                <motion.div
-                  key={project.id}
-                  layout
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <Card
-                    className="h-full cursor-pointer hover:shadow-lg transition-shadow duration-300"
-                    onClick={() => handleProjectClick(project)}
+          <>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <AnimatePresence>
+                {currentProjects.map((project) => (
+                  <motion.div
+                    key={project.id}
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.5 }}
                   >
-                    <CardHeader className="pb-2">
-                      <div className="flex justify-between items-center">
-                        <Avatar className="h-12 w-12">
-                          <AvatarImage
-                            src={`http://localhost:5000/${project.company.avatarUrl}`}
-                            alt={project.company.CompanyDetail.companyName}
-                          />
-                          <AvatarFallback>
-                            {project.company.CompanyDetail.companyName.charAt(
-                              0
-                            )}
-                          </AvatarFallback>
-                        </Avatar>
-                        <Badge className={`${getStatusColor(project.status)}`}>
-                          {project.status}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <CardTitle className="mb-2">
-                        {project.company.CompanyDetail.companyName}
-                      </CardTitle>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Project started on{" "}
-                        {new Date(project.startDate).toLocaleDateString()}
-                      </p>
-                      <div className="space-y-2">
-                        <div className="flex items-center text-sm">
-                          <Zap className="h-4 w-4 mr-2 text-yellow-500" />
-                          <span>
-                            System Size:{" "}
-                            {project.quotation.latestVersion.systemSize}
-                          </span>
+                    <Card
+                      className="h-full cursor-pointer hover:shadow-lg transition-shadow duration-300"
+                      onClick={() => handleProjectClick(project)}
+                    >
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-center">
+                          <Avatar className="h-12 w-12">
+                            <AvatarImage
+                              src={`http://localhost:5000/${project.company.avatarUrl}`}
+                              alt={project.company.CompanyDetail.companyName}
+                            />
+                            <AvatarFallback>
+                              {project.company.CompanyDetail.companyName.charAt(
+                                0
+                              )}
+                            </AvatarFallback>
+                          </Avatar>
+                          <Badge
+                            className={`${getStatusColor(project.status)}`}
+                          >
+                            {project.status}
+                          </Badge>
                         </div>
-                        <div className="flex items-center text-sm">
-                          <DollarSign className="h-4 w-4 mr-2 text-green-500" />
-                          <span>
-                            Savings: {project.quotation.latestVersion.savings}
-                          </span>
+                      </CardHeader>
+                      <CardContent>
+                        <CardTitle className="mb-2">
+                          {project.company.CompanyDetail.companyName}
+                        </CardTitle>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Project started on{" "}
+                          {new Date(project.startDate).toLocaleDateString()}
+                        </p>
+                        <div className="space-y-2">
+                          <div className="flex items-center text-sm">
+                            <Zap className="h-4 w-4 mr-2 text-yellow-500" />
+                            <span>
+                              System Size:{" "}
+                              {project.quotation.latestVersion.systemSize}
+                            </span>
+                          </div>
+                          <div className="flex items-center text-sm">
+                            <DollarSign className="h-4 w-4 mr-2 text-green-500" />
+                            <span>
+                              Savings: {project.quotation.latestVersion.savings}
+                            </span>
+                          </div>
+                          <div className="flex items-center text-sm">
+                            <TrendingUp className="h-4 w-4 mr-2 text-blue-500" />
+                            <span>
+                              ROI: {project.quotation.latestVersion.roi}
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex items-center text-sm">
-                          <TrendingUp className="h-4 w-4 mr-2 text-blue-500" />
-                          <span>
-                            ROI: {project.quotation.latestVersion.roi}
-                          </span>
-                        </div>
-                      </div>
-                    </CardContent>
-                    <CardFooter>
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-between"
-                      >
-                        View Details
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
+                      </CardContent>
+                      <CardFooter>
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-between"
+                        >
+                          View Details
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+            <Pagination />
+          </>
         )}
 
         <Dialog open={!!selectedProject} onOpenChange={closeDetails}>
