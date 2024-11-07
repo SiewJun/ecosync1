@@ -17,6 +17,7 @@ import {
   MessageCircle,
   FileCheck,
   ClipboardList,
+  Construction,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import ThemeSwitcher from "@/_components/theme/ThemeSwitcher";
@@ -58,6 +59,11 @@ const renderDashboardLinks = (user, linkClasses) => {
         label: "Projects",
         icon: ClipboardList,
       },
+      {
+        to: "/consumer-dashboard/consumer-maintenance",
+        label: "Maintenance",
+        icon: Construction,
+      },
     ],
     COMPANY: [
       {
@@ -84,6 +90,11 @@ const renderDashboardLinks = (user, linkClasses) => {
         to: "/company-dashboard/company-project",
         label: "Projects",
         icon: ClipboardList,
+      },
+      {
+        to: "/company-dashboard/company-maintenance",
+        label: "Maintenances",
+        icon: Construction,
       },
     ],
     ADMIN: [{ to: "/dashboard", label: "Dashboard", icon: LayoutDashboard }],

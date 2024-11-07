@@ -13,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
 
       // A project has many steps (ProjectStep)
       this.hasMany(models.ProjectStep, { foreignKey: 'projectId', as: 'steps' });
+
+      // A project has many maintenances (Maintenance)
+      this.hasMany(models.Maintenance, { foreignKey: 'projectId', as: 'maintenance' });
+
     }
   }
 

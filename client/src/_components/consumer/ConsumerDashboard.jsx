@@ -24,6 +24,8 @@ import ConsumerQuotationView from "./ConsumerQuotationView";
 import ConsumerProject from "./ConsumerProject";
 import ConsumerProjectStep from "./ConsumerProjectStep";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import ConsumerMaintenance from "./ConsumerMaintenance";
+import ConsumerMaintenanceRecords from "./ConsumerMaintenanceRecords";
 import NotFoundPage from "@/pages/NotFoundPage";
 
 const ConsumerDashboard = () => {
@@ -115,7 +117,18 @@ const ConsumerDashboard = () => {
             )} ${getLinkClasses("/consumer-dashboard/consumer-project/:id")}`}
           >
             <ClipboardList className="h-4 w-4" />
-            Projects
+            Project
+          </Link>
+          <Link
+            to="/consumer-dashboard/consumer-maintenance"
+            className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
+              "/consumer-dashboard/consumer-maintenance"
+            )} ${getLinkClasses(
+              "/consumer-dashboard/consumer-maintenance/:projectId"
+            )}`}
+          >
+            <ClipboardList className="h-4 w-4" />
+            Maintenance
           </Link>
         </nav>
         <div className="p-4">
@@ -191,7 +204,18 @@ const ConsumerDashboard = () => {
                   )}`}
                 >
                   <ClipboardList className="h-4 w-4" />
-                  Projects
+                  Project
+                </Link>
+                <Link
+                  to="/consumer-dashboard/consumer-maintenance"
+                  className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
+                    "/consumer-dashboard/consumer-maintenance"
+                  )} ${getLinkClasses(
+                    "/consumer-dashboard/consumer-maintenance/:projectId"
+                  )}`}
+                >
+                  <ClipboardList className="h-4 w-4" />
+                  Maintenance
                 </Link>
                 {/* Add mt-auto here to push the logout button to the bottom */}
                 <div
@@ -231,6 +255,14 @@ const ConsumerDashboard = () => {
               <Route
                 path="/consumer-project/:projectId"
                 element={<ConsumerProjectStep />}
+              />
+              <Route
+                path="/consumer-maintenance"
+                element={<ConsumerMaintenance />}
+              />
+              <Route
+                path="/consumer-maintenance/:projectId"
+                element={<ConsumerMaintenanceRecords />}
               />
               <Route path="*" element={<NotFoundPage />} />
             </Routes>

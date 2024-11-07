@@ -36,7 +36,13 @@ import {
   TrendingUp,
   AlertTriangle,
 } from "lucide-react";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 
 const ITEMS_PER_PAGE = 9;
@@ -85,18 +91,21 @@ const CompanyProjects = () => {
     setSearchTerm(e.target.value);
     setCurrentPage(1);
   };
-  
+
   const handleFilterChange = (value) => {
     setFilterStatus(value);
     setCurrentPage(1);
   };
 
   const filteredProjects = projects.filter((project) => {
-    const matchesSearch = project.consumer?.username.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterStatus === "ALL" || project.status === filterStatus;
+    const matchesSearch = project.consumer?.username
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesFilter =
+      filterStatus === "ALL" || project.status === filterStatus;
     return matchesSearch && matchesFilter;
   });
-  
+
   const currentProjects = filteredProjects.slice(startIndex, endIndex);
 
   const handleProjectClick = (project) => {
@@ -601,6 +610,8 @@ const CompanyProjects = () => {
               >
                 {selectedProject?.status === "IN_PROGRESS"
                   ? "View Progress"
+                  : selectedProject?.status === "COMPLETED"
+                  ? "View"
                   : "Customise Timeline"}
               </Button>
             </div>

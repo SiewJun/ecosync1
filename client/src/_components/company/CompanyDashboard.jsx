@@ -36,6 +36,8 @@ import StripeOnboarding from "./StripeOnboarding";
 import useStripeOnboarding from "../../hooks/useStripeOnboarding";
 import OnboardingReminder from "./OnboardingReminder";
 import NotFoundPage from "@/pages/NotFoundPage";
+import CompanyMaintenance from "./CompanyMaintenance";
+import CompanyMaintenanceRecords from "./CompanyMaintenanceRecords";
 
 const CompanyDashboard = () => {
   const [user, setUser] = useState(null);
@@ -156,12 +158,14 @@ const CompanyDashboard = () => {
             )}`}
           >
             <ClipboardList className="h-4 w-4" />
-            Projects
+            Project
           </Link>
           <Link
             to="/company-dashboard/company-maintenance"
             className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
               "/company-dashboard/company-maintenance"
+            )} ${getLinkClasses(
+              "/company-dashboard/company-maintenance/:projectId"
             )}`}
           >
             <Construction className="h-4 w-4" />
@@ -256,8 +260,10 @@ const CompanyDashboard = () => {
                 </Link>
                 <Link
                   to="/company-dashboard/company-maintenance"
-                  className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
+                  className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${getLinkClasses(
                     "/company-dashboard/company-maintenance"
+                  )} ${getLinkClasses(
+                    "/company-dashboard/company-maintenance/:projectId"
                   )}`}
                 >
                   <Construction className="h-4 w-4" />
@@ -327,6 +333,12 @@ const CompanyDashboard = () => {
                 element={<CompanyProjectStep />}
               />
               <Route path="/stripe-onboarding" element={<StripeOnboarding />} />
+              <Route
+                path="/company-maintenance"
+                element={<CompanyMaintenance />}  />
+                <Route
+                path="/company-maintenance/:projectId"
+                element={<CompanyMaintenanceRecords />}  />
               <Route path="*" element={<NotFoundPage />} />
               {/* Add other routes here */}
             </Routes>

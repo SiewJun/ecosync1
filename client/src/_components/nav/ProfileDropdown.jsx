@@ -19,6 +19,7 @@ import {
   MessageCircle,
   FileCheck,
   ClipboardList,
+  Construction,
 } from "lucide-react";
 
 const ProfileDropdown = ({ user }) => {
@@ -76,7 +77,16 @@ const ProfileDropdown = ({ user }) => {
                 className="flex items-center gap-2 p-2 rounded-md cursor-pointer"
               >
                 <ClipboardList className="h-4 w-4" />
-                Projects
+                Project
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link
+                to="/consumer-dashboard/consumer-maintenance"
+                className="flex items-center gap-2 p-2 rounded-md cursor-pointer"
+              >
+                <Construction className="h-4 w-4" />
+                Maintenance
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
@@ -134,7 +144,16 @@ const ProfileDropdown = ({ user }) => {
                 className="flex items-center gap-2 p-2 rounded-md cursor-pointer"
               >
                 <ClipboardList className="h-4 w-4" />
-                Projects
+                Project
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link
+                to="/company-dashboard/company-maintenance"
+                className="flex items-center gap-2 p-2 rounded-md cursor-pointer"
+              >
+                <Construction className="h-4 w-4" />
+                Maintenance
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
