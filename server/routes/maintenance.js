@@ -13,6 +13,17 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// Helper function to send email notifications
+const sendEmail = async (to, subject, html) => {
+  const mailOptions = {
+    from: process.env.EMAIL,
+    to,
+    subject,
+    html,
+  };
+  await transporter.sendMail(mailOptions);
+};
+
 // Get all completed projects for a company
 router.get('/completed-projects', authenticateToken, async (req, res) => {
   const companyId = req.user.id;
@@ -39,7 +50,7 @@ router.get('/completed-projects', authenticateToken, async (req, res) => {
         },
         {
           model: Maintenance,
-          as: 'maintenance', // Specify the alias here
+          as: 'maintenance',
           attributes: ['id', 'scheduledDate', 'status', 'notes', 'createdAt']
         }
       ]
@@ -66,7 +77,7 @@ router.get('/schedules', authenticateToken, async (req, res) => {
       include: [
         {
           model: Project,
-          as: 'project', // Specify the alias here
+          as: 'project',
           attributes: ['id', 'status'],
           include: [{
             model: User,
@@ -97,17 +108,14 @@ router.post('/:projectId/schedule', authenticateToken, async (req, res) => {
   try {
     const project = await Project.findByPk(projectId);
 
-    // Check if project exists and is completed
     if (!project || project.status !== 'COMPLETED') {
       return res.status(400).json({ message: 'Project must be completed to schedule maintenance.' });
     }
 
-    // Ensure only the company associated with the project can schedule
     if (project.companyId !== req.user.id) {
       return res.status(403).json({ message: 'Unauthorized to schedule maintenance for this project.' });
     }
 
-    // Create a new maintenance entry
     const maintenance = await Maintenance.create({
       projectId,
       companyId: req.user.id,
@@ -117,84 +125,25 @@ router.post('/:projectId/schedule', authenticateToken, async (req, res) => {
       status: 'SCHEDULED'
     });
 
-    // Fetch consumer and company details
     const consumer = await User.findByPk(project.consumerId);
     const company = await User.findByPk(req.user.id);
 
-    const mailOptions = {
-      from: process.env.EMAIL,
-      to: consumer.email,
-      subject: 'Solar System Maintenance Scheduled',
-      html: `
-        <h2>Maintenance Appointment Scheduled</h2>
-        <p>Dear ${consumer.username},</p>
-        <p>A maintenance appointment has been scheduled for your solar system by ${company.username}.</p>
-        <p><strong>Date:</strong> ${new Date(scheduledDate).toLocaleDateString()}</p>
-        <p><strong>Time:</strong> ${new Date(scheduledDate).toLocaleTimeString()}</p>
-        ${notes ? `<p><strong>Notes:</strong> ${notes}</p>` : ''}
-        <p>If you need to reschedule, please log in to your account or contact us.</p>
-      `
-    };
+    const emailHtml = `
+      <h2>Maintenance Appointment Scheduled</h2>
+      <p>Dear ${consumer.username},</p>
+      <p>A maintenance appointment has been scheduled for your solar system by ${company.username}.</p>
+      <p><strong>Date:</strong> ${new Date(scheduledDate).toLocaleDateString()}</p>
+      <p><strong>Time:</strong> ${new Date(scheduledDate).toLocaleTimeString()}</p>
+      ${notes ? `<p><strong>Notes:</strong> ${notes}</p>` : ''}
+      <p>If you need to reschedule, please log in to your account or contact us.</p>
+    `;
 
-    await transporter.sendMail(mailOptions);
+    await sendEmail(consumer.email, 'Solar System Maintenance Scheduled', emailHtml);
 
     res.status(201).json({ message: 'Maintenance scheduled and notification sent.', maintenance });
   } catch (error) {
     console.error('Error scheduling maintenance:', error);
     res.status(500).json({ message: 'Failed to schedule maintenance.' });
-  }
-});
-
-// Update maintenance status
-router.put('/:maintenanceId/status', authenticateToken, async (req, res) => {
-  const { maintenanceId } = req.params;
-  const { status, completionNotes } = req.body;
-
-  try {
-    const maintenance = await Maintenance.findByPk(maintenanceId);
-
-    if (!maintenance) {
-      return res.status(404).json({ message: 'Maintenance record not found.' });
-    }
-
-    // Ensure only the company can update the status
-    if (maintenance.companyId !== req.user.id) {
-      return res.status(403).json({ message: 'Unauthorized to update this maintenance record.' });
-    }
-
-    // Allow only specific statuses to be set
-    const allowedStatuses = ['SCHEDULED', 'CONFIRMED', 'COMPLETED'];
-    if (!allowedStatuses.includes(status)) {
-      return res.status(400).json({ message: 'Invalid status update.' });
-    }
-
-    maintenance.status = status;
-    if (completionNotes) {
-      maintenance.notes = completionNotes;
-    }
-    await maintenance.save();
-
-    // Notify consumer about the status update
-    const consumer = await User.findByPk(maintenance.consumerId);
-    const company = await User.findByPk(req.user.id);
-    const mailOptions = {
-      from: process.env.EMAIL,
-      to: consumer.email,
-      subject: 'Maintenance Status Update',
-      html: `
-        <h2>Maintenance Status Update</h2>
-        <p>Dear ${consumer.username},</p>
-        <p>Your maintenance appointment status has been updated to: <strong>${status} by ${company.username}.</strong></p>
-        ${completionNotes ? `<p><strong>Notes:</strong> ${completionNotes}</p>` : ''}
-      `
-    };
-
-    await transporter.sendMail(mailOptions);
-
-    res.status(200).json({ message: 'Maintenance status updated and notification sent.', maintenance });
-  } catch (error) {
-    console.error('Error updating maintenance status:', error);
-    res.status(500).json({ message: 'Failed to update maintenance status.' });
   }
 });
 
@@ -208,7 +157,7 @@ router.get('/project/:projectId', authenticateToken, async (req, res) => {
       include: [
         {
           model: Project,
-          as: 'project', // Specify the alias here
+          as: 'project',
           attributes: ['id', 'status'],
           include: [
             {
@@ -232,6 +181,121 @@ router.get('/project/:projectId', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Error fetching maintenance records:', error);
     res.status(500).json({ message: 'Failed to fetch maintenance records.' });
+  }
+});
+
+// Confirm maintenance status by company
+router.put('/:maintenanceId/company-confirm', authenticateToken, async (req, res) => {
+  const { maintenanceId } = req.params;
+
+  try {
+    const maintenance = await Maintenance.findByPk(maintenanceId);
+
+    if (!maintenance) {
+      return res.status(404).json({ message: 'Maintenance record not found.' });
+    }
+
+    if (maintenance.companyId !== req.user.id) {
+      return res.status(403).json({ message: 'Unauthorized to confirm this maintenance record.' });
+    }
+
+    maintenance.status = 'CONFIRMED';
+    await maintenance.save();
+
+    const consumer = await User.findByPk(maintenance.consumerId);
+    const company = await User.findByPk(req.user.id);
+
+    const emailHtml = `
+      <h2>Maintenance Schedule Confirmed</h2>
+      <p>Dear ${consumer.username},</p>
+      <p>The maintenance appointment has been confirmed by ${company.username}.</p>
+      <p><strong>Date:</strong> ${new Date(maintenance.scheduledDate).toLocaleDateString()}</p>
+      <p><strong>Time:</strong> ${new Date(maintenance.scheduledDate).toLocaleTimeString()}</p>
+    `;
+
+    await sendEmail(consumer.email, 'Maintenance Schedule Confirmed', emailHtml);
+
+    res.status(200).json({ message: 'Maintenance schedule confirmed and notification sent.', maintenance });
+  } catch (error) {
+    console.error('Error confirming maintenance schedule:', error);
+    res.status(500).json({ message: 'Failed to confirm maintenance schedule.' });
+  }
+});
+
+// Reject maintenance status by company
+router.put('/:maintenanceId/company-reject', authenticateToken, async (req, res) => {
+  const { maintenanceId } = req.params;
+  const { reason } = req.body;
+
+  try {
+    const maintenance = await Maintenance.findByPk(maintenanceId);
+
+    if (!maintenance) {
+      return res.status(404).json({ message: 'Maintenance record not found.' });
+    }
+
+    if (maintenance.companyId !== req.user.id) {
+      return res.status(403).json({ message: 'Unauthorized to reject this maintenance record.' });
+    }
+
+    maintenance.status = 'REJECTED';
+    maintenance.notes = reason ? `Rejected: ${reason}` : maintenance.notes;
+    await maintenance.save();
+
+    const consumer = await User.findByPk(maintenance.consumerId);
+    const company = await User.findByPk(req.user.id);
+
+    const emailHtml = `
+      <h2>Maintenance Schedule Rejected</h2>
+      <p>Dear ${consumer.username},</p>
+      <p>The maintenance appointment has been rejected by ${company.username}.</p>
+      ${reason ? `<p><strong>Reason:</strong> ${reason}</p>` : ''}
+    `;
+
+    await sendEmail(consumer.email, 'Maintenance Schedule Rejected', emailHtml);
+
+    res.status(200).json({ message: 'Maintenance schedule rejected and notification sent.', maintenance });
+  } catch (error) {
+    console.error('Error rejecting maintenance schedule:', error);
+    res.status(500).json({ message: 'Failed to reject maintenance schedule.' });
+  }
+});
+
+// Mark maintenance as completed by company
+router.put('/:maintenanceId/complete', authenticateToken, async (req, res) => {
+  const { maintenanceId } = req.params;
+
+  try {
+    const maintenance = await Maintenance.findByPk(maintenanceId);
+
+    if (!maintenance) {
+      return res.status(404).json({ message: 'Maintenance record not found.' });
+    }
+
+    if (maintenance.companyId !== req.user.id) {
+      return res.status(403).json({ message: 'Unauthorized to complete this maintenance record.' });
+    }
+
+    maintenance.status = 'COMPLETED';
+    await maintenance.save();
+
+    const consumer = await User.findByPk(maintenance.consumerId);
+    const company = await User.findByPk(req.user.id);
+
+    const emailHtml = `
+      <h2>Maintenance Completed</h2>
+      <p>Dear ${consumer.username},</p>
+      <p>The maintenance appointment has been completed by ${company.username}.</p>
+      <p><strong>Date:</strong> ${new Date(maintenance.scheduledDate).toLocaleDateString()}</p>
+      <p><strong>Time:</strong> ${new Date(maintenance.scheduledDate).toLocaleTimeString()}</p>
+    `;
+
+    await sendEmail(consumer.email, 'Maintenance Completed', emailHtml);
+
+    res.status(200).json({ message: 'Maintenance marked as completed and notification sent.', maintenance });
+  } catch (error) {
+    console.error('Error marking maintenance as completed:', error);
+    res.status(500).json({ message: 'Failed to mark maintenance as completed.' });
   }
 });
 
@@ -261,7 +325,7 @@ router.get('/consumer/completed-projects', authenticateToken, async (req, res) =
         },
         {
           model: Maintenance,
-          as: 'maintenance', // Specify the alias here
+          as: 'maintenance',
           attributes: ['id', 'scheduledDate', 'status', 'notes', 'createdAt']
         }
       ]
@@ -285,7 +349,6 @@ router.put('/:maintenanceId/confirm', authenticateToken, async (req, res) => {
       return res.status(404).json({ message: 'Maintenance record not found.' });
     }
 
-    // Ensure only the consumer can confirm the proposed schedule
     if (maintenance.consumerId !== req.user.id) {
       return res.status(403).json({ message: 'Unauthorized to confirm this maintenance record.' });
     }
@@ -293,23 +356,18 @@ router.put('/:maintenanceId/confirm', authenticateToken, async (req, res) => {
     maintenance.status = 'CONFIRMED';
     await maintenance.save();
 
-    // Notify company about the confirmation
     const company = await User.findByPk(maintenance.companyId);
     const consumer = await User.findByPk(req.user.id);
-    const mailOptions = {
-      from: process.env.EMAIL,
-      to: company.email,
-      subject: 'Maintenance Schedule Confirmed',
-      html: `
-        <h2>Maintenance Schedule Confirmed</h2>
-        <p>Dear ${company.username},</p>
-        <p>The maintenance appointment has been confirmed by ${consumer.username}.</p>
-        <p><strong>Date:</strong> ${new Date(maintenance.scheduledDate).toLocaleDateString()}</p>
-        <p><strong>Time:</strong> ${new Date(maintenance.scheduledDate).toLocaleTimeString()}</p>
-      `
-    };
 
-    await transporter.sendMail(mailOptions);
+    const emailHtml = `
+      <h2>Maintenance Schedule Confirmed</h2>
+      <p>Dear ${company.username},</p>
+      <p>The maintenance appointment has been confirmed by ${consumer.username}.</p>
+      <p><strong>Date:</strong> ${new Date(maintenance.scheduledDate).toLocaleDateString()}</p>
+      <p><strong>Time:</strong> ${new Date(maintenance.scheduledDate).toLocaleTimeString()}</p>
+    `;
+
+    await sendEmail(company.email, 'Maintenance Schedule Confirmed', emailHtml);
 
     res.status(200).json({ message: 'Maintenance schedule confirmed and notification sent.', maintenance });
   } catch (error) {
@@ -328,7 +386,7 @@ router.put('/:maintenanceId/consumer-reschedule', authenticateToken, async (req,
       include: [
         {
           model: Project,
-          as: 'project', // Specify the alias here
+          as: 'project',
           include: [{
             model: User,
             as: 'company'
@@ -341,39 +399,29 @@ router.put('/:maintenanceId/consumer-reschedule', authenticateToken, async (req,
       return res.status(404).json({ message: 'Maintenance record not found.' });
     }
 
-    // Ensure only the consumer can propose rescheduling
     if (maintenance.consumerId !== req.user.id) {
       return res.status(403).json({ message: 'Unauthorized to reschedule this maintenance.' });
     }
 
-    // Store proposed dates and reason
-    maintenance.proposedDates = proposedDates;
+    maintenance.scheduledDate = proposedDates;
     maintenance.status = 'RESCHEDULE_PENDING';
-    if (reason) {
-      maintenance.notes = `Rescheduled: ${reason}\n${maintenance.notes || ''}`;
-    }
+    maintenance.notes = reason ? `Rescheduled: ${reason}` : maintenance.notes;
     await maintenance.save();
 
-    // Notify the company about the proposed dates
     const notifyUser = await User.findByPk(maintenance.companyId);
 
-    const mailOptions = {
-      from: process.env.EMAIL,
-      to: notifyUser.email,
-      subject: 'Maintenance Appointment Rescheduled',
-      html: `
-        <h2>Maintenance Appointment Rescheduled</h2>
-        <p>Dear ${notifyUser.username},</p>
-        <p>The maintenance appointment for project ID ${maintenance.projectId} has been proposed to be rescheduled to the following dates:</p>
-        <ul>
-          ${proposedDates.map(date => `<li>${new Date(date).toLocaleString()}</li>`).join('')}
-        </ul>
-        ${reason ? `<p><strong>Reason:</strong> ${reason}</p>` : ''}
-        <p>Please log in to your account to approve or propose new dates.</p>
-      `
-    };
+    const emailHtml = `
+      <h2>Maintenance Appointment Rescheduled</h2>
+      <p>Dear ${notifyUser.username},</p>
+      <p>The maintenance appointment for project ID ${maintenance.projectId} has been proposed to be rescheduled to the following dates:</p>
+      <ul>
+        ${proposedDates.map(date => `<li>${new Date(date).toLocaleString()}</li>`).join('')}
+      </ul>
+      ${reason ? `<p><strong>Reason:</strong> ${reason}</p>` : ''}
+      <p>Please log in to your account to approve or propose new dates.</p>
+    `;
 
-    await transporter.sendMail(mailOptions);
+    await sendEmail(notifyUser.email, 'Maintenance Appointment Rescheduled', emailHtml);
 
     res.status(200).json({ message: 'Maintenance reschedule proposed and notification sent.', maintenance });
   } catch (error) {
@@ -392,7 +440,6 @@ router.get('/consumer/project/:projectId/schedules', authenticateToken, async (r
       return res.status(403).json({ message: 'Only consumers can access this endpoint.' });
     }
 
-    // Check if the project belongs to the consumer
     const project = await Project.findOne({
       where: { id: projectId, consumerId },
       include: [

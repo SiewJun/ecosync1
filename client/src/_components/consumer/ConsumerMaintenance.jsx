@@ -4,11 +4,14 @@ import { Calendar, CheckCircle, Loader2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 
 const ConsumerMaintenance = () => {
   const [completedProjects, setCompletedProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchCompletedProjects = async () => {
@@ -28,13 +31,18 @@ const ConsumerMaintenance = () => {
       // eslint-disable-next-line no-unused-vars
       } catch (err) {
         setError("Failed to load data. Please try again.");
+        toast({
+          title: "Error",
+          description: "Failed to fetch completed projects",
+          variant: "destructive",
+        });
       } finally {
         setLoading(false);
       }
     };
 
     fetchCompletedProjects();
-  }, []);
+  }, [toast]);
 
   if (loading) {
     return (
@@ -57,6 +65,7 @@ const ConsumerMaintenance = () => {
 
   return (
     <div className="container mx-auto p-4 lg:p-6 space-y-6 max-w-7xl">
+      <Toaster />
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">

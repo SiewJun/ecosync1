@@ -36,7 +36,7 @@ import StripeOnboarding from "./StripeOnboarding";
 import useStripeOnboarding from "../../hooks/useStripeOnboarding";
 import OnboardingReminder from "./OnboardingReminder";
 import NotFoundPage from "@/pages/NotFoundPage";
-import CompanyMaintenance from "./CompanyMaintenance";
+import CompanyMaintenanceProject from "./CompanyMaintenanceProject";
 import CompanyMaintenanceRecords from "./CompanyMaintenanceRecords";
 
 const CompanyDashboard = () => {
@@ -335,7 +335,7 @@ const CompanyDashboard = () => {
               <Route path="/stripe-onboarding" element={<StripeOnboarding />} />
               <Route
                 path="/company-maintenance"
-                element={<CompanyMaintenance />}  />
+                element={<CompanyMaintenanceProject />}  />
                 <Route
                 path="/company-maintenance/:projectId"
                 element={<CompanyMaintenanceRecords />}  />
