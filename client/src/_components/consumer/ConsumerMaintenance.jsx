@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Calendar, CheckCircle, Loader2 } from "lucide-react";
+import { Calendar, CheckCircle, Loader2, FileText } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+import { motion } from "framer-motion";
 
 const ConsumerMaintenance = () => {
   const [completedProjects, setCompletedProjects] = useState([]);
@@ -106,9 +107,20 @@ const ConsumerMaintenance = () => {
               </TableBody>
             </Table>
             {completedProjects.length === 0 && (
-              <div className="text-center py-8 text-gray-500">
-                No completed projects found
-              </div>
+              <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Card className="bg-muted">
+                <CardContent className="flex flex-col items-center justify-center h-32">
+                  <FileText className="h-8 w-8 text-muted-foreground mb-2" />
+                  <p className="text-center text-sm text-muted-foreground">
+                    No completed project yet.
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
             )}
           </div>
         </CardContent>
