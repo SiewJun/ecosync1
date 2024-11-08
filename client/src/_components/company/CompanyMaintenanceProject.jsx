@@ -154,17 +154,16 @@ const CompanyMaintenanceProject = () => {
     }
   };
 
-  const handleConfirmMaintenance = async () => {
+  const handleConfirmMaintenance = async (maintenanceId) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/maintenance/${selectedMaintenance.id}/company-confirm`,
+        `http://localhost:5000/api/maintenance/${maintenanceId}/company-confirm`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-          body: JSON.stringify({ status: "CONFIRMED" }),
         }
       );
 
@@ -459,13 +458,12 @@ const CompanyMaintenanceProject = () => {
                               {schedule.status === "RESCHEDULE_PENDING" && (
                                 <>
                                   <Button
-                                    onClick={() => {
-                                      setSelectedMaintenance(schedule);
-                                      handleConfirmMaintenance();
-                                    }}
+                                    onClick={() =>
+                                      handleConfirmMaintenance(schedule.id)
+                                    }
                                     size="sm"
                                     variant="outline"
-                                    className="flex items-center space-x-1"
+                                    className="flex items-center space-x-1 text-green-500 hover:text-green-600"
                                   >
                                     <CheckCircle2 className="w-4 h-4" />
                                     <span>Confirm</span>
