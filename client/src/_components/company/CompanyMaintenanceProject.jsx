@@ -50,7 +50,7 @@ const CompanyMaintenanceProject = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPageCompleted, setCurrentPageCompleted] = useState(1);
   const [currentPageMaintenance, setCurrentPageMaintenance] = useState(1);
-  const itemsPerPage = 3;
+  const itemsPerPage = 10;
 
   const filteredCompletedProjects = completedProjects.filter((project) =>
     project.consumer.username.toLowerCase().includes(searchTerm.toLowerCase())
