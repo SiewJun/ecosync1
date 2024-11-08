@@ -57,7 +57,7 @@ router.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ where: { email } });
     if (!user) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({ message: "Invalid credentials or insufficient permissions" });
     }
 
     if (user.role !== "CONSUMER" && user.role !== "COMPANY") {
