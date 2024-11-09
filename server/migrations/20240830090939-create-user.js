@@ -9,11 +9,6 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      cuid: {
-        type: Sequelize.STRING,
-        defaultValue: Sequelize.UUIDV4,
-        unique: true
-      },
       username: {
         type: Sequelize.STRING,
         allowNull: false
