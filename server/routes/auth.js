@@ -2,7 +2,6 @@ const express = require("express");
 const { Op } = require("sequelize");
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const cuid = require("cuid");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
@@ -34,7 +33,6 @@ router.post("/register", async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await User.create({
-      cuid: cuid(),
       username,
       email,
       password: hashedPassword,
@@ -206,7 +204,7 @@ router.post("/change-password", authenticateToken, async (req, res) => {
 router.get("/me", authenticateToken, async (req, res) => {
   try {
     const user = await User.findByPk(req.user.id, {
-      attributes: ["cuid", "username", "email", "role", "avatarUrl"], // Add more fields as needed
+      attributes: ["username", "email", "role", "avatarUrl"], // Add more fields as needed
     });
 
     if (!user) {

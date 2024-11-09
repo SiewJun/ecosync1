@@ -2,7 +2,6 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
-const cuid = require("cuid");
 const router = express.Router();
 const {
   User,
@@ -211,7 +210,6 @@ router.post("/complete-registration", async (req, res) => {
 
     // Create the user
     const user = await User.create({
-      cuid: cuid(),
       username: application.companyName,
       email: application.email,
       password: await bcrypt.hash(password, 10),
