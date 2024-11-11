@@ -22,21 +22,20 @@ const services = [
   {
     title: "Get Estimate",
     href: "/solar-estimation",
-    description:
-      "Estimate savings from solar panel installation with our advanced calculator.",
-    icon: <LineChart className="h-5 w-5 text-primary/70" />,
+    description: "Estimate savings from solar panel installation with our advanced calculator.",
+    icon: <LineChart className="h-5 w-5 text-primary" />,
   },
   {
     title: "Search Installers",
     href: "/installers",
     description: "Connect with certified solar professionals in your area.",
-    icon: <Users className="h-5 w-5 text-primary/70" />,
+    icon: <Users className="h-5 w-5 text-primary" />,
   },
   {
     title: "Solar Solutions",
     href: "/solar-solutions",
     description: "Compare and find the perfect solar setup for your needs.",
-    icon: <Sun className="h-5 w-5 text-primary/70" />,
+    icon: <Sun className="h-5 w-5 text-primary" />,
   },
 ];
 
@@ -44,29 +43,28 @@ const information = [
   {
     title: "About EcoSync",
     href: "/about",
-    description:
-      "Learn about our mission to make solar energy accessible to everyone.",
-    icon: <Building2 className="h-5 w-5 text-primary/70" />,
+    description: "Learn about our mission to make solar energy accessible to everyone.",
+    icon: <Building2 className="h-5 w-5 text-primary" />,
   },
   {
     title: "Technology",
     href: "/technology",
-    description:
-      "Discover the innovative technology behind our solar solutions.",
-    icon: <Laptop className="h-5 w-5 text-primary/70" />,
+    description: "Discover the innovative technology behind our solar solutions.",
+    icon: <Laptop className="h-5 w-5 text-primary" />,
   },
   {
     title: "Incentives",
-    href: "/Incentives",
+    href: "/incentives",
     description: "Access guides, articles, and tools to help you go solar.",
-    icon: <SearchCheckIcon className="h-5 w-5 text-primary/70" />,
+    icon: <SearchCheckIcon className="h-5 w-5 text-primary" />,
   },
 ];
 
 function NavBar() {
   const [user, setUser] = useState(null);
   const [scrolled, setScrolled] = useState(false);
-  const navHeight = "h-16"; // Define a consistent height for the navbar
+  const navHeight = "h-16";
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -82,12 +80,9 @@ function NavBar() {
       try {
         const token = localStorage.getItem("token");
         if (token) {
-          const response = await axios.get(
-            "http://localhost:5000/api/auth/me",
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
+          const response = await axios.get("http://localhost:5000/api/auth/me", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
           setUser(response.data.user);
         }
       } catch (error) {
@@ -105,30 +100,37 @@ function NavBar() {
     <>
       <div
         className={cn(
-          "fixed top-0 w-full z-50 transition-all duration-300",
+          "fixed top-0 w-full z-50 transition-all duration-500",
           navHeight,
           scrolled
-            ? "opacity-95 backdrop-blur-lg border-b shadow-sm"
-            : ""
+            ? "bg-background/80 backdrop-blur-xl border-b border-border/40 shadow-sm"
+            : "bg-background/0",
+          isHovered && "bg-background/90 backdrop-blur-xl"
         )}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
-        <div className="h-full">
-          <div className="flex items-center justify-between px-4 h-full">
+        <div className="h-full mx-auto px-4">
+          <div className="flex items-center justify-between h-full">
             <div className="flex-1 flex justify-start">
-              <EcoSyncLogo className="transition-transform duration-200 hover:scale-105" />
+              <Link to="/">
+                <EcoSyncLogo className="transition-transform duration-300 hover:scale-105" />
+              </Link>
             </div>
 
             <div className="flex-1 flex justify-center">
               <div className="hidden md:flex">
                 <NavigationMenu>
-                  <NavigationMenuList>
+                  <NavigationMenuList className="space-x-2">
                     <NavigationMenuItem>
-                      <NavigationMenuTrigger className="text-sm font-medium bg-transparent hover:bg-accent/40">
+                      <NavigationMenuTrigger 
+                        className="text-sm font-medium bg-transparent data-[state=open]:bg-accent/30 hover:bg-accent/20 transition-colors duration-300"
+                      >
                         Services
                       </NavigationMenuTrigger>
                       <NavigationMenuContent>
-                        <div className="w-[400px] p-3">
-                          <div className="grid gap-2">
+                        <div className="w-[400px] p-4 bg-background/95 backdrop-blur-xl rounded-xl shadow-lg">
+                          <div className="grid gap-3">
                             {services.map((service) => (
                               <ListItem
                                 key={service.title}
@@ -145,12 +147,14 @@ function NavBar() {
                     </NavigationMenuItem>
 
                     <NavigationMenuItem>
-                      <NavigationMenuTrigger className="text-sm font-medium bg-transparent hover:bg-accent/40">
+                      <NavigationMenuTrigger 
+                        className="text-sm font-medium bg-transparent data-[state=open]:bg-accent/30 hover:bg-accent/20 transition-colors duration-300"
+                      >
                         Info
                       </NavigationMenuTrigger>
                       <NavigationMenuContent>
-                        <div className="w-[400px] p-3">
-                          <div className="grid gap-2">
+                        <div className="w-[400px] p-4 bg-background/95 backdrop-blur-xl rounded-xl shadow-lg">
+                          <div className="grid gap-3">
                             {information.map((item) => (
                               <ListItem
                                 key={item.title}
@@ -175,7 +179,7 @@ function NavBar() {
                 <MobileMenu user={user} />
               </div>
 
-              <div className="hidden md:flex items-center space-x-3">
+              <div className="hidden md:flex items-center space-x-4">
                 <ThemeSwitcher />
                 {user ? (
                   <ProfileDropdown user={user} />
@@ -184,7 +188,7 @@ function NavBar() {
                     <Button
                       variant="default"
                       size="sm"
-                      className="font-medium transition-all hover:scale-105"
+                      className="font-medium transition-all duration-300 hover:scale-105 hover:shadow-md"
                     >
                       Sign in
                     </Button>
@@ -195,7 +199,6 @@ function NavBar() {
           </div>
         </div>
       </div>
-      {/* Add spacing div to prevent content overlap */}
       <div className={navHeight} />
     </>
   );
@@ -208,17 +211,18 @@ const ListItem = React.forwardRef(
         <a
           ref={ref}
           className={cn(
-            "flex items-center gap-3 rounded-md p-2.5 transition-colors hover:bg-accent/50",
-            "no-underline outline-none",
+            "flex items-center gap-4 rounded-lg p-3 transition-all duration-300",
+            "hover:bg-accent/30 active:scale-98",
+            "no-underline outline-none focus:ring-2 focus:ring-primary/20",
             className
           )}
           {...props}
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-md border bg-background">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg border bg-background/50 backdrop-blur-sm shadow-sm">
             {icon}
           </div>
           <div>
-            <div className="text-sm font-medium leading-none mb-1">
+            <div className="text-sm font-semibold leading-none mb-1.5">
               {title}
             </div>
             <p className="line-clamp-2 text-xs text-muted-foreground">

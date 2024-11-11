@@ -34,9 +34,9 @@ const HeroSection = () => {
       {/* Background Image with Parallax Effect */}
       <motion.div
         className="absolute inset-0 z-0"
-        initial={{ scale: 1.1 }}
+        initial={{ scale: 0.99 }}
         animate={{ scale: 1 }}
-        transition={{ duration: 2 }}
+        transition={{ duration: 1 }}
       >
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-background" />
         <img
