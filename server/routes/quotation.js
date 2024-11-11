@@ -135,6 +135,11 @@ router.get("/consumer-quotations", authenticateToken, async (req, res) => {
             "createdAt",
           ],
         },
+        {
+          model: Project,
+          as: "project",
+          attributes: ["id", "status", "startDate", "endDate"],
+        },
       ],
     });
 

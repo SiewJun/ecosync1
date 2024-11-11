@@ -209,7 +209,7 @@ const ConsumerQuotation = () => {
 
   QuotationCard.propTypes = {
     quotation: PropTypes.shape({
-      id: PropTypes.number.isRequired,
+      id: PropTypes.string.isRequired,
       company: PropTypes.shape({
         avatarUrl: PropTypes.string,
         CompanyDetail: PropTypes.shape({
@@ -570,7 +570,7 @@ const ConsumerQuotation = () => {
             </Button>
             {selectedQuotation?.quotationStatus !== "REJECTED" &&
               selectedQuotation?.quotationStatus !== "ACCEPTED" &&
-              selectedQuotation?.quotationStatus !== "FINALIZED" && (
+              !selectedQuotation?.project && (
                 <Button
                   variant="destructive"
                   onClick={() => setIsRejectDialogOpen(true)}
