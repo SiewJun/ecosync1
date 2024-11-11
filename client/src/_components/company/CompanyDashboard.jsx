@@ -202,7 +202,7 @@ const CompanyDashboard = () => {
                 <Description>Menu for navigating the dashboard</Description>
               </div>
               <nav className="flex flex-col flex-1 gap-2 text-lg font-medium">
-                <div className="flex items-center gap-2 text-lg font-semibold">
+                <div className="flex items-center gap-2 text-lg font-semibold mb-6">
                   <EcoSyncLogo />
                 </div>
                 <Link

@@ -4,32 +4,27 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
   Menu,
-  Server,
-  BookOpenCheck,
-  Settings,
-  CircleGauge,
+  ChevronRight,
   User,
   MessageSquare,
   FileText,
   LogOut,
-  LayoutDashboard,
   Building,
   MessageCircle,
   FileCheck,
   ClipboardList,
   Construction,
+  Calculator,
+  Search,
+  Info,
+  SearchCheckIcon,
+  Sun,
+  LayoutDashboard,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import ThemeSwitcher from "@/_components/theme/ThemeSwitcher";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
 import { DialogTitle, DialogDescription } from "@radix-ui/react-dialog";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
-// Helper function for logout handling
 const handleLogout = async () => {
   try {
     localStorage.removeItem("token");
@@ -39,188 +34,236 @@ const handleLogout = async () => {
   }
 };
 
-// Function to render dashboard links based on the user role
-const renderDashboardLinks = (user, linkClasses) => {
-  const links = {
-    CONSUMER: [
-      {
-        to: "/consumer-dashboard/consumer-profile",
-        label: "Profile",
-        icon: User,
-      },
-      { to: "/consumer-dashboard/chat", label: "Chat", icon: MessageSquare },
-      {
-        to: "/consumer-dashboard/consumer-quotation",
-        label: "Quotation",
-        icon: FileText,
-      },
-      {
-        to: "/consumer-dashboard/consumer-project",
-        label: "Projects",
-        icon: ClipboardList,
-      },
-      {
-        to: "/consumer-dashboard/consumer-maintenance",
-        label: "Maintenance",
-        icon: Construction,
-      },
-    ],
-    COMPANY: [
-      {
-        to: "/company-dashboard/company-details",
-        label: "Company Details",
-        icon: Building,
-      },
-      {
-        to: "/company-dashboard/company-profile",
-        label: "Company Profile",
-        icon: User,
-      },
-      {
-        to: "/company-dashboard/company-chat",
-        label: "Chat",
-        icon: MessageCircle,
-      },
-      {
-        to: "/company-dashboard/company-quotation",
-        label: "Quotation",
-        icon: FileCheck,
-      },
-      {
-        to: "/company-dashboard/company-project",
-        label: "Projects",
-        icon: ClipboardList,
-      },
-      {
-        to: "/company-dashboard/company-maintenance",
-        label: "Maintenances",
-        icon: Construction,
-      },
-    ],
-    ADMIN: [{ to: "/dashboard", label: "Dashboard", icon: LayoutDashboard }],
-    SUPERADMIN: [{ to: "/dashboard", label: "Dashboard", icon: LayoutDashboard }],
-  };
+const MenuItem = ({
+  icon: Icon,
+  label,
+  onClick,
+  to,
+  rightIcon: RightIcon,
+  className,
+  iconClassName, // Add iconClassName prop
+}) => {
+  const Wrapper = to ? Link : "button";
+  const props = to ? { to } : { onClick };
 
   return (
-    <>
-      {links[user?.role]?.map(({ to, label, icon: Icon }) => (
-        <Link key={to} to={to}>
-          <li className={linkClasses}>
-            <Icon className="inline-block mr-2" />
-            {label}
-          </li>
-        </Link>
-      ))}
-      <li
-        className="py-2 px-4 rounded-md text-red-600 hover:text-red-800 hover:bg-red-100 font-semibold cursor-pointer transition-colors"
-        onClick={handleLogout}
-      >
-        <LogOut className="inline-block mr-2" />
-        Logout
-      </li>
-    </>
+    <Wrapper
+      {...props}
+      className={`w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-foreground hover:bg-accent/50 rounded-lg transition-colors duration-200 ${className}`}
+    >
+      <div className="flex items-center gap-3">
+        <Icon className={`h-5 w-5 text-primary ${iconClassName}`} />{" "}
+        {/* Apply iconClassName */}
+        <span>{label}</span>
+      </div>
+      {RightIcon && <RightIcon className="h-4 w-4 text-muted-foreground" />}
+    </Wrapper>
   );
 };
 
+const MenuSection = ({ title, children }) => (
+  <div className="mb-6">
+    <h3 className="px-4 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+      {title}
+    </h3>
+    <div className="space-y-1">{children}</div>
+  </div>
+);
+
 const MobileMenu = ({ user }) => {
   const [open, setOpen] = useState(false);
-  const linkClasses =
-    "py-2 px-4 rounded-md text-muted-foreground hover:text-primary-foreground hover:bg-primary transition-colors cursor-pointer";
+
+  const mainMenuItems = [
+    {
+      to: "/solar-estimation",
+      label: "Get Estimate",
+      icon: Calculator,
+    },
+    {
+      to: "/installers",
+      label: "Find Installers",
+      icon: Search,
+    },
+    {
+      to: "/solar-solutions",
+      label: "Explore Solar Solutions",
+      icon: Sun,
+    },
+    {
+      to: "/about",
+      label: "About EcoSync",
+      icon: Info,
+    },
+    {
+      to: "/incentives",
+      label: "Incentives",
+      icon: SearchCheckIcon,
+    },
+  ];
+
+  const getDashboardItems = (role) => {
+    const items = {
+      CONSUMER: [
+        {
+          to: "/consumer-dashboard/consumer-profile",
+          label: "Profile",
+          icon: User,
+        },
+        { to: "/consumer-dashboard/chat", label: "Chat", icon: MessageSquare },
+        {
+          to: "/consumer-dashboard/consumer-quotation",
+          label: "Quotation",
+          icon: FileText,
+        },
+        {
+          to: "/consumer-dashboard/consumer-project",
+          label: "Projects",
+          icon: ClipboardList,
+        },
+        {
+          to: "/consumer-dashboard/consumer-maintenance",
+          label: "Maintenance",
+          icon: Construction,
+        },
+      ],
+      COMPANY: [
+        {
+          to: "/company-dashboard/company-details",
+          label: "Company Details",
+          icon: Building,
+        },
+        {
+          to: "/company-dashboard/company-profile",
+          label: "Profile",
+          icon: User,
+        },
+        {
+          to: "/company-dashboard/company-chat",
+          label: "Chat",
+          icon: MessageCircle,
+        },
+        {
+          to: "/company-dashboard/company-quotation",
+          label: "Quotation",
+          icon: FileCheck,
+        },
+        {
+          to: "/company-dashboard/company-project",
+          label: "Projects",
+          icon: ClipboardList,
+        },
+        {
+          to: "/company-dashboard/company-maintenance",
+          label: "Maintenance",
+          icon: Construction,
+        },
+      ],
+      ADMIN: [
+        {
+          to: "/dashboard",
+          label: "Dashboard",
+          icon: LayoutDashboard,
+        },
+      ],
+      SUPERADMIN: [
+        {
+          to: "/dashboard",
+          label: "Dashboard",
+          icon: LayoutDashboard,
+        },
+      ],
+    };
+    return items[role] || [];
+  };
+
+  const BASE_URL = "http://localhost:5000/";
 
   return (
-    <div className="flex h-14 items-center gap-4">
+    <div className="flex h-14 items-center">
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
-          <Button variant="link" size="icon" className="shrink-0 md:hidden">
+          <Button variant="ghost" size="icon" className="shrink-0 md:hidden">
             <Menu className="h-5 w-5" />
-            <span className="sr-only">Toggle navigation menu</span>
+            <span className="sr-only">Toggle menu</span>
           </Button>
         </SheetTrigger>
 
-        <SheetContent side="right" className="flex flex-col p-4">
-          <DialogTitle className="sr-only">Navigation Menu</DialogTitle>
+        <SheetContent
+          side="right"
+          className="w-full sm:max-w-sm p-0 bg-background/95 backdrop-blur-xl"
+        >
+          <DialogTitle className="sr-only">Menu</DialogTitle>
           <DialogDescription className="sr-only">
-            Mobile navigation menu for the Ecosync website.
+            Mobile navigation menu
           </DialogDescription>
+          <div className="h-full flex flex-col overflow-y-auto py-6">
+            <div className="px-4 mb-8">
+              <div className="h-12 w-12 bg-primary/10 rounded-xl flex items-center justify-center">
+                {user?.avatarUrl ? (
+                  <Avatar>
+                    <AvatarImage
+                      src={`${BASE_URL}${user.avatarUrl}`}
+                      alt={user.username}
+                    />
+                    <AvatarFallback>{user.username.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                ) : (
+                  <User className="h-6 w-6 text-primary" />
+                )}
+              </div>
+              {user ? (
+                <div className="mt-4">
+                  <p className="font-semibold text-lg">{user.username}</p>
+                  <p className="text-sm text-muted-foreground">{user.email}</p>
+                </div>
+              ) : (
+                <Link
+                  to="/signin"
+                  className="mt-4 inline-flex items-center px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                >
+                  Sign In
+                </Link>
+              )}
+            </div>
 
-          {/* Main Navigation */}
-          <nav className="space-y-4 mt-8 text-lg font-medium">
-            <Accordion type="single" collapsible>
-              <AccordionItem value="services">
-                <AccordionTrigger className="flex items-center gap-2">
-                  <Server className="h-5 w-5" />
-                  Services
-                </AccordionTrigger>
-                <AccordionContent>
-                  <ul className="pl-4 mt-2 space-y-2">
-                    <li className={linkClasses}>
-                      <Link to="/solar-estimation">Get Estimate</Link>
-                    </li>
-                    <li className={linkClasses}>
-                      <Link to="/installers">Search Solar Installers</Link>
-                    </li>
-                    <li className={linkClasses}>
-                      <Link to="/solar-solutions">
-                        Search/Compare Solar Solutions
-                      </Link>
-                    </li>
-                  </ul>
-                </AccordionContent>
-              </AccordionItem>
+            <div className="flex-1 px-2 space-y-8">
+              <MenuSection title="Main Menu">
+                {mainMenuItems.map((item) => (
+                  <MenuItem key={item.to} {...item} rightIcon={ChevronRight} />
+                ))}
+              </MenuSection>
 
-              <AccordionItem value="calculator">
-                <AccordionTrigger className="flex items-center gap-2">
-                  <BookOpenCheck className="h-5 w-5" />
-                  Info
-                </AccordionTrigger>
-                <AccordionContent>
-                  <ul className="pl-4 mt-2 space-y-2">
-                    <li className={linkClasses}>
-                      <Link to="/about">About Ecosync</Link>
-                    </li>
-                    <li className={linkClasses}>
-                      <Link to="/incentives">Incentives</Link>
-                    </li>
-                  </ul>
-                </AccordionContent>
-              </AccordionItem>
+              {user && (
+                <MenuSection title="Dashboard">
+                  {getDashboardItems(user.role).map((item) => (
+                    <MenuItem
+                      key={item.to}
+                      {...item}
+                      rightIcon={ChevronRight}
+                    />
+                  ))}
+                </MenuSection>
+              )}
 
-              <AccordionItem value="dashboard">
-                <AccordionTrigger className="flex items-center gap-2">
-                  <CircleGauge className="h-5 w-5" />
-                  Dashboard
-                </AccordionTrigger>
-                <AccordionContent>
-                  <ul className="pl-4 mt-2 space-y-2">
-                    {user ? (
-                      renderDashboardLinks(user, linkClasses)
-                    ) : (
-                      <Link to="/signin">
-                        <li className="py-2 px-4 rounded-md text-muted-foreground transition-colors">
-                          <Button>Sign In</Button>
-                        </li>
-                      </Link>
-                    )}
-                  </ul>
-                </AccordionContent>
-              </AccordionItem>
+              <MenuSection title="Preferences">
+                {user && (
+                  <MenuItem
+                    icon={LogOut}
+                    label="Sign Out"
+                    onClick={handleLogout}
+                    className="text-red-500 hover:text-red-600"
+                    iconClassName="text-red-500" // Add this line to change the icon color
+                  />
+                )}
+              </MenuSection>
+            </div>
 
-              <AccordionItem value="settings">
-                <AccordionTrigger className="flex items-center gap-2">
-                  <Settings className="h-5 w-5" />
-                  Settings
-                </AccordionTrigger>
-                <AccordionContent>
-                  <ul className="pl-4 mt-2 space-y-2">
-                    <li className="py-2 flex items-center space-x-2">
-                      <ThemeSwitcher />
-                      <p>Switch Theme</p>
-                    </li>
-                  </ul>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </nav>
+            <div className="px-4 mt-4">
+              <p className="text-xs text-center text-muted-foreground">
+                EcoSync © {new Date().getFullYear()}
+              </p>
+            </div>
+          </div>
         </SheetContent>
       </Sheet>
     </div>
@@ -229,8 +272,26 @@ const MobileMenu = ({ user }) => {
 
 MobileMenu.propTypes = {
   user: PropTypes.shape({
+    username: PropTypes.string,
+    email: PropTypes.string,
     role: PropTypes.string,
+    avatarUrl: PropTypes.string,
   }),
+};
+
+MenuItem.propTypes = {
+  icon: PropTypes.elementType.isRequired,
+  label: PropTypes.string.isRequired,
+  onClick: PropTypes.func,
+  to: PropTypes.string,
+  rightIcon: PropTypes.elementType,
+  className: PropTypes.string,
+  iconClassName: PropTypes.string,
+};
+
+MenuSection.propTypes = {
+  title: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
 };
 
 export default MobileMenu;
