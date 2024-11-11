@@ -569,7 +569,8 @@ const ConsumerQuotation = () => {
                 : "View Quotation"}
             </Button>
             {selectedQuotation?.quotationStatus !== "REJECTED" &&
-              selectedQuotation?.quotationStatus !== "ACCEPTED" && (
+              selectedQuotation?.quotationStatus !== "ACCEPTED" &&
+              selectedQuotation?.quotationStatus !== "FINALIZED" && (
                 <Button
                   variant="destructive"
                   onClick={() => setIsRejectDialogOpen(true)}
