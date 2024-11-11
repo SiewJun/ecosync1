@@ -5,12 +5,12 @@ module.exports = {
     await queryInterface.createTable('Projects', {
       id: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4
       },
       consumerId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.UUID,
         allowNull: false,
         references: {
           model: 'Users',
@@ -20,7 +20,7 @@ module.exports = {
         onDelete: 'CASCADE'
       },
       companyId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.UUID,
         allowNull: false,
         references: {
           model: 'Users',
@@ -30,7 +30,7 @@ module.exports = {
         onDelete: 'CASCADE'
       },
       quotationId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.UUID,
         allowNull: false,
         references: {
           model: 'Quotations',

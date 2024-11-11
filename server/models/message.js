@@ -12,8 +12,13 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   Message.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
+    },
     chatId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
         model: 'Chats', // Refers to the 'Chats' table
@@ -23,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: 'CASCADE',
     },
     senderId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
         model: 'Users', // Refers to the 'Users' table

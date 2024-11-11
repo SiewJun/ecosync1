@@ -81,7 +81,7 @@ const CompanyDashboard = () => {
   }, []);
 
   const getLinkClasses = (path) => {
-    const regex = new RegExp(`^${path.replace(/:\w+/g, "\\w+")}$`);
+    const regex = new RegExp(`^${path.replace(/:\w+/g, "[0-9a-fA-F-]{36}")}$`);
     return regex.test(location.pathname)
       ? "bg-primary text-primary-foreground"
       : "text-muted-foreground hover:text-foreground hover:bg-accent";

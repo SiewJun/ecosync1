@@ -4,12 +4,12 @@ module.exports = {
     await queryInterface.createTable('SolarSolutions', {
       id: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4
       },
       companyProfileId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.UUID,
         allowNull: false,
         references: {
           model: 'CompanyProfiles', // Ensure the table name is pluralized

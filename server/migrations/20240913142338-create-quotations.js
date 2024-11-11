@@ -5,9 +5,9 @@ module.exports = {
     await queryInterface.createTable('Quotations', {
       id: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4
       },
       salutation: {
         type: Sequelize.STRING,
@@ -42,7 +42,7 @@ module.exports = {
         allowNull: false
       },
       consumerId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.UUID,
         allowNull: false,
         references: {
           model: 'Users',
@@ -52,7 +52,7 @@ module.exports = {
         onDelete: 'CASCADE'
       },
       companyId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.UUID,
         allowNull: false,
         references: {
           model: 'Users',

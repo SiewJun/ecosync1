@@ -14,8 +14,13 @@ module.exports = (sequelize, DataTypes) => {
 
   QuotationVersion.init(
     {
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
+      },
       quotationId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
         references: {
           model: "Quotations",

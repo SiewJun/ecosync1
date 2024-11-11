@@ -328,7 +328,7 @@ const ConsumerQuotationView = () => {
                 <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
-                      <TableRow>
+                      <TableRow className="hover:bg-gray-200">
                         <TableHead className="font-semibold">Item</TableHead>
                         <TableHead className="font-semibold">
                           Quantity
@@ -341,7 +341,7 @@ const ConsumerQuotationView = () => {
                     </TableHeader>
                     <TableBody>
                       {costBreakdown.map((item, index) => (
-                        <TableRow key={index}>
+                        <TableRow key={index} className="hover:bg-gray-200">
                           <TableCell>{item.item}</TableCell>
                           <TableCell>{item.quantity}</TableCell>
                           <TableCell>RM{item.unitPrice}</TableCell>
@@ -365,7 +365,7 @@ const ConsumerQuotationView = () => {
                 <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
-                      <TableRow>
+                      <TableRow className="hover:bg-gray-200">
                         <TableHead className="font-semibold">Phase</TableHead>
                         <TableHead className="font-semibold">
                           Start Date
@@ -380,7 +380,7 @@ const ConsumerQuotationView = () => {
                     </TableHeader>
                     <TableBody>
                       {timeline.map((phase, index) => (
-                        <TableRow key={index}>
+                        <TableRow key={index} className="hover:bg-gray-200">
                           <TableCell>{phase.phase}</TableCell>
                           <TableCell>
                             {new Date(phase.startDate).toLocaleDateString()}

@@ -10,6 +10,11 @@ module.exports = (sequelize, DataTypes) => {
 
   Incentive.init(
     {
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
+      },
       title: {
         type: DataTypes.STRING,
         allowNull: false,

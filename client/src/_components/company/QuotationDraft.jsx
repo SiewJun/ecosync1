@@ -11,7 +11,6 @@ import {
   Save,
   Send,
   FileEdit,
-  CheckCircle,
   ArrowLeftCircle,
   Plus,
   Trash2,
@@ -140,11 +139,155 @@ const StripeOnboardingAlert = () => (
   </Alert>
 );
 
+// Separate component for form fields
+const FormField = ({
+  label,
+  name,
+  value,
+  onChange,
+  type = "input",
+  disabled,
+}) => (
+  <div className="space-y-2">
+    <Label htmlFor={name}>{label}</Label>
+    {type === "textarea" ? (
+      <Textarea
+        id={name}
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder={`Enter ${name}`}
+        disabled={disabled}
+        rows={3}
+      />
+    ) : (
+      <Input
+        id={name}
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder={`Enter ${name}`}
+        disabled={disabled}
+      />
+    )}
+  </div>
+);
+
+// Separate component for responsive table container
+const ResponsiveTableContainer = ({ children }) => (
+  <div className="relative w-full overflow-auto">
+    <div className="overflow-x-auto">
+      <ScrollArea className="h-[300px]">{children}</ScrollArea>
+    </div>
+  </div>
+);
+
+// Cost Breakdown Table Component
+const CostBreakdownTable = ({
+  items,
+  onItemChange,
+  onRemoveItem,
+  disabled,
+}) => (
+  <ResponsiveTableContainer>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Item</TableHead>
+          <TableHead>Quantity</TableHead>
+          <TableHead>Unit Price</TableHead>
+          <TableHead>Total Price</TableHead>
+          <TableHead>Action</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {items.map((item, index) => (
+          <TableRow key={index}>
+            {["item", "quantity", "unitPrice", "totalPrice"].map((field) => (
+              <TableCell key={field}>
+                <Input
+                  value={item[field]}
+                  onChange={(e) => onItemChange(index, field, e.target.value)}
+                  type={
+                    field.includes("rice") || field === "quantity"
+                      ? "number"
+                      : "text"
+                  }
+                  placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+                  disabled={disabled || field === "totalPrice"}
+                  className="w-full"
+                />
+              </TableCell>
+            ))}
+            <TableCell>
+              <Button
+                type="button"
+                variant="destructive"
+                size="sm"
+                onClick={() => onRemoveItem(index)}
+                disabled={disabled}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  </ResponsiveTableContainer>
+);
+
+// Timeline Table Component
+const TimelineTable = ({ phases, onPhaseChange, onRemovePhase, disabled }) => (
+  <ResponsiveTableContainer>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Phase</TableHead>
+          <TableHead>Start Date</TableHead>
+          <TableHead>End Date</TableHead>
+          <TableHead>Description</TableHead>
+          <TableHead>Action</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {phases.map((phase, index) => (
+          <TableRow key={index}>
+            {["phase", "startDate", "endDate", "description"].map((field) => (
+              <TableCell key={field}>
+                <Input
+                  type={field.includes("Date") ? "date" : "text"}
+                  value={phase[field]}
+                  onChange={(e) => onPhaseChange(index, field, e.target.value)}
+                  disabled={disabled}
+                  className="w-full bg-secondary"
+                />
+              </TableCell>
+            ))}
+            <TableCell>
+              <Button
+                type="button"
+                variant="destructive"
+                size="sm"
+                onClick={() => onRemovePhase(index)}
+                disabled={disabled}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  </ResponsiveTableContainer>
+);
+
 const QuotationDraft = () => {
   const { quotationId } = useParams();
   const [quotationVersionId, setQuotationVersionid] = useState("");
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [error, setError] = useState("");
   const [isNewQuotation, setIsNewQuotation] = useState(false);
   const [isFinalized, setIsFinalized] = useState(false);
@@ -367,15 +510,12 @@ const QuotationDraft = () => {
         }
       );
       navigate("/company-dashboard/company-quotation");
+      // eslint-disable-next-line no-unused-vars
     } catch (err) {
       setError(
         `Failed to ${
           action === "save" ? "save draft" : "finalize quotation"
         }. Please try again.`
-      );
-      console.error(
-        `Error ${action === "save" ? "saving draft" : "finalizing quotation"}:`,
-        err
       );
     } finally {
       setLoading(false);
@@ -386,21 +526,22 @@ const QuotationDraft = () => {
     <div className="min-h-screen container px-4 py-6 md:p-6">
       <Link
         to="/company-dashboard/company-quotation"
-        className="inline-flex items-center text-primary hover:text-black dark:hover:text-white mb-4 md:mb-8"
+        className="inline-flex items-center text-primary hover:text-black dark:hover:text-white mb-4"
       >
         <ArrowLeftCircle className="mr-2" size={16} />
         Back to Quotations
       </Link>
+
       <Card className="w-full max-w-4xl mx-auto">
         <CardHeader>
-          <CardTitle className="text-xl md:text-2xl font-bold flex flex-col md:flex-row items-start md:items-center justify-between">
-            <span className="flex items-center mb-2 md:mb-0">
-              <FileEdit className="mr-2 h-5 w-5 md:h-6 md:w-6" />
+          <CardTitle className="flex items-center justify-between">
+            <span className="flex items-center">
+              <FileEdit className="mr-2 h-6 w-6" />
               {isNewQuotation ? "Create New Quotation" : "Edit Quotation"}
             </span>
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="outline" className="mt-2 md:mt-0">
+                <Button variant="outline">
                   <Eye className="mr-2 h-4 w-4" /> Preview
                 </Button>
               </DialogTrigger>
@@ -414,283 +555,82 @@ const QuotationDraft = () => {
             </Dialog>
           </CardTitle>
         </CardHeader>
+
         <CardContent>
           <ScrollArea className="h-[calc(95vh-200px)]">
-            <div className="p-4 md:p-6 space-y-4 md:space-y-6">
+            <div className="space-y-6 p-6">
               {!stripeOnboardingComplete && <StripeOnboardingAlert />}
+              {/* Status Alerts */}
               {isNewQuotation && (
-                <Alert className="mb-6">
+                <Alert>
                   <FileEdit className="h-4 w-4" />
                   <AlertTitle>New Quotation</AlertTitle>
                   <AlertDescription>
                     You&apos;re creating a new quotation draft. Fill in the
-                    details below and save when ready.
+                    details below.
                   </AlertDescription>
                 </Alert>
               )}
-              {isFinalized && (
-                <Alert className="mb-6">
-                  <CheckCircle className="h-4 w-4" />
-                  <AlertTitle>Finalized Quotation</AlertTitle>
-                  <AlertDescription>
-                    This quotation has been finalized and sent to the consumer.
-                    You cannot make further changes.
-                  </AlertDescription>
-                </Alert>
-              )}
-              {error && (
-                <Alert variant="destructive" className="mb-6">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertTitle>Error</AlertTitle>
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
-              <form className="space-y-4 md:space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+
+              <form className="space-y-6">
+                {/* Form Fields */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {Object.entries(quotationData).map(([key, value]) => (
-                    <div key={key} className="space-y-2">
-                      <Label htmlFor={key}>
-                        {key
-                          .replace(/([A-Z])/g, " $1")
-                          .replace(/^./, (str) => str.toUpperCase())}
-                      </Label>
-                      {key === "incentives" || key === "productWarranties" ? (
-                        <Textarea
-                          id={key}
-                          name={key}
-                          value={value}
-                          onChange={handleChange}
-                          placeholder={`Enter ${key}`}
-                          disabled={isFinalized || !stripeOnboardingComplete}
-                          rows={3}
-                        />
-                      ) : (
-                        <Input
-                          id={key}
-                          name={key}
-                          value={value}
-                          onChange={handleChange}
-                          placeholder={`Enter ${key}`}
-                          disabled={isFinalized || !stripeOnboardingComplete}
-                        />
-                      )}
-                    </div>
+                    <FormField
+                      key={key}
+                      label={key
+                        .replace(/([A-Z])/g, " $1")
+                        .replace(/^./, (str) => str.toUpperCase())}
+                      name={key}
+                      value={value}
+                      onChange={handleChange}
+                      type={
+                        ["incentives", "productWarranties"].includes(key)
+                          ? "textarea"
+                          : "input"
+                      }
+                      disabled={isFinalized || !stripeOnboardingComplete}
+                    />
                   ))}
                 </div>
-                <div className="space-y-2 grid grid-cols-1 md:grid-cols-2">
-                  <Label htmlFor="costBreakdown">Cost Breakdown</Label>
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Item</TableHead>
-                          <TableHead>Quantity</TableHead>
-                          <TableHead>Unit Price</TableHead>
-                          <TableHead>Total Price</TableHead>
-                          <TableHead>Action</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {costBreakdown.map((item, index) => (
-                          <TableRow key={index}>
-                            <TableCell>
-                              <Input
-                                value={item.item}
-                                onChange={(e) =>
-                                  handleCostBreakdownChange(
-                                    index,
-                                    "item",
-                                    e.target.value
-                                  )
-                                }
-                                placeholder="Item description"
-                                disabled={
-                                  isFinalized || !stripeOnboardingComplete
-                                }
-                                className="w-full"
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <Input
-                                type="number"
-                                value={item.quantity}
-                                onChange={(e) =>
-                                  handleCostBreakdownChange(
-                                    index,
-                                    "quantity",
-                                    e.target.value
-                                  )
-                                }
-                                placeholder="Quantity"
-                                disabled={
-                                  isFinalized || !stripeOnboardingComplete
-                                }
-                                className="w-full"
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <Input
-                                type="number"
-                                value={item.unitPrice}
-                                onChange={(e) =>
-                                  handleCostBreakdownChange(
-                                    index,
-                                    "unitPrice",
-                                    e.target.value
-                                  )
-                                }
-                                placeholder="Unit Price"
-                                disabled={
-                                  isFinalized || !stripeOnboardingComplete
-                                }
-                                className="w-full"
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <Input
-                                value={item.totalPrice}
-                                readOnly
-                                placeholder="Total Price"
-                                disabled={
-                                  isFinalized || !stripeOnboardingComplete
-                                }
-                                className="w-full"
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <Button
-                                type="button"
-                                variant="destructive"
-                                size="sm"
-                                onClick={() => removeCostBreakdownRow(index)}
-                                disabled={isFinalized}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
+
+                {/* Cost Breakdown Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Cost Breakdown</h3>
+                  <CostBreakdownTable
+                    items={costBreakdown}
+                    onItemChange={handleCostBreakdownChange}
+                    onRemoveItem={removeCostBreakdownRow}
+                    disabled={isFinalized || !stripeOnboardingComplete}
+                  />
                   <Button
                     type="button"
                     onClick={addCostBreakdownRow}
-                    className="mt-2"
                     disabled={isFinalized}
                   >
                     <Plus className="mr-2 h-4 w-4" /> Add Item
                   </Button>
                 </div>
-                <div className="space-y-2 grid grid-cols-1 md:grid-cols-2">
-                  <Label htmlFor="timeline">Project Timeline</Label>
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Phase</TableHead>
-                          <TableHead>Start Date</TableHead>
-                          <TableHead>End Date</TableHead>
-                          <TableHead>Description</TableHead>
-                          <TableHead>Action</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {timeline.map((phase, index) => (
-                          <TableRow key={index}>
-                            <TableCell>
-                              <Input
-                                value={phase.phase}
-                                onChange={(e) =>
-                                  handleTimelineChange(
-                                    index,
-                                    "phase",
-                                    e.target.value
-                                  )
-                                }
-                                placeholder="Phase name"
-                                disabled={
-                                  isFinalized || !stripeOnboardingComplete
-                                }
-                                className="w-full"
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <Input
-                                type="date"
-                                value={phase.startDate}
-                                onChange={(e) =>
-                                  handleTimelineChange(
-                                    index,
-                                    "startDate",
-                                    e.target.value
-                                  )
-                                }
-                                disabled={
-                                  isFinalized || !stripeOnboardingComplete
-                                }
-                                className="w-full"
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <Input
-                                type="date"
-                                value={phase.endDate}
-                                onChange={(e) =>
-                                  handleTimelineChange(
-                                    index,
-                                    "endDate",
-                                    e.target.value
-                                  )
-                                }
-                                disabled={
-                                  isFinalized || !stripeOnboardingComplete
-                                }
-                                className="w-full"
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <Input
-                                value={phase.description}
-                                onChange={(e) =>
-                                  handleTimelineChange(
-                                    index,
-                                    "description",
-                                    e.target.value
-                                  )
-                                }
-                                placeholder="Phase description"
-                                disabled={
-                                  isFinalized || !stripeOnboardingComplete
-                                }
-                                className="w-full"
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <Button
-                                type="button"
-                                variant="destructive"
-                                size="sm"
-                                onClick={() => removeTimelinePhase(index)}
-                                disabled={isFinalized}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
+
+                {/* Timeline Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Project Timeline</h3>
+                  <TimelineTable
+                    phases={timeline}
+                    onPhaseChange={handleTimelineChange}
+                    onRemovePhase={removeTimelinePhase}
+                    disabled={isFinalized || !stripeOnboardingComplete}
+                  />
                   <Button
                     type="button"
                     onClick={addTimelinePhase}
-                    className="mt-2"
                     disabled={isFinalized}
                   >
                     <Plus className="mr-2 h-4 w-4" /> Add Phase
                   </Button>
                 </div>
+
+                {/* Action Buttons */}
                 <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-4">
                   <Button
                     type="button"
@@ -724,6 +664,47 @@ const QuotationDraft = () => {
       </Card>
     </div>
   );
+};
+
+FormField.propTypes = {
+  label: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  onChange: PropTypes.func.isRequired,
+  type: PropTypes.string,
+  disabled: PropTypes.bool,
+};
+
+CostBreakdownTable.propTypes = {
+  items: PropTypes.arrayOf(
+    PropTypes.shape({
+      item: PropTypes.string,
+      quantity: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      unitPrice: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      totalPrice: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    })
+  ).isRequired,
+  onItemChange: PropTypes.func.isRequired,
+  onRemoveItem: PropTypes.func.isRequired,
+  disabled: PropTypes.bool,
+};
+
+ResponsiveTableContainer.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
+TimelineTable.propTypes = {
+  phases: PropTypes.arrayOf(
+    PropTypes.shape({
+      phase: PropTypes.string,
+      startDate: PropTypes.string,
+      endDate: PropTypes.string,
+      description: PropTypes.string,
+    })
+  ).isRequired,
+  onPhaseChange: PropTypes.func.isRequired,
+  onRemovePhase: PropTypes.func.isRequired,
+  disabled: PropTypes.bool,
 };
 
 QuotationPreview.propTypes = {

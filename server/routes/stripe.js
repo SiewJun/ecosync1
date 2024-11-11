@@ -156,7 +156,7 @@ router.post("/create-stripe-account", authenticateToken, async (req, res) => {
     const accountLink = await stripe.accountLinks.create({
       account: account.id,
       refresh_url: `${process.env.FRONTEND_URL}/company-dashboard/stripe-onboarding`,
-      return_url: `${process.env.FRONTEND_URL}/company-dashboard`,
+      return_url: `${process.env.FRONTEND_URL}/company-dashboard/company-details`,
       type: "account_onboarding",
     });
 

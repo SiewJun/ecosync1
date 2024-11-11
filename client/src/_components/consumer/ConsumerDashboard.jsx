@@ -2,7 +2,8 @@ import { Link, Routes, Route, useLocation } from "react-router-dom";
 import {
   User,
   MessageSquare,
-  FileText,
+  FileCheck,
+  Construction,
   Menu,
   LogOut,
   ClipboardList,
@@ -67,7 +68,7 @@ const ConsumerDashboard = () => {
   }, []);
 
   const getLinkClasses = (path) => {
-    const regex = new RegExp(`^${path.replace(/:\w+/g, "\\w+")}$`);
+    const regex = new RegExp(`^${path.replace(/:\w+/g, "[0-9a-fA-F-]{36}")}$`);
     return regex.test(location.pathname)
       ? "bg-primary text-primary-foreground"
       : "text-muted-foreground hover:text-foreground hover:bg-accent";
@@ -107,7 +108,7 @@ const ConsumerDashboard = () => {
               "/consumer-dashboard/consumer-quotation"
             )} ${getLinkClasses("/consumer-dashboard/consumer-quotation/:id")}`}
           >
-            <FileText className="h-4 w-4" />
+            <FileCheck className="h-4 w-4" />
             Quotation
           </Link>
           <Link
@@ -127,7 +128,7 @@ const ConsumerDashboard = () => {
               "/consumer-dashboard/consumer-maintenance/:projectId"
             )}`}
           >
-            <ClipboardList className="h-4 w-4" />
+            <Construction className="h-4 w-4" />
             Maintenance
           </Link>
         </nav>
@@ -192,7 +193,7 @@ const ConsumerDashboard = () => {
                     "/consumer-dashboard/consumer-quotation/:id"
                   )}`}
                 >
-                  <FileText className="h-4 w-4" />
+                  <FileCheck className="h-4 w-4" />
                   Quotation
                 </Link>
                 <Link
@@ -214,7 +215,7 @@ const ConsumerDashboard = () => {
                     "/consumer-dashboard/consumer-maintenance/:projectId"
                   )}`}
                 >
-                  <ClipboardList className="h-4 w-4" />
+                  <Construction className="h-4 w-4" />
                   Maintenance
                 </Link>
                 {/* Add mt-auto here to push the logout button to the bottom */}

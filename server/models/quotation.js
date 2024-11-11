@@ -28,8 +28,13 @@ module.exports = (sequelize, DataTypes) => {
 
   Quotation.init(
     {
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
+      },
       consumerId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
         references: {
           model: "Users",
@@ -39,7 +44,7 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "CASCADE",
       },
       companyId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
         references: {
           model: "Users",

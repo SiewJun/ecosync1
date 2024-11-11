@@ -5,9 +5,9 @@ module.exports = {
     await queryInterface.createTable('CompanyApplications', {
       id: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4
       },
       companyName: {
         type: Sequelize.STRING,

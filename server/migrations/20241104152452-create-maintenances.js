@@ -5,12 +5,12 @@ module.exports = {
     await queryInterface.createTable('Maintenances', {
       id: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4
       },
       projectId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.UUID,
         allowNull: false,
         references: {
           model: 'Projects',
@@ -20,7 +20,7 @@ module.exports = {
         onDelete: 'CASCADE'
       },
       companyId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.UUID,
         allowNull: false,
         references: {
           model: 'Users',
@@ -30,7 +30,7 @@ module.exports = {
         onDelete: 'CASCADE'
       },
       consumerId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.UUID,
         allowNull: false,
         references: {
           model: 'Users',

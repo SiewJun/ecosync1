@@ -21,8 +21,13 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   Project.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
+    },
     consumerId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
         model: 'Users',
@@ -32,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: 'CASCADE',
     },
     companyId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
         model: 'Users',
@@ -42,7 +47,7 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: 'CASCADE',
     },
     quotationId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
         model: 'Quotations',

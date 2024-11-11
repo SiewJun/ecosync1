@@ -599,7 +599,7 @@ const AuthDialog = ({
   <Dialog open={isOpen} onOpenChange={onClose}>
     <DialogContent className="sm:max-w-[425px] rounded-lg shadow-xl">
       <DialogHeader>
-        <DialogTitle className="text-2xl font-semibold text-gray-500">
+        <DialogTitle className="text-2xl font-semibold">
           Authentication Required
         </DialogTitle>
         <DialogDescription className="text-gray-500">

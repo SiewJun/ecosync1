@@ -11,8 +11,13 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   Maintenance.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
+    },
     projectId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
         model: 'Projects',
@@ -22,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: 'CASCADE',
     },
     companyId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
         model: 'Users',
@@ -32,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: 'CASCADE',
     },
     consumerId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
         model: 'Users',

@@ -10,8 +10,13 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   ProjectStep.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
+    },
     projectId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
         model: 'Projects',

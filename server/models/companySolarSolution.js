@@ -10,8 +10,13 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   SolarSolution.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
+    },
     companyProfileId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
         model: 'CompanyProfiles',

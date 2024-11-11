@@ -5,16 +5,21 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, User, Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { MessageSquare, User, Loader2, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { io } from "socket.io-client"; // Import socket.io-client
 
 const BASE_URL = "http://localhost:5000/";
 const socket = io('http://localhost:5000/'); // Initialize socket connection
 
+const ITEMS_PER_PAGE = 10;
+
 const ChatListCompany = () => {
   const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -58,6 +63,20 @@ const ChatListCompany = () => {
     };
   }, []);
 
+  const filteredChats = chats.filter((chat) =>
+    chat.Consumer.username.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredChats.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentChats = filteredChats.slice(startIndex, endIndex);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -83,10 +102,22 @@ const ChatListCompany = () => {
 
   return (
     <div className="max-w-5xl container mx-auto p-6 space-y-8">
+      <div className="flex justify-end mb-4">
+        <div className="relative w-full md:w-1/3">
+          <Input
+            type="text"
+            placeholder="Search chats..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+        </div>
+      </div>
       <ScrollArea className="h-[calc(100vh-200px)] pr-4">
-        {chats.length ? (
+        {currentChats.length ? (
           <div className="space-y-4">
-            {chats.map((chat) => (
+            {currentChats.map((chat) => (
               <Link
                 key={chat.consumerId}
                 to={`/company-dashboard/company-chat/${chat.consumerId}`}
@@ -130,6 +161,33 @@ const ChatListCompany = () => {
           </Card>
         )}
       </ScrollArea>
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-8 space-x-2">
+          <Button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            variant="outline"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          {Array.from({ length: totalPages }, (_, index) => (
+            <Button
+              key={index + 1}
+              onClick={() => handlePageChange(index + 1)}
+              variant={currentPage === index + 1 ? "default" : "outline"}
+            >
+              {index + 1}
+            </Button>
+          ))}
+          <Button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            variant="outline"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

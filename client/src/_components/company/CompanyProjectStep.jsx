@@ -44,17 +44,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import StepGuide from "./StepGuide";
 
 const stepTypes = [
   { value: "DEPOSIT", label: "Deposit" },
@@ -75,6 +69,7 @@ const stepIcons = {
 const CompanyProjectStep = () => {
   const { projectId } = useParams();
   const [steps, setSteps] = useState([]);
+  // eslint-disable-next-line no-unused-vars
   const [project, setProject] = useState(null);
   const [projectStatus, setProjectStatus] = useState("");
   const [newStep, setNewStep] = useState({
@@ -102,19 +97,8 @@ const CompanyProjectStep = () => {
 
   const checkCanPublish = useCallback(() => {
     const sortedSteps = [...steps].sort((a, b) => a.stepOrder - b.stepOrder);
-    const isConsecutive = sortedSteps.every(
-      (step, index) => step.stepOrder === index + 1
-    );
-    setCanPublish(
-      sortedSteps.length === 5 &&
-        isConsecutive &&
-        projectStatus !== "IN_PROGRESS"
-    );
+    setCanPublish(sortedSteps.length === 5 && projectStatus !== "IN_PROGRESS");
   }, [steps, projectStatus]);
-
-  useEffect(() => {
-    fetchProjectData();
-  }, [projectId]);
 
   useEffect(() => {
     checkCanPublish();
@@ -150,6 +134,10 @@ const CompanyProjectStep = () => {
     }
   };
 
+  useEffect(() => {
+    fetchProjectData();
+  }, [projectId]);
+
   const handlePublishProject = async () => {
     if (!isEditable) return;
     try {
@@ -173,13 +161,15 @@ const CompanyProjectStep = () => {
     }
   };
 
-  const validateStepOrder = (stepOrder) => {
-    const existingOrders = steps.map((step) => step.stepOrder);
+  const validateStepOrder = (stepOrder, currentStepId = null) => {
+    const existingOrders = steps
+      .filter((step) => step.id !== currentStepId) // Exclude the current step being edited
+      .map((step) => step.stepOrder);
     const maxOrder = Math.max(...existingOrders, 0);
     return (
       stepOrder >= 1 &&
       stepOrder <= 5 &&
-      !existingOrders.includes(stepOrder) &&
+      (!existingOrders.includes(stepOrder) || currentStepId !== null) &&
       stepOrder <= maxOrder + 1
     );
   };
@@ -258,7 +248,7 @@ const CompanyProjectStep = () => {
 
   const handleEditStep = async (stepId) => {
     if (!isEditable) return;
-    if (!validateStepOrder(newStep.stepOrder)) {
+    if (!validateStepOrder(newStep.stepOrder, stepId)) {
       setErrorMessage(
         "Invalid step order. Ensure it is between 1 and 5, not already used, and not skipping any order."
       );
@@ -405,13 +395,6 @@ const CompanyProjectStep = () => {
     }
   };
 
-  const calculateProgress = () => {
-    const completedSteps = steps.filter(
-      (step) => step.status === "COMPLETED"
-    ).length;
-    return (completedSteps / steps.length) * 100;
-  };
-
   if (loading && steps.length === 0) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -447,30 +430,14 @@ const CompanyProjectStep = () => {
           </p>
         </div>
       </div>
-      {project && (
-        <Card className="mb-6 shadow-md">
-          <CardHeader>
-            <CardTitle className="text-xl text-gray-500">
-              Project Overview
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-2 text-gray-600">
-              Consumer: {project.consumer.username}
-            </p>
-            <Progress value={calculateProgress()} className="w-full h-2" />
-            <p className="mt-2 text-sm text-gray-500">
-              {calculateProgress().toFixed(0)}% Complete
-            </p>
-          </CardContent>
-        </Card>
-      )}
 
       <ScrollArea className="flex-grow pr-4">
         <div className="container mx-auto p-4 md:p-6 max-w-4xl">
+          <StepGuide steps={steps} isEditable={isEditable} />
+
           <div className="flex justify-between items-center mb-6 md:mb-8">
             <div className="flex space-x-2">
-              {isEditable && (
+              {isEditable && steps.length < 5 && (
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                   <DialogTrigger asChild>
                     <Button
@@ -562,6 +529,7 @@ const CompanyProjectStep = () => {
                           id="dueDate"
                           type="date"
                           value={newStep.dueDate}
+                          className="bg-secondary"
                           onChange={(e) =>
                             handleChange("dueDate", e.target.value)
                           }
@@ -637,7 +605,11 @@ const CompanyProjectStep = () => {
                   step.stepType
                 );
                 const isStepAvailable =
-                  index === 0 || completedSteps.includes(steps[index - 1].id);
+                  (index === 0 &&
+                    ["INSTALLATION", "COMPLETION"].includes(step.stepType)) ||
+                  (index > 0 &&
+                    completedSteps.includes(steps[index - 1].id) &&
+                    ["INSTALLATION", "COMPLETION"].includes(step.stepType));
 
                 return (
                   <Card
@@ -722,7 +694,9 @@ const CompanyProjectStep = () => {
                                   size="icon"
                                   onClick={() => openEditDialog(step)}
                                   className={`${
-                                    isCompanyStep ? "dark:hover:bg-black/20" : ""
+                                    isCompanyStep
+                                      ? "dark:hover:bg-black/20"
+                                      : ""
                                   }`}
                                 >
                                   <Edit
