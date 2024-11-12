@@ -22,10 +22,9 @@ const CompanyProfileEditForm = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const token = localStorage.getItem("token");
         const response = await axios.get(
           "http://localhost:5000/api/company/company-profile",
-          { headers: { Authorization: `Bearer ${token}` } }
+          { withCredentials: true } // Include credentials in the request
         );
         setProfileData({
           description: response.data.description || "",
@@ -54,7 +53,6 @@ const CompanyProfileEditForm = () => {
     setSuccess(null);
 
     try {
-      const token = localStorage.getItem("token");
       const formData = new FormData();
 
       formData.append("description", profileData.description);
@@ -69,9 +67,9 @@ const CompanyProfileEditForm = () => {
         formData,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
+          withCredentials: true, // Include credentials in the request
         }
       );
       setSuccess("Profile updated successfully!");

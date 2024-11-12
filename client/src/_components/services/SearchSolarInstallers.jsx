@@ -29,7 +29,10 @@ const SearchSolarInstallers = () => {
     const fetchCompanyDetails = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/company-services/company-details"
+          "http://localhost:5000/api/company-services/company-details",
+          {
+            withCredentials: true, // Include credentials in the request
+          }
         );
         setCompanies(response.data);
         setFilteredCompanies(response.data);
@@ -39,7 +42,7 @@ const SearchSolarInstallers = () => {
         setLoading(false);
       }
     };
-
+  
     fetchCompanyDetails();
   }, []);
 

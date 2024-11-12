@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { Maintenance, Project, User, ConsumerProfile } = require('../models');
-const authenticateToken = require('../middleware/auth');
+const authenticateSession = require('../middleware/auth');
 const nodemailer = require('nodemailer');
 
 // Set up Nodemailer transporter
@@ -25,7 +25,7 @@ const sendEmail = async (to, subject, html) => {
 };
 
 // Get all completed projects for a company
-router.get('/completed-projects', authenticateToken, async (req, res) => {
+router.get('/completed-projects', authenticateSession, async (req, res) => {
   const companyId = req.user.id;
 
   try {
@@ -64,7 +64,7 @@ router.get('/completed-projects', authenticateToken, async (req, res) => {
 });
 
 // Get all maintenance schedules for a company
-router.get('/schedules', authenticateToken, async (req, res) => {
+router.get('/schedules', authenticateSession, async (req, res) => {
   const companyId = req.user.id;
 
   try {
@@ -101,7 +101,7 @@ router.get('/schedules', authenticateToken, async (req, res) => {
 });
 
 // Schedule maintenance for a project
-router.post('/:projectId/schedule', authenticateToken, async (req, res) => {
+router.post('/:projectId/schedule', authenticateSession, async (req, res) => {
   const { projectId } = req.params;
   const { scheduledDate, notes } = req.body;
 
@@ -148,7 +148,7 @@ router.post('/:projectId/schedule', authenticateToken, async (req, res) => {
 });
 
 // Get all maintenance records for a specific project
-router.get('/project/:projectId', authenticateToken, async (req, res) => {
+router.get('/project/:projectId', authenticateSession, async (req, res) => {
   const { projectId } = req.params;
 
   try {
@@ -185,7 +185,7 @@ router.get('/project/:projectId', authenticateToken, async (req, res) => {
 });
 
 // Confirm maintenance status by company
-router.put('/:maintenanceId/company-confirm', authenticateToken, async (req, res) => {
+router.put('/:maintenanceId/company-confirm', authenticateSession, async (req, res) => {
   const { maintenanceId } = req.params;
 
   try {
@@ -223,7 +223,7 @@ router.put('/:maintenanceId/company-confirm', authenticateToken, async (req, res
 });
 
 // Reject maintenance status by company
-router.put('/:maintenanceId/company-reject', authenticateToken, async (req, res) => {
+router.put('/:maintenanceId/company-reject', authenticateSession, async (req, res) => {
   const { maintenanceId } = req.params;
   const { reason } = req.body;
 
@@ -262,7 +262,7 @@ router.put('/:maintenanceId/company-reject', authenticateToken, async (req, res)
 });
 
 // Mark maintenance as completed by company
-router.put('/:maintenanceId/complete', authenticateToken, async (req, res) => {
+router.put('/:maintenanceId/complete', authenticateSession, async (req, res) => {
   const { maintenanceId } = req.params;
 
   try {
@@ -300,7 +300,7 @@ router.put('/:maintenanceId/complete', authenticateToken, async (req, res) => {
 });
 
 // Get all completed projects for a consumer
-router.get('/consumer/completed-projects', authenticateToken, async (req, res) => {
+router.get('/consumer/completed-projects', authenticateSession, async (req, res) => {
   const consumerId = req.user.id;
 
   try {
@@ -339,7 +339,7 @@ router.get('/consumer/completed-projects', authenticateToken, async (req, res) =
 });
 
 // Confirm proposed scheduled maintenance
-router.put('/:maintenanceId/confirm', authenticateToken, async (req, res) => {
+router.put('/:maintenanceId/confirm', authenticateSession, async (req, res) => {
   const { maintenanceId } = req.params;
 
   try {
@@ -377,7 +377,7 @@ router.put('/:maintenanceId/confirm', authenticateToken, async (req, res) => {
 });
 
 // Reschedule maintenance by consumer
-router.put('/:maintenanceId/consumer-reschedule', authenticateToken, async (req, res) => {
+router.put('/:maintenanceId/consumer-reschedule', authenticateSession, async (req, res) => {
   const { maintenanceId } = req.params;
   const { proposedDates, reason } = req.body;
 
@@ -431,7 +431,7 @@ router.put('/:maintenanceId/consumer-reschedule', authenticateToken, async (req,
 });
 
 // Get all maintenance schedules for a specific project for a consumer
-router.get('/consumer/project/:projectId/schedules', authenticateToken, async (req, res) => {
+router.get('/consumer/project/:projectId/schedules', authenticateSession, async (req, res) => {
   const { projectId } = req.params;
   const consumerId = req.user.id;
 

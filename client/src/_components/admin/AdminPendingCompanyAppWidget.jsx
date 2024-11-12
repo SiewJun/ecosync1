@@ -18,13 +18,10 @@ const PendingApplicationsWidget = () => {
   useEffect(() => {
     const fetchPendingApplications = async () => {
       try {
-        const token = localStorage.getItem("token");
         const response = await axios.get(
           "http://localhost:5000/api/auth/pending-applications",
           {
-            headers: {
-              Authorization: `Bearer ${token}`, // Include the authorization header
-            },
+            withCredentials: true, // Include credentials in the request
           }
         );
         const applications = response.data.applications || [];
@@ -40,7 +37,7 @@ const PendingApplicationsWidget = () => {
         setLoading(false);
       }
     };
-
+  
     fetchPendingApplications();
   }, [navigate]);
 

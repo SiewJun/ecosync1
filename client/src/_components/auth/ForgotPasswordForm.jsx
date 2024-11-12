@@ -12,7 +12,7 @@ const ForgotPasswordForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/auth/forgot-password', { email });
+      await axios.post('http://localhost:5000/api/auth/forgot-password', { email }, { withCredentials: true });
       setMessage('If an account with that email exists, a password reset link has been sent.');
     } catch (error) {
       setError(error.response.data.message || 'An error occurred');

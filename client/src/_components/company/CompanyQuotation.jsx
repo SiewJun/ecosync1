@@ -49,11 +49,10 @@ const CompanyQuotation = () => {
     const fetchQuotations = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem("token");
         const response = await axios.get(
           "http://localhost:5000/api/quotation/company-quotations",
           {
-            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true, // Include credentials in the request
           }
         );
         setQuotations(response.data.quotations);
@@ -64,7 +63,7 @@ const CompanyQuotation = () => {
         setLoading(false);
       }
     };
-
+  
     fetchQuotations();
   }, []);
 

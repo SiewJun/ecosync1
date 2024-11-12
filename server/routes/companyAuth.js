@@ -9,7 +9,7 @@ const {
   CompanyApplication,
   CompanyProfile,
 } = require("../models");
-const authenticateToken = require("../middleware/auth");
+const authenticateSession = require("../middleware/auth");
 require("dotenv").config();
 const { Op } = require("sequelize");
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -64,6 +64,7 @@ router.post(
       website,
       registrationNumber,
     } = req.body;
+
     const businessLicense = req.file ? req.file.path : null; // File path
 
     try {
@@ -106,7 +107,7 @@ router.post(
   }
 );
 
-router.get("/pending-applications", authenticateToken, async (req, res) => {
+router.get("/pending-applications", authenticateSession, async (req, res) => {
   if (req.user.role !== "ADMIN" && req.user.role !== "SUPERADMIN") {
     return res.status(403).json({ message: "Forbidden" });
   }
@@ -142,7 +143,7 @@ router.get("/pending-applications", authenticateToken, async (req, res) => {
   }
 });
 
-router.post("/review-application/:id", authenticateToken, async (req, res) => {
+router.post("/review-application/:id", authenticateSession, async (req, res) => {
   if (req.user.role !== "ADMIN" && req.user.role !== "SUPERADMIN") {
     return res.status(403).json({ message: "Forbidden" });
   }

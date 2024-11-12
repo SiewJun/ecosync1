@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const { Incentive } = require("../models");
-const authenticateToken = require("../middleware/auth");
+const authenticateSession = require("../middleware/auth");
 
 // Get all incentives
-router.get("/incentives", authenticateToken, async (req, res) => {
+router.get("/incentives", authenticateSession, async (req, res) => {
   if (req.user.role !== "ADMIN" && req.user.role !== "SUPERADMIN") {
     return res.status(403).json({ message: "Forbidden" });
   }
@@ -19,7 +19,7 @@ router.get("/incentives", authenticateToken, async (req, res) => {
 });
 
 // Get a single incentive by ID
-router.get("/incentives/:id", authenticateToken, async (req, res) => {
+router.get("/incentives/:id", authenticateSession, async (req, res) => {
   if (req.user.role !== "ADMIN" && req.user.role !== "SUPERADMIN") {
     return res.status(403).json({ message: "Forbidden" });
   }
@@ -39,7 +39,7 @@ router.get("/incentives/:id", authenticateToken, async (req, res) => {
 });
 
 // Create a new incentive
-router.post("/incentives", authenticateToken, async (req, res) => {
+router.post("/incentives", authenticateSession, async (req, res) => {
   if (req.user.role !== "ADMIN" && req.user.role !== "SUPERADMIN") {
     return res.status(403).json({ message: "Forbidden" });
   }
@@ -78,7 +78,7 @@ router.post("/incentives", authenticateToken, async (req, res) => {
 });
 
 // Update an existing incentive
-router.put("/incentives/:id", authenticateToken, async (req, res) => {
+router.put("/incentives/:id", authenticateSession, async (req, res) => {
   if (req.user.role !== "ADMIN" && req.user.role !== "SUPERADMIN") {
     return res.status(403).json({ message: "Forbidden" });
   }
@@ -124,7 +124,7 @@ router.put("/incentives/:id", authenticateToken, async (req, res) => {
 });
 
 // Delete an incentive
-router.delete("/incentives/:id", authenticateToken, async (req, res) => {
+router.delete("/incentives/:id", authenticateSession, async (req, res) => {
   if (req.user.role !== "ADMIN" && req.user.role !== "SUPERADMIN") {
     return res.status(403).json({ message: "Forbidden" });
   }

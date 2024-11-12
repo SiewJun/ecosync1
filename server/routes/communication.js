@@ -8,13 +8,13 @@ const {
   Attachment,
 } = require("../models");
 const router = express.Router();
-const authenticateToken = require("../middleware/auth");
+const authenticateSession = require("../middleware/auth");
 const upload = require("../middleware/multer");
 
 module.exports = (io) => {
-  router.post("/chats/initiate", authenticateToken, async (req, res) => {
+  router.post("/chats/initiate", authenticateSession, async (req, res) => {
     const { companyId } = req.body;
-    const consumerId = req.user.id; // Get consumer ID from token
+    const consumerId = req.user.id; // Get consumer ID from session
 
     try {
       // Check if the user initiating the chat is a consumer
@@ -41,7 +41,7 @@ module.exports = (io) => {
     }
   });
 
-  router.get("/companies/:companyId", authenticateToken, async (req, res) => {
+  router.get("/companies/:companyId", authenticateSession, async (req, res) => {
     const { companyId } = req.params;
 
     try {
@@ -91,7 +91,7 @@ module.exports = (io) => {
     }
   });
 
-  router.get("/consumers/:consumerId", authenticateToken, async (req, res) => {
+  router.get("/consumers/:consumerId", authenticateSession, async (req, res) => {
     const { consumerId } = req.params;
 
     try {
@@ -118,9 +118,9 @@ module.exports = (io) => {
     }
   });
 
-  router.get("/chats/consumer", authenticateToken, async (req, res) => {
-    const consumerId = req.user.id; // Get consumer ID from token
-    const userRole = req.user.role; // Get user role from token
+  router.get("/chats/consumer", authenticateSession, async (req, res) => {
+    const consumerId = req.user.id; // Get consumer ID from session
+    const userRole = req.user.role; // Get user role from session
 
     // Check if the role is CONSUMER
     if (userRole !== "CONSUMER") {
@@ -163,9 +163,9 @@ module.exports = (io) => {
     }
   });
 
-  router.get("/chats/company", authenticateToken, async (req, res) => {
-    const companyId = req.user.id; // Get company ID from token
-    const userRole = req.user.role; // Get user role from token
+  router.get("/chats/company", authenticateSession, async (req, res) => {
+    const companyId = req.user.id; // Get company ID from session
+    const userRole = req.user.role; // Get user role from session
 
     // Ensure the user is a company
     if (userRole !== "COMPANY") {
@@ -203,11 +203,11 @@ module.exports = (io) => {
 
   router.get(
     "/company-chats/:consumerId",
-    authenticateToken,
+    authenticateSession,
     async (req, res) => {
-      const companyId = req.user.id; // Get company ID from token
+      const companyId = req.user.id; // Get company ID from session
       const { consumerId } = req.params;
-      const userRole = req.user.role; // Get user role from token
+      const userRole = req.user.role; // Get user role from session
 
       if (userRole !== "COMPANY") {
         return res.status(403).json({
@@ -249,9 +249,9 @@ module.exports = (io) => {
     }
   );
 
-  router.get("/chats/:companyId", authenticateToken, async (req, res) => {
+  router.get("/chats/:companyId", authenticateSession, async (req, res) => {
     const { companyId } = req.params;
-    const consumerId = req.user.id; // Get consumer ID from token
+    const consumerId = req.user.id; // Get consumer ID from session
 
     try {
       // Find the chat for the given company and consumer
@@ -285,9 +285,9 @@ module.exports = (io) => {
     }
   });
 
-  router.get("/chats/:consumerId", authenticateToken, async (req, res) => {
+  router.get("/chats/:consumerId", authenticateSession, async (req, res) => {
     const { consumerId } = req.params;
-    const companyId = req.user.id; // Get company ID from token
+    const companyId = req.user.id; // Get company ID from session
 
     try {
       // Find the chat for the given company and consumer
@@ -317,12 +317,12 @@ module.exports = (io) => {
 
   router.post(
     "/chats/:companyId/messages",
-    authenticateToken,
+    authenticateSession,
     upload.single("attachment"),
     async (req, res) => {
       const { companyId } = req.params;
       const { content } = req.body; // Text content of the message
-      const consumerId = req.user.id; // Get consumer ID from token
+      const consumerId = req.user.id; // Get consumer ID from session
 
       try {
         const chat = await Chat.findOne({ where: { consumerId, companyId } });
@@ -367,7 +367,7 @@ module.exports = (io) => {
 
   router.post(
     "/company-chats/:consumerId/messages",
-    authenticateToken,
+    authenticateSession,
     upload.single("attachment"), // Handle file uploads for companies
     async (req, res) => {
       const { consumerId } = req.params;

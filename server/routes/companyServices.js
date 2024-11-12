@@ -1,9 +1,10 @@
 const express = require('express');
 const { User, CompanyDetail, CompanyProfile, SolarSolution } = require('../models');
+const authenticateSession = require('../middleware/auth');
 const router = express.Router();
 
 // Fetch company users with their details
-router.get('/company-details', async (req, res) => {
+router.get('/company-details', authenticateSession, async (req, res) => {
   try {
     // Fetch users with role 'COMPANY' along with their company details and profile
     const companyUsers = await User.findAll({
@@ -32,8 +33,7 @@ router.get('/company-details', async (req, res) => {
   }
 });
 
-
-router.get('/solar-solutions', async (req, res) => {
+router.get('/solar-solutions', authenticateSession, async (req, res) => {
   try {
     // Fetch all solar solutions, including company profile (certificate) and company details (company name)
     const solarSolutions = await SolarSolution.findAll({

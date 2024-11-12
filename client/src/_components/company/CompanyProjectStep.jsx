@@ -86,7 +86,6 @@ const CompanyProjectStep = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [canPublish, setCanPublish] = useState(false);
-  const token = localStorage.getItem("token");
   const { toast } = useToast();
   const navigate = useNavigate();
   const [completedSteps, setCompletedSteps] = useState([]);
@@ -110,7 +109,7 @@ const CompanyProjectStep = () => {
       const response = await axios.get(
         `http://localhost:5000/api/project-step/company/${projectId}/steps`,
         {
-          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true, // Include credentials in the request
         }
       );
       setSteps(response.data.steps);
@@ -122,7 +121,7 @@ const CompanyProjectStep = () => {
           .map((step) => step.id)
       );
       setLoading(false);
-      // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast({
         title: "Error",
@@ -144,14 +143,16 @@ const CompanyProjectStep = () => {
       await axios.put(
         `http://localhost:5000/api/project-step/${projectId}/publish`,
         {},
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          withCredentials: true, // Include credentials in the request
+        }
       );
       toast({
         title: "Success",
         description: "Project successfully published!",
       });
       fetchProjectData();
-      // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast({
         title: "Error",
@@ -224,7 +225,7 @@ const CompanyProjectStep = () => {
           steps: [stepData],
         },
         {
-          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true, // Include credentials in the request
         }
       );
       setSteps([...steps, ...response.data.steps]);
@@ -233,7 +234,7 @@ const CompanyProjectStep = () => {
         title: "Success",
         description: "Step added successfully.",
       });
-      // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast({
         title: "Error",
@@ -266,7 +267,7 @@ const CompanyProjectStep = () => {
           stepData: newStep,
         },
         {
-          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true, // Include credentials in the request
         }
       );
       const updatedSteps = steps.map((step) =>
@@ -278,7 +279,7 @@ const CompanyProjectStep = () => {
         title: "Success",
         description: "Step updated successfully.",
       });
-      // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast({
         title: "Error",
@@ -297,7 +298,7 @@ const CompanyProjectStep = () => {
       await axios.delete(
         `http://localhost:5000/api/project-step/${projectId}/steps/${stepId}`,
         {
-          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true, // Include credentials in the request
         }
       );
       setSteps(steps.filter((step) => step.id !== stepId));
@@ -305,7 +306,7 @@ const CompanyProjectStep = () => {
         title: "Success",
         description: "Step deleted successfully.",
       });
-      // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast({
         title: "Error",
@@ -361,14 +362,16 @@ const CompanyProjectStep = () => {
       const response = await axios.put(
         `http://localhost:5000/api/project-step/${projectId}/steps/${stepId}/complete`,
         {},
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          withCredentials: true, // Include credentials in the request
+        }
       );
       const updatedSteps = steps.map((step) =>
         step.id === stepId ? { ...step, status: "COMPLETED" } : step
       );
       setSteps(updatedSteps);
       setCompletedSteps([...completedSteps, stepId]);
-
+  
       // Check if the project status has been updated to COMPLETED
       if (response.data.projectStatus === "COMPLETED") {
         setProjectStatus("COMPLETED");
@@ -382,10 +385,10 @@ const CompanyProjectStep = () => {
           description: "Step marked as completed successfully.",
         });
       }
-
+  
       // Refresh project data to get the latest status
       fetchProjectData();
-      // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast({
         title: "Error",

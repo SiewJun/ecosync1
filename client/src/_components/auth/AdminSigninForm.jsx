@@ -19,11 +19,11 @@ const AdminSignInForm = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await axios.post(
+      await axios.post(
         "http://localhost:5000/api/auth/admin-login",
-        { email, password }
+        { email, password },
+        { withCredentials: true }
       );
-      localStorage.setItem("token", response.data.token);
       navigate("/dashboard/");
     } catch (error) {
       setError(error.response?.data?.message || "An error occurred");

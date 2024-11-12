@@ -50,7 +50,7 @@ const CompletedCompanySignUp = () => {
     setError("");
     setSuccess("");
     setIsSubmitting(true);
-
+  
     if (
       !passwordConditions.length ||
       !passwordConditions.upperCase ||
@@ -64,18 +64,19 @@ const CompletedCompanySignUp = () => {
       setIsSubmitting(false);
       return;
     }
-
+  
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       setIsSubmitting(false);
       return;
     }
-
+  
     try {
-      await axios.post("http://localhost:5000/api/auth/complete-registration", {
-        password,
-        token,
-      });
+      await axios.post(
+        "http://localhost:5000/api/auth/complete-registration",
+        { password, token },
+        { withCredentials: true } // Include credentials in the request
+      );
       setSuccess("Registration completed successfully");
       setError("");
       setTimeout(() => {

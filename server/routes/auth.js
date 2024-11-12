@@ -2,15 +2,12 @@ const express = require("express");
 const { Op } = require("sequelize");
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const { User } = require("../models");
-const authenticateToken = require("../middleware/auth");
+const authenticateSession = require("../middleware/auth");
 
 require("dotenv").config();
-
-const JWT_SECRET = process.env.JWT_SECRET; // Replace with your own secret key
 
 const transporter = nodemailer.createTransport({
   service: "Gmail",
@@ -69,11 +66,11 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    // Create a session
+    req.session.userId = user.id;
+    req.session.role = user.role;
 
-    res.json({ message: "Login successful", token });
+    res.json({ message: "Login successful" });
   } catch (error) {
     console.error("Error during user login:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -100,16 +97,28 @@ router.post("/admin-login", async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    // Create a session
+    req.session.userId = user.id;
+    req.session.role = user.role;
 
-    res.json({ message: "Login successful", token });
+    res.json({ message: "Login successful" });
   } catch (error) {
-    console.error("Error during user login:", error);
+    console.error("Error during admin login:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
+//Logout Endpoint
+router.post('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ message: 'Failed to log out' });
+    }
+    res.clearCookie('connect.sid'); // Clear the session cookie
+    res.json({ message: 'Logout successful' });
+  });
+});
+
 
 // Forgot Password Endpoint
 router.post("/forgot-password", async (req, res) => {
@@ -175,11 +184,11 @@ router.post("/reset-password", async (req, res) => {
   }
 });
 
-router.post("/change-password", authenticateToken, async (req, res) => {
+router.post("/change-password", authenticateSession, async (req, res) => {
   const { currentPassword, newPassword } = req.body;
 
   try {
-    const user = await User.findByPk(req.user.id);
+    const user = await User.findByPk(req.session.userId);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -201,9 +210,9 @@ router.post("/change-password", authenticateToken, async (req, res) => {
   }
 });
 
-router.get("/me", authenticateToken, async (req, res) => {
+router.get("/me", authenticateSession, async (req, res) => {
   try {
-    const user = await User.findByPk(req.user.id, {
+    const user = await User.findByPk(req.session.userId, {
       attributes: ["username", "email", "role", "avatarUrl"], // Add more fields as needed
     });
 

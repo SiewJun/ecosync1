@@ -55,7 +55,7 @@ const CompanySignUpForm = () => {
     if (businessLicense) {
       formData.append("businessLicense", businessLicense);
     }
-
+  
     try {
       await axios.post(
         "http://localhost:5000/api/auth/register-company",
@@ -64,6 +64,7 @@ const CompanySignUpForm = () => {
           headers: {
             "Content-Type": "multipart/form-data",
           },
+          withCredentials: true, // Include credentials in the request
         }
       );
       setSuccess("Application submitted successfully. Please allow 3-5 business days for approval.");

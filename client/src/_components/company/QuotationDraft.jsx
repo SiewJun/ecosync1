@@ -323,11 +323,10 @@ const QuotationDraft = () => {
   const fetchQuotation = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
       const response = await axios.get(
         `http://localhost:5000/api/quotation/latest/${quotationId}`,
         {
-          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true, // Include credentials in the request
         }
       );
       setQuotationVersionid(response.data.id);
@@ -349,7 +348,7 @@ const QuotationDraft = () => {
           productWarranties,
           status,
         } = response.data;
-
+  
         setQuotationData({
           systemSize,
           panelSpecifications,
@@ -383,7 +382,7 @@ const QuotationDraft = () => {
     } finally {
       setLoading(false);
     }
-  };
+  };  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -489,11 +488,10 @@ const QuotationDraft = () => {
       setError("Please fill in all required fields.");
       return;
     }
-
+  
     setLoading(true);
     setError("");
     try {
-      const token = localStorage.getItem("token");
       const endpoint =
         action === "save" ? "/api/quotation/draft" : "/api/quotation/finalize";
       await axios.post(
@@ -506,11 +504,11 @@ const QuotationDraft = () => {
           quotationVersionId: quotationVersionId || undefined,
         },
         {
-          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true, // Include credentials in the request
         }
       );
       navigate("/company-dashboard/company-quotation");
-      // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
     } catch (err) {
       setError(
         `Failed to ${

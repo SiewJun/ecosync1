@@ -15,19 +15,28 @@ const AdminDashboardPage = () => {
       <main className="flex-1 overflow-hidden">
         <ScrollArea className="h-full">
           <Routes>
-            <Route index element={<AdminHomeDashboardPage />} />
+            <Route
+              index
+              element={
+                <ProtectedRoute element={<AdminHomeDashboardPage />} roles={["ADMIN", "SUPERADMIN"]} />
+              }
+            />
             <Route
               path="pendingapp"
-              element={<AdminPendingCompanyAppDashboardPage />}
+              element={
+                <ProtectedRoute element={<AdminPendingCompanyAppDashboardPage />} roles={["ADMIN", "SUPERADMIN"]} />
+              }
             />
-            <Route path="incentives" element={<AdminModerationIncentives />} />
+            <Route
+              path="incentives"
+              element={
+                <ProtectedRoute element={<AdminModerationIncentives />} roles={["ADMIN", "SUPERADMIN"]} />
+              }
+            />
             <Route
               path="users-management"
               element={
-                <ProtectedRoute
-                  element={<SuperAdminUsersManagement />}
-                  roles={["SUPERADMIN"]}
-                />
+                <ProtectedRoute element={<SuperAdminUsersManagement />} roles={["SUPERADMIN"]} />
               }
             />
             <Route path="*" element={<NotFoundPage />} />

@@ -13,7 +13,14 @@ import { Button } from "@/components/ui/button";
 import EcoSyncLogo from "./EcoSyncLogo";
 import MobileMenu from "@/_components/nav/MobileMenu";
 import ProfileDropdown from "./ProfileDropdown";
-import { Laptop, Users, LineChart, Sun, Building2, SearchCheckIcon } from "lucide-react";
+import {
+  Laptop,
+  Users,
+  LineChart,
+  Sun,
+  Building2,
+  SearchCheckIcon,
+} from "lucide-react";
 import axios from "axios";
 import ThemeSwitcher from "@/_components/theme/ThemeSwitcher";
 import PropTypes from "prop-types";
@@ -22,7 +29,8 @@ const services = [
   {
     title: "Get Estimate",
     href: "/solar-estimation",
-    description: "Estimate savings from solar panel installation with our advanced calculator.",
+    description:
+      "Estimate savings from solar panel installation with our advanced calculator.",
     icon: <LineChart className="h-5 w-5 text-primary" />,
   },
   {
@@ -43,13 +51,15 @@ const information = [
   {
     title: "About EcoSync",
     href: "/about",
-    description: "Learn about our mission to make solar energy accessible to everyone.",
+    description:
+      "Learn about our mission to make solar energy accessible to everyone.",
     icon: <Building2 className="h-5 w-5 text-primary" />,
   },
   {
     title: "Technology",
     href: "/technology",
-    description: "Discover the innovative technology behind our solar solutions.",
+    description:
+      "Discover the innovative technology behind our solar solutions.",
     icon: <Laptop className="h-5 w-5 text-primary" />,
   },
   {
@@ -78,18 +88,14 @@ function NavBar() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (token) {
-          const response = await axios.get("http://localhost:5000/api/auth/me", {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          setUser(response.data.user);
-        }
+        const response = await axios.get("http://localhost:5000/api/auth/me", {
+          withCredentials: true, // Include credentials in the request
+        });
+        setUser(response.data.user);
       } catch (error) {
         if (error.response?.status === 403) {
-          localStorage.removeItem("token");
+          console.error("Error fetching user:", error);
         }
-        console.error("Error fetching user:", error);
       }
     };
 
@@ -123,9 +129,7 @@ function NavBar() {
                 <NavigationMenu>
                   <NavigationMenuList className="space-x-2">
                     <NavigationMenuItem>
-                      <NavigationMenuTrigger 
-                        className="text-sm font-medium bg-transparent data-[state=open]:bg-accent/30 hover:bg-accent/20 transition-colors duration-300"
-                      >
+                      <NavigationMenuTrigger className="text-sm font-medium bg-transparent data-[state=open]:bg-accent/30 hover:bg-accent/20 transition-colors duration-300">
                         Services
                       </NavigationMenuTrigger>
                       <NavigationMenuContent>
@@ -147,9 +151,7 @@ function NavBar() {
                     </NavigationMenuItem>
 
                     <NavigationMenuItem>
-                      <NavigationMenuTrigger 
-                        className="text-sm font-medium bg-transparent data-[state=open]:bg-accent/30 hover:bg-accent/20 transition-colors duration-300"
-                      >
+                      <NavigationMenuTrigger className="text-sm font-medium bg-transparent data-[state=open]:bg-accent/30 hover:bg-accent/20 transition-colors duration-300">
                         Info
                       </NavigationMenuTrigger>
                       <NavigationMenuContent>

@@ -32,11 +32,10 @@ const EditForm = () => {
     // Fetch current user and company details to populate form
     const fetchDetails = async () => {
       try {
-        const token = localStorage.getItem("token");
         const response = await axios.get(
           "http://localhost:5000/api/company/company-details",
           {
-            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true, // Include credentials in the request
           }
         );
         setUser(response.data.user);
@@ -91,32 +90,31 @@ const EditForm = () => {
     setError("");
     setSuccess("");
     setIsSubmitting(true);
-
+  
     try {
-      const token = localStorage.getItem("token");
       const formDataObj = new FormData();
       formDataObj.append("username", formData.username);
       formDataObj.append("email", formData.email);
       formDataObj.append("phoneNumber", formData.phoneNumber);
       formDataObj.append("address", formData.address);
       formDataObj.append("website", formData.website);
-
+  
       // Add avatar if selected
       if (avatar) {
         formDataObj.append("avatar", avatar);
       }
-
+  
       await axios.put(
         "http://localhost:5000/api/company/update-details",
         formDataObj,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
+          withCredentials: true, // Include credentials in the request
         }
       );
-
+  
       setSuccess("Details updated successfully!");
       navigate(-1);
     } catch (error) {

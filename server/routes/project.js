@@ -9,11 +9,11 @@ const {
   Project,
   ProjectStep,
 } = require("../models");
-const authenticateToken = require("../middleware/auth");
+const authenticateSession = require("../middleware/auth");
 const upload = require("../middleware/multer"); 
 const stripe = require('stripe')('your_stripe_secret_key'); // Add your Stripe secret key here
 
-router.get("/consumer-projects", authenticateToken, async (req, res) => {
+router.get("/consumer-projects", authenticateSession, async (req, res) => {
   const consumerId = req.user.id;
   const userRole = req.user.role;
 
@@ -69,13 +69,13 @@ router.get("/consumer-projects", authenticateToken, async (req, res) => {
   }
 });
 
-router.get("/company-projects", authenticateToken, async (req, res) => {
+router.get("/company-projects", authenticateSession, async (req, res) => {
   const companyId = req.user.id;
   const userRole = req.user.role;
 
   // Only consumers can view their projects
   if (userRole !== "COMPANY") {
-    return res.status(403).json({ message: "Only companiess can view their projects." });
+    return res.status(403).json({ message: "Only companies can view their projects." });
   }
 
   try {
@@ -129,7 +129,7 @@ router.get("/company-projects", authenticateToken, async (req, res) => {
   }
 });
 
-router.post("/:projectId/steps", authenticateToken, upload.single("document"), async (req, res) => {
+router.post("/:projectId/steps", authenticateSession, upload.single("document"), async (req, res) => {
   const { stepName, stepType, dueDate, description } = req.body;
   const { projectId } = req.params;
 

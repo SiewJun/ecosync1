@@ -43,11 +43,10 @@ const CompanyDetail = () => {
   useEffect(() => {
     const fetchCompanyDetails = async () => {
       try {
-        const token = localStorage.getItem("token");
         const response = await axios.get(
           "http://localhost:5000/api/company/company-details",
           {
-            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true, // Include credentials in the request
           }
         );
         const userData = response.data.user;
@@ -60,9 +59,9 @@ const CompanyDetail = () => {
         setIsLoading(false);
       }
     };
-
+  
     fetchCompanyDetails();
-  }, []);
+  }, []);  
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -85,7 +84,7 @@ const CompanyDetail = () => {
     setError("");
     setSuccess("");
     setIsSubmitting(true);
-
+  
     if (
       !passwordConditions.length ||
       !passwordConditions.upperCase ||
@@ -97,15 +96,14 @@ const CompanyDetail = () => {
       setIsSubmitting(false);
       return;
     }
-
+  
     if (newPassword !== confirmPassword) {
       setError("Passwords do not match!");
       setIsSubmitting(false);
       return;
     }
-
+  
     try {
-      const token = localStorage.getItem("token");
       await axios.post(
         "http://localhost:5000/api/auth/change-password",
         {
@@ -113,7 +111,7 @@ const CompanyDetail = () => {
           newPassword,
         },
         {
-          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true, // Include credentials in the request
         }
       );
       setSuccess("Password updated successfully!");

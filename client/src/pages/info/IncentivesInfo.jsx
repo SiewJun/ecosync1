@@ -58,7 +58,10 @@ const IncentivesDashboard = () => {
     const fetchIncentives = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5000/api/admin-moderation/public/incentives"
+          "http://localhost:5000/api/admin-moderation/public/incentives",
+          {
+            credentials: "include", // Include credentials in the request
+          }
         );
         if (!response.ok) throw new Error("Failed to fetch incentives");
         const data = await response.json();

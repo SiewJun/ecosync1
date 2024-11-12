@@ -35,15 +35,14 @@ const AddSolutionForm = () => {
     if (solutionPic) formData.append("solutionPic", solutionPic);
 
     try {
-      const token = localStorage.getItem("token");
       await axios.post(
         "http://localhost:5000/api/company/add-solar-solution",
         formData,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
+          withCredentials: true, // Include credentials in the request
         }
       );
       setSuccess("Solar solution added successfully!");

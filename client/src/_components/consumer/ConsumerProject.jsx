@@ -54,11 +54,10 @@ const ConsumerProjects = () => {
     const fetchProjects = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem("token");
         const response = await axios.get(
           "http://localhost:5000/api/project/consumer-projects",
           {
-            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true, // Include credentials in the request
           }
         );
         setProjects(response.data.projects);

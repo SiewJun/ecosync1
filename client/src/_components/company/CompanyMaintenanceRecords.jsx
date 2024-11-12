@@ -16,15 +16,13 @@ const ProjectMaintenanceRecords = () => {
     const fetchMaintenanceRecords = async () => {
       try {
         const res = await fetch(`http://localhost:5000/api/maintenance/project/${projectId}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          credentials: "include", // Include credentials in the request
         });
-
+  
         if (!res.ok) {
           throw new Error("Failed to fetch maintenance records");
         }
-
+  
         const data = await res.json();
         setMaintenanceRecords(data.maintenanceRecords);
       // eslint-disable-next-line no-unused-vars
@@ -34,7 +32,7 @@ const ProjectMaintenanceRecords = () => {
         setLoading(false);
       }
     };
-
+  
     fetchMaintenanceRecords();
   }, [projectId]);
 

@@ -48,11 +48,10 @@ const ConsumerQuotationView = () => {
   useEffect(() => {
     const fetchQuotationDetails = async () => {
       try {
-        const token = localStorage.getItem("token");
         const response = await axios.get(
           `http://localhost:5000/api/quotation/consumer-quotations/${versionId}`,
           {
-            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true, // Include credentials in the request
           }
         );
         console.log(response.data);
@@ -65,24 +64,23 @@ const ConsumerQuotationView = () => {
         );
       }
     };
-
+  
     fetchQuotationDetails();
   }, [versionId]);
 
   const handleAcceptQuotation = async () => {
     try {
-      const token = localStorage.getItem("token");
       await axios.post(
         `http://localhost:5000/api/quotation/accept/${quotationDetails.id}`,
         {},
         {
-          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true, // Include credentials in the request
         }
       );
       const response = await axios.get(
         `http://localhost:5000/api/quotation/consumer-quotations/${versionId}`,
         {
-          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true, // Include credentials in the request
         }
       );
       setQuotationDetails(response.data);

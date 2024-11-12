@@ -55,9 +55,7 @@ const AdminPendingCompanyAppDashboard = () => {
         const response = await axios.get(
           "http://localhost:5000/api/auth/pending-applications",
           {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
+            withCredentials: true, // Include credentials in the request
           }
         );
         setApplications(response.data.applications);
@@ -70,7 +68,7 @@ const AdminPendingCompanyAppDashboard = () => {
         }
       }
     };
-
+  
     fetchApplications();
   }, [navigate]);
 
@@ -213,9 +211,7 @@ const AdminPendingCompanyAppDashboard = () => {
         `http://localhost:5000/api/auth/review-application/${id}`,
         { status },
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          withCredentials: true, // Include credentials in the request
         }
       );
       // Refresh the application list

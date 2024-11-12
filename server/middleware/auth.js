@@ -1,34 +1,26 @@
-const jwt = require('jsonwebtoken');
-require('dotenv').config();
-const JWT_SECRET = process.env.JWT_SECRET; 
+const { User } = require('../models');
 
-const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  
-  // Check if the Authorization header exists
-  if (!authHeader) {
-    console.error('Authorization header missing');
-    return res.status(401).json({ message: 'Authorization header missing' });
-  }
+const authenticateSession = async (req, res, next) => {
+  if (req.session && req.session.userId) {
+    try {
+      const user = await User.findByPk(req.session.userId, {
+        attributes: ['id', 'role'], // Fetch only necessary attributes
+      });
 
-  // Extract the token from the Authorization header
-  const token = authHeader.split(' ')[1];
-  if (!token) {
-    console.error('Token missing');
-    return res.status(401).json({ message: 'Token missing' });
-  }
+      if (!user) {
+        return res.status(401).json({ message: 'Unauthorized: User not found' });
+      }
 
-  // Verify the token
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) {
-      console.error('Invalid token:', err);
-      return res.status(403).json({ message: 'Invalid token' });
+      req.user = user; // Attach user to the request object
+      return next();
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      return res.status(500).json({ message: 'Internal server error' });
     }
-
-    // Attach the decoded user information to the request object
-    req.user = user;
-    next();
-  });
+  } else {
+    console.warn(`Unauthorized access attempt on ${req.originalUrl} from IP: ${req.ip}`);
+    return res.status(401).json({ message: 'Unauthorized: Please log in to access this resource.' });
+  }
 };
 
-module.exports = authenticateToken;
+module.exports = authenticateSession;

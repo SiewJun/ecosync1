@@ -16,14 +16,14 @@ const SignInForm = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
+      await axios.post(
         "http://localhost:5000/api/auth/login",
-        { email, password }
+        { email, password },
+        { withCredentials: true } // Include credentials in the request
       );
-      localStorage.setItem("token", response.data.token);
       navigate("/");
     } catch (error) {
-      setError(error.response.data.message || "An error occurred");
+      setError(error.response?.data?.message || "An error occurred");
     }
   };
 

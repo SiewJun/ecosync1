@@ -27,11 +27,10 @@ const ChatList = () => {
     const fetchChats = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem("token");
         const response = await axios.get(
           `${BASE_URL}api/communication/chats/consumer`,
           {
-            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true, // Include credentials in the request
           }
         );
         setChats(response.data.chats);
@@ -45,7 +44,7 @@ const ChatList = () => {
         setLoading(false);
       }
     };
-
+  
     fetchChats();
   }, []);
 

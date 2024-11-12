@@ -72,9 +72,7 @@ const SuperAdminUsersManagement = () => {
         const response = await fetch(
           "http://localhost:5000/api/superadmin-moderation/users",
           {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
+            credentials: "include", // Include credentials in the request
           }
         );
         const data = await response.json();
@@ -83,7 +81,7 @@ const SuperAdminUsersManagement = () => {
         console.error("Error fetching users:", error);
       }
     };
-
+  
     fetchUsers();
   }, []);
 
@@ -114,12 +112,12 @@ const SuperAdminUsersManagement = () => {
   const handleCreateAdmin = async (e) => {
     e.preventDefault();
     setCreateAdminError("");
-
+  
     if (createAdminForm.password !== createAdminForm.confirmPassword) {
       setCreateAdminError("Passwords do not match");
       return;
     }
-
+  
     try {
       const response = await fetch(
         "http://localhost:5000/api/superadmin-moderation/create-admin",
@@ -127,18 +125,18 @@ const SuperAdminUsersManagement = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify({
             username: createAdminForm.username,
             email: createAdminForm.email,
             password: createAdminForm.password,
           }),
+          credentials: "include", // Include credentials in the request
         }
       );
-
+  
       const data = await response.json();
-
+  
       if (response.ok) {
         setUsers((prev) => [...prev, { ...data.admin, role: "ADMIN" }]);
         setCreateAdminForm({
@@ -210,12 +208,10 @@ const SuperAdminUsersManagement = () => {
         `http://localhost:5000/api/superadmin-moderation/demote-admin/${userId}`,
         {
           method: "PUT",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          credentials: "include", // Include credentials in the request
         }
       );
-
+  
       if (response.ok) {
         const updatedUsers = users.map((user) =>
           user.id === userId ? { ...user, role: "CONSUMER" } : user
@@ -233,12 +229,10 @@ const SuperAdminUsersManagement = () => {
         `http://localhost:5000/api/superadmin-moderation/delete-user/${userId}`,
         {
           method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          credentials: "include", // Include credentials in the request
         }
       );
-
+  
       if (response.ok) {
         const updatedUsers = users.filter((user) => user.id !== userId);
         setUsers(updatedUsers);

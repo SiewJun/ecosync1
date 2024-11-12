@@ -43,23 +43,20 @@ const ChatCompany = () => {
   useEffect(() => {
     const fetchCompanyAndMessages = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) return;
-
         setLoading(true);
-
+  
         const [consumerResponse, messagesResponse] = await Promise.all([
           axios.get(`${BASE_URL}api/communication/consumers/${consumerId}`, {
-            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true, // Include credentials in the request
           }),
           axios.get(
             `${BASE_URL}api/communication/company-chats/${consumerId}`,
             {
-              headers: { Authorization: `Bearer ${token}` },
+              withCredentials: true, // Include credentials in the request
             }
           ),
         ]);
-
+  
         setConsumer(consumerResponse.data.consumer);
         const sortedMessages = messagesResponse.data.messages.sort(
           (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
@@ -77,7 +74,7 @@ const ChatCompany = () => {
         setLoading(false);
       }
     };
-
+  
     fetchCompanyAndMessages();
   }, [consumerId]);
 
@@ -103,26 +100,24 @@ const ChatCompany = () => {
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if ((!message.trim() && !attachment) || sending) return;
-
+  
     try {
-      const token = localStorage.getItem("token");
-      if (!token) return;
       const formData = new FormData();
       formData.append("content", message);
       if (attachment) formData.append("attachment", attachment);
-
+  
       setSending(true);
       const response = await axios.post(
         `${BASE_URL}api/communication/company-chats/${consumerId}/messages`,
         formData,
         {
+          withCredentials: true, // Include credentials in the request
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
         }
       );
-
+  
       const newMessage = response.data.message;
       socket.emit("sendMessage", newMessage);
       if (!messageIds.current.has(newMessage.id)) {

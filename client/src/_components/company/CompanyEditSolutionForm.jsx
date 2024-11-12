@@ -28,13 +28,10 @@ const UpdateSolutionForm = () => {
     // Fetch the existing data for the solution
     const fetchSolution = async () => {
       try {
-        const token = localStorage.getItem("token");
         const response = await axios.get(
           `http://localhost:5000/api/company/solar-solution/${id}`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            withCredentials: true, // Include credentials in the request
           }
         );
         const data = response.data.solution;
@@ -50,7 +47,7 @@ const UpdateSolutionForm = () => {
         setError("Failed to fetch solar solution data.");
       }
     };
-
+  
     fetchSolution();
   }, [id]);
 
@@ -58,7 +55,7 @@ const UpdateSolutionForm = () => {
     e.preventDefault();
     setError("");
     setSuccess("");
-
+  
     const formData = new FormData();
     formData.append("solutionName", solutionName);
     formData.append("solarPanelType", solarPanelType);
@@ -67,17 +64,16 @@ const UpdateSolutionForm = () => {
     formData.append("warranty", warranty);
     formData.append("price", price);
     if (solutionPic) formData.append("solutionPic", solutionPic);
-
+  
     try {
-      const token = localStorage.getItem("token");
       await axios.put(
         `http://localhost:5000/api/company/update-solar-solution/${id}`,
         formData,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
+          withCredentials: true, // Include credentials in the request
         }
       );
       setSuccess("Solar solution updated successfully!");

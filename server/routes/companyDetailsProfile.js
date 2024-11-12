@@ -7,10 +7,10 @@ const {
   CompanyGallery,
   SolarSolution,
 } = require("../models");
-const authenticateToken = require("../middleware/auth");
+const authenticateSession = require("../middleware/auth");
 const upload = require("../middleware/multer");
 
-router.get("/company-details", authenticateToken, async (req, res) => {
+router.get("/company-details", authenticateSession, async (req, res) => {
   if (req.user.role !== "COMPANY") {
     return res.status(403).json({ message: "Forbidden" });
   }
@@ -58,7 +58,7 @@ router.get("/company-details", authenticateToken, async (req, res) => {
 
 router.put(
   "/update-details",
-  authenticateToken,
+  authenticateSession,
   upload.single("avatar"),
   async (req, res) => {
     try {
@@ -103,7 +103,7 @@ router.put(
   }
 );
 
-router.get("/company-profile", authenticateToken, async (req, res) => {
+router.get("/company-profile", authenticateSession, async (req, res) => {
   try {
     const profile = await CompanyProfile.findOne({
       where: { userId: req.user.id },
@@ -142,7 +142,7 @@ router.get("/company-profile", authenticateToken, async (req, res) => {
 
 router.put(
   "/update-company-profile",
-  authenticateToken,
+  authenticateSession,
   upload.single("certificate"),
   async (req, res) => {
     const { description, overview, services } = req.body;
@@ -179,7 +179,7 @@ router.put(
 
 router.put(
   "/update-gallery",
-  authenticateToken,
+  authenticateSession,
   upload.array("images", 5),
   async (req, res) => {
     try {
@@ -218,7 +218,7 @@ router.put(
   }
 );
 
-router.delete("/company-gallery/:id", authenticateToken, async (req, res) => {
+router.delete("/company-gallery/:id", authenticateSession, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -252,7 +252,7 @@ router.delete("/company-gallery/:id", authenticateToken, async (req, res) => {
 
 router.post(
   "/add-solar-solution",
-  authenticateToken,
+  authenticateSession,
   upload.single("solutionPic"), // Single file upload for the solution picture
   async (req, res) => {
     try {
@@ -307,7 +307,7 @@ router.post(
   }
 );
 
-router.get("/solar-solution/:id", authenticateToken, async (req, res) => {
+router.get("/solar-solution/:id", authenticateSession, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -338,7 +338,7 @@ router.get("/solar-solution/:id", authenticateToken, async (req, res) => {
 
 router.put(
   "/update-solar-solution/:id",
-  authenticateToken,
+  authenticateSession,
   upload.single("solutionPic"),
   async (req, res) => {
     try {
@@ -392,7 +392,7 @@ router.put(
 
 router.delete(
   "/delete-solar-solution/:id",
-  authenticateToken,
+  authenticateSession,
   async (req, res) => {
     try {
       const { id } = req.params;

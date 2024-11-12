@@ -4,6 +4,9 @@ const dotenv = require('dotenv');
 const path = require('path');
 const http = require('http'); // Import http module
 const { Server } = require('socket.io'); // Import socket.io
+const session = require('express-session');
+const SequelizeStore = require('connect-session-sequelize')(session.Store);
+const { sequelize } = require('./models'); // Assuming you have a sequelize instance
 
 const app = express();
 const server = http.createServer(app); // Create an HTTP server
@@ -36,11 +39,35 @@ const maintenance = require('./routes/maintenance');
 
 dotenv.config();
 
+// Session store configuration
+const sessionStore = new SequelizeStore({
+  db: sequelize,
+});
+
+app.use(session({
+  secret: process.env.SESSION_SECRET, // Use a strong secret
+  store: sessionStore,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
+  },
+}));
+
+sessionStore.sync(); // Sync the session store with the database
+
 // Stripe webhook route should be defined before any middleware that parses the request body
 app.post('/api/stripe/webhook', express.raw({type: 'application/json'}), stripe);
 
 // Apply other middleware for all other routes
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
+}));
 app.use(express.json());
 
 app.get('/', (req, res) => {

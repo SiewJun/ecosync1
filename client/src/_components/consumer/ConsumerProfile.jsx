@@ -36,11 +36,10 @@ const ConsumerProfile = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const token = localStorage.getItem("token");
         const response = await axios.get(
           "http://localhost:5000/api/consumer/profile",
           {
-            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true, // Include credentials in the request
           }
         );
         const userData = response.data.user;
@@ -58,12 +57,11 @@ const ConsumerProfile = () => {
 
   const handleCreateProfile = async () => {
     try {
-      const token = localStorage.getItem("token");
       const response = await axios.post(
         "http://localhost:5000/api/consumer/profile",
         {},
         {
-          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true, // Include credentials in the request
         }
       );
       setConsumerProfile(response.data.profile);
@@ -114,7 +112,6 @@ const ConsumerProfile = () => {
     }
 
     try {
-      const token = localStorage.getItem("token");
       await axios.post(
         "http://localhost:5000/api/auth/change-password",
         {
@@ -122,7 +119,7 @@ const ConsumerProfile = () => {
           newPassword,
         },
         {
-          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true, // Include credentials in the request
         }
       );
       setSuccess("Password updated successfully!");

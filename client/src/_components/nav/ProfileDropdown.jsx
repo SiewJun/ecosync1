@@ -21,11 +21,12 @@ import {
   ClipboardList,
   Construction,
 } from "lucide-react";
+import axios from "axios";
 
 const ProfileDropdown = ({ user }) => {
   const handleLogout = async () => {
     try {
-      localStorage.removeItem("token");
+      await axios.post("http://localhost:5000/api/auth/logout", {}, { withCredentials: true });
       window.location.href = "/signin";
     } catch (error) {
       console.error("Error during logout:", error);

@@ -11,24 +11,25 @@ const Sidebar = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (token) {
-          const response = await axios.get("http://localhost:5000/api/auth/me", {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          setUser(response.data.user);
-        }
+        const response = await axios.get("http://localhost:5000/api/auth/me", {
+          withCredentials: true, // Include credentials in the request
+        });
+        setUser(response.data.user);
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
     };
-
+  
     fetchUser();
   }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/signin");
+  
+  const handleLogout = async () => {
+    try {
+      await axios.post("http://localhost:5000/api/auth/logout", {}, { withCredentials: true });
+      navigate("/signin");
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
   };
 
   return (

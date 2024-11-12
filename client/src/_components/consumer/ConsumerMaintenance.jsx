@@ -1,9 +1,22 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Calendar, CheckCircle, Loader2, FileText } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { motion } from "framer-motion";
@@ -17,11 +30,12 @@ const ConsumerMaintenance = () => {
   useEffect(() => {
     const fetchCompletedProjects = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/maintenance/consumer/completed-projects", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const response = await fetch(
+          "http://localhost:5000/api/maintenance/consumer/completed-projects",
+          {
+            credentials: "include", // Include credentials in the request
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Failed to fetch completed projects");
@@ -44,7 +58,7 @@ const ConsumerMaintenance = () => {
 
     fetchCompletedProjects();
   }, [toast]);
-
+  
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -57,7 +71,11 @@ const ConsumerMaintenance = () => {
     return (
       <div className="text-center py-8 text-red-500">
         <p>{error}</p>
-        <Button variant="destructive" className="mt-4" onClick={() => window.location.reload()}>
+        <Button
+          variant="destructive"
+          className="mt-4"
+          onClick={() => window.location.reload()}
+        >
           Try Again
         </Button>
       </div>
@@ -93,10 +111,17 @@ const ConsumerMaintenance = () => {
                   <TableRow key={project.id}>
                     <TableCell>#{project.id}</TableCell>
                     <TableCell>{project.company.username}</TableCell>
-                    <TableCell>{new Date(project.endDate).toLocaleDateString()}</TableCell>
                     <TableCell>
-                      <Link to={`/consumer-dashboard/consumer-maintenance/${project.id}`}>
-                        <Button variant="outline" className="flex items-center gap-2">
+                      {new Date(project.endDate).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      <Link
+                        to={`/consumer-dashboard/consumer-maintenance/${project.id}`}
+                      >
+                        <Button
+                          variant="outline"
+                          className="flex items-center gap-2"
+                        >
                           <Calendar className="w-4 h-4" />
                           View Records
                         </Button>
@@ -108,19 +133,19 @@ const ConsumerMaintenance = () => {
             </Table>
             {completedProjects.length === 0 && (
               <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              <Card className="bg-muted">
-                <CardContent className="flex flex-col items-center justify-center h-32">
-                  <FileText className="h-8 w-8 text-muted-foreground mb-2" />
-                  <p className="text-center text-sm text-muted-foreground">
-                    No completed project yet.
-                  </p>
-                </CardContent>
-              </Card>
-            </motion.div>
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Card className="bg-muted">
+                  <CardContent className="flex flex-col items-center justify-center h-32">
+                    <FileText className="h-8 w-8 text-muted-foreground mb-2" />
+                    <p className="text-center text-sm text-muted-foreground">
+                      No completed project yet.
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
             )}
           </div>
         </CardContent>

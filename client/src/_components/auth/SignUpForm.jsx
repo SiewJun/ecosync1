@@ -57,13 +57,13 @@ const SignUpForm = () => {
     setError("");
     setSuccess("");
     setIsSubmitting(true);
-
+  
     if (!formData.username) {
       setError("Username is required");
       setIsSubmitting(false);
       return;
     }
-
+  
     if (
       !passwordConditions.length ||
       !passwordConditions.upperCase ||
@@ -77,13 +77,13 @@ const SignUpForm = () => {
       setIsSubmitting(false);
       return;
     }
-
+  
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
       setIsSubmitting(false);
       return;
     }
-
+  
     try {
       const response = await fetch("http://localhost:5000/api/auth/register", {
         method: "POST",
@@ -92,7 +92,7 @@ const SignUpForm = () => {
         },
         body: JSON.stringify(formData),
       });
-
+  
       if (!response.ok) {
         const data = await response.json();
         setError(data.message);

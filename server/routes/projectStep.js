@@ -1,11 +1,11 @@
 const express = require('express');
 const { User, Project, ProjectStep } = require("../models");
 const router = express.Router();
-const authenticateToken = require("../middleware/auth");
+const authenticateSession = require("../middleware/auth");
 const upload = require("../middleware/multer");
 
 // POST /:projectId/steps
-router.post('/:projectId/steps', authenticateToken, async (req, res) => {
+router.post('/:projectId/steps', authenticateSession, async (req, res) => {
   const { projectId } = req.params;
   const { steps } = req.body;  // Assume this contains an array of steps data
 
@@ -36,7 +36,7 @@ router.post('/:projectId/steps', authenticateToken, async (req, res) => {
 });
 
 // GET /:projectId/steps
-router.get('/:projectId/steps', authenticateToken, async (req, res) => {
+router.get('/:projectId/steps', authenticateSession, async (req, res) => {
   const { projectId } = req.params;
 
   try {
@@ -59,7 +59,7 @@ router.get('/:projectId/steps', authenticateToken, async (req, res) => {
 });
 
 // GET /consumer/:projectId/steps
-router.get('/consumer/:projectId/steps', authenticateToken, async (req, res) => {
+router.get('/consumer/:projectId/steps', authenticateSession, async (req, res) => {
   const { projectId } = req.params;
 
   try {
@@ -89,7 +89,7 @@ router.get('/consumer/:projectId/steps', authenticateToken, async (req, res) => 
 });
 
 // GET /company/:projectId/steps
-router.get('/company/:projectId/steps', authenticateToken, async (req, res) => {
+router.get('/company/:projectId/steps', authenticateSession, async (req, res) => {
   const { projectId } = req.params;
 
   try {
@@ -119,7 +119,7 @@ router.get('/company/:projectId/steps', authenticateToken, async (req, res) => {
 });
 
 // PUT /:projectId/steps/:stepId
-router.put('/:projectId/steps/:stepId', authenticateToken, async (req, res) => {
+router.put('/:projectId/steps/:stepId', authenticateSession, async (req, res) => {
   const { projectId, stepId } = req.params;
   const { stepData } = req.body;
 
@@ -147,7 +147,7 @@ router.put('/:projectId/steps/:stepId', authenticateToken, async (req, res) => {
 });
 
 // DELETE /:projectId/steps/:stepId
-router.delete('/:projectId/steps/:stepId', authenticateToken, async (req, res) => {
+router.delete('/:projectId/steps/:stepId', authenticateSession, async (req, res) => {
   const { projectId, stepId } = req.params;
 
   try {
@@ -174,7 +174,7 @@ router.delete('/:projectId/steps/:stepId', authenticateToken, async (req, res) =
 });
 
 // PUT /:projectId/publish
-router.put('/:projectId/publish', authenticateToken, async (req, res) => {
+router.put('/:projectId/publish', authenticateSession, async (req, res) => {
   const { projectId } = req.params;
 
   try {
@@ -204,7 +204,7 @@ router.put('/:projectId/publish', authenticateToken, async (req, res) => {
 });
 
 // POST /consumer/:projectId/steps/:stepId/upload
-router.post('/consumer/:projectId/steps/:stepId/upload', authenticateToken, upload.array('documents', 5), async (req, res) => {
+router.post('/consumer/:projectId/steps/:stepId/upload', authenticateSession, upload.array('documents', 5), async (req, res) => {
   const { projectId, stepId } = req.params;
 
   try {
@@ -252,7 +252,7 @@ router.post('/consumer/:projectId/steps/:stepId/upload', authenticateToken, uplo
   }
 });
 
-router.put('/:projectId/steps/:stepId/complete', authenticateToken, async (req, res) => {
+router.put('/:projectId/steps/:stepId/complete', authenticateSession, async (req, res) => {
   const { projectId, stepId } = req.params;
 
   try {

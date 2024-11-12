@@ -23,10 +23,11 @@ const CompanyProfile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const token = localStorage.getItem("token");
         const response = await axios.get(
           "http://localhost:5000/api/company/company-profile",
-          { headers: { Authorization: `Bearer ${token}` } }
+          {
+            withCredentials: true, // Include credentials in the request
+          }
         );
         setProfile(response.data);
       } catch (error) {
@@ -58,9 +59,7 @@ const CompanyProfile = () => {
   const onDelete = async (id) => {
     try {
       await axios.delete(`${BASE_URL}api/company/delete-solar-solution/${id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+        withCredentials: true, // Include credentials in the request
       });
       window.location.reload(); // Reload the page after successful deletion
     } catch (error) {

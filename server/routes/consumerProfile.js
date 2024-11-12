@@ -1,12 +1,12 @@
 const express = require('express');
 const { User, ConsumerProfile } = require('../models');
 const router = express.Router();
-const authenticateToken = require("../middleware/auth");
+const authenticateSession = require("../middleware/auth");
 const upload = require("../middleware/multer");
 
-router.get('/profile', authenticateToken, async (req, res) => {
+router.get('/profile', authenticateSession, async (req, res) => {
   try {
-    const userId = req.user.id; // Assuming you have user ID from token middleware
+    const userId = req.session.userId; // Assuming you have user ID from session
 
     // Fetch user details
     const user = await User.findByPk(userId, {
@@ -30,9 +30,9 @@ router.get('/profile', authenticateToken, async (req, res) => {
   }
 });
 
-router.post('/profile', authenticateToken, async (req, res) => {
+router.post('/profile', authenticateSession, async (req, res) => {
   try {
-    const userId = req.user.id; // Assuming you have user ID from token middleware
+    const userId = req.session.userId; // Assuming you have user ID from session
     const { phoneNumber, address } = req.body;
 
     // Check if profile already exists
@@ -56,9 +56,9 @@ router.post('/profile', authenticateToken, async (req, res) => {
   }
 });
 
-router.put('/profile', authenticateToken, upload.single('avatar'), async (req, res) => {
+router.put('/profile', authenticateSession, upload.single('avatar'), async (req, res) => {
   try {
-    const userId = req.user.id; // Get the user ID from token middleware
+    const userId = req.session.userId; // Get the user ID from session
     const { username, email, phoneNumber, address } = req.body;
 
     // Fetch user

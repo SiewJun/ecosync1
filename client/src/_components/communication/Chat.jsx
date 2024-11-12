@@ -50,19 +50,16 @@ const ChatPage = () => {
   useEffect(() => {
     const fetchCompanyAndMessages = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) return;
-
         setLoading(true);
         const [companyResponse, messagesResponse] = await Promise.all([
           axios.get(`${BASE_URL}api/communication/companies/${companyId}`, {
-            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true, // Include credentials in the request
           }),
           axios.get(`${BASE_URL}api/communication/chats/${companyId}`, {
-            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true, // Include credentials in the request
           }),
         ]);
-
+  
         setCompany(companyResponse.data.company);
         const sortedMessages = messagesResponse.data.messages.sort(
           (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
@@ -80,7 +77,7 @@ const ChatPage = () => {
         setLoading(false);
       }
     };
-
+  
     fetchCompanyAndMessages();
   }, [companyId]);
 
@@ -106,26 +103,24 @@ const ChatPage = () => {
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if ((!message.trim() && !attachment) || sending) return;
-
+  
     try {
-      const token = localStorage.getItem("token");
-      if (!token) return;
       const formData = new FormData();
       formData.append("content", message);
       if (attachment) formData.append("attachment", attachment);
-
+  
       setSending(true);
       const response = await axios.post(
         `${BASE_URL}api/communication/chats/${companyId}/messages`,
         formData,
         {
+          withCredentials: true, // Include credentials in the request
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
         }
       );
-
+  
       const newMessage = response.data.message;
       socket.emit("sendMessage", newMessage); // Emit the message to the server
       if (!messageIds.current.has(newMessage.id)) {

@@ -6,11 +6,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MessageSquare, User, Loader2, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  MessageSquare,
+  User,
+  Loader2,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { io } from "socket.io-client"; // Import socket.io-client
 
 const BASE_URL = "http://localhost:5000/";
-const socket = io('http://localhost:5000/'); // Initialize socket connection
+const socket = io("http://localhost:5000/"); // Initialize socket connection
 
 const ITEMS_PER_PAGE = 10;
 
@@ -24,11 +31,10 @@ const ChatListCompany = () => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const token = localStorage.getItem("token");
         const response = await axios.get(
           `${BASE_URL}api/communication/chats/company`,
           {
-            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true, // Include credentials in the request
           }
         );
         setChats(response.data.chats);
@@ -74,7 +80,7 @@ const ChatListCompany = () => {
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   if (loading) {

@@ -74,7 +74,10 @@ const SolarSolutionComparison = () => {
     const fetchSolarSolutions = async () => {
       try {
         const response = await axios.get(
-          `${BASE_URL}api/company-services/solar-solutions`
+          `${BASE_URL}api/company-services/solar-solutions`,
+          {
+            withCredentials: true, // Include credentials in the request
+          }
         );
         setSolutions(response.data);
         setFilteredSolutions(response.data);
@@ -92,7 +95,7 @@ const SolarSolutionComparison = () => {
         console.error("Error fetching solar solutions:", error);
       }
     };
-
+  
     fetchSolarSolutions();
   }, []);
 

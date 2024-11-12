@@ -13,10 +13,10 @@ const {
   CompanyProfile,
   Project
 } = require("../models");
-const authenticateToken = require("../middleware/auth");
+const authenticateSession = require("../middleware/auth");
 const checkStripeAccount = require('../middleware/checkStripeAccount');
 
-router.post("/submit-quotation", authenticateToken, async (req, res) => {
+router.post("/submit-quotation", authenticateSession, async (req, res) => {
   try {
     const consumerId = req.user.id;
 
@@ -86,7 +86,7 @@ router.post("/submit-quotation", authenticateToken, async (req, res) => {
   }
 });
 
-router.get("/consumer-quotations", authenticateToken, async (req, res) => {
+router.get("/consumer-quotations", authenticateSession, async (req, res) => {
   const consumerId = req.user.id;
   const userRole = req.user.role;
 
@@ -150,7 +150,7 @@ router.get("/consumer-quotations", authenticateToken, async (req, res) => {
   }
 });
 
-router.get("/consumer-quotations/:versionId", authenticateToken, async (req, res) => {
+router.get("/consumer-quotations/:versionId", authenticateSession, async (req, res) => {
   const versionId = req.params.versionId;
   const userRole = req.user.role;
 
@@ -198,7 +198,7 @@ router.get("/consumer-quotations/:versionId", authenticateToken, async (req, res
   }
 });
 
-router.post("/reject/:id", authenticateToken, async (req, res) => {
+router.post("/reject/:id", authenticateSession, async (req, res) => {
   const quotationId = req.params.id;
   const consumerId = req.user.id;
   const userRole = req.user.role;
@@ -227,11 +227,11 @@ router.post("/reject/:id", authenticateToken, async (req, res) => {
   }
 });
 
-router.get("/company-quotations", authenticateToken, async (req, res) => {
+router.get("/company-quotations", authenticateSession, async (req, res) => {
   const companyId = req.user.id;
   const userRole = req.user.role;
 
-  // Check if the role is CONSUMER
+  // Check if the role is COMPANY
   if (userRole !== "COMPANY") {
     return res.status(403).json({ message: "Forbidden: Access is denied" });
   }
@@ -282,7 +282,7 @@ router.get("/company-quotations", authenticateToken, async (req, res) => {
   }
 });
 
-router.post("/draft", authenticateToken, checkStripeAccount, async (req, res) => {
+router.post("/draft", authenticateSession, checkStripeAccount, async (req, res) => {
   const userRole = req.user.role;
 
   if (userRole !== "COMPANY") {
@@ -366,7 +366,7 @@ router.post("/draft", authenticateToken, checkStripeAccount, async (req, res) =>
   }
 });
 
-router.post("/finalize", authenticateToken, checkStripeAccount, async (req, res) => {
+router.post("/finalize", authenticateSession, checkStripeAccount, async (req, res) => {
   const userRole = req.user.role;
 
   if (userRole !== "COMPANY") {
@@ -475,7 +475,7 @@ router.post("/finalize", authenticateToken, checkStripeAccount, async (req, res)
 });
 
 // New endpoint to fetch the latest quotation version
-router.get("/latest/:quotationId", authenticateToken, checkStripeAccount, async (req, res) => {
+router.get("/latest/:quotationId", authenticateSession, checkStripeAccount, async (req, res) => {
   const { quotationId } = req.params;
   const userRole = req.user.role;
 
@@ -531,7 +531,7 @@ router.get("/latest/:quotationId", authenticateToken, checkStripeAccount, async 
   }
 });
 
-router.post("/accept/:quotationVersionId", authenticateToken, async (req, res) => {
+router.post("/accept/:quotationVersionId", authenticateSession, async (req, res) => {
   const { quotationVersionId } = req.params;
   const consumerId = req.user.id;
   const userRole = req.user.role;

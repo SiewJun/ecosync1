@@ -35,7 +35,11 @@ const ConsumerDashboard = () => {
 
   const handleLogout = async () => {
     try {
-      localStorage.removeItem("token");
+      await axios.post(
+        "http://localhost:5000/api/auth/logout",
+        {},
+        { withCredentials: true }
+      );
       window.location.href = "/signin";
     } catch (error) {
       console.error("Error during logout:", error);
@@ -45,19 +49,13 @@ const ConsumerDashboard = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (token) {
-          const response = await axios.get(
-            "http://localhost:5000/api/auth/me",
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
-          setUser(response.data.user);
-        }
+        const response = await axios.get("http://localhost:5000/api/auth/me", {
+          withCredentials: true, // Include credentials in the request
+        });
+        setUser(response.data.user);
       } catch (error) {
         if (error.response && error.response.status === 403) {
-          localStorage.removeItem("token");
+          // Handle unauthorized access
         } else {
           console.error("Error fetching user:", error);
         }

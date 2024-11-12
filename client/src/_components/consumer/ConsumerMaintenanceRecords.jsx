@@ -28,6 +28,7 @@ const ConsumerMaintenanceRecords = () => {
   const [maintenanceRecords, setMaintenanceRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [selectedMaintenance, setSelectedMaintenance] = useState(null);
   const [rescheduleForm, setRescheduleForm] = useState({
     proposedDates: [],
@@ -41,9 +42,7 @@ const ConsumerMaintenanceRecords = () => {
         const response = await fetch(
           `http://localhost:5000/api/maintenance/project/${projectId}`,
           {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
+            credentials: "include", // Include credentials in the request
           }
         );
 
@@ -53,7 +52,7 @@ const ConsumerMaintenanceRecords = () => {
 
         const data = await response.json();
         setMaintenanceRecords(data.maintenanceRecords);
-      // eslint-disable-next-line no-unused-vars
+        // eslint-disable-next-line no-unused-vars
       } catch (err) {
         setError("Failed to load maintenance records. Please try again.");
         toast({
@@ -75,9 +74,7 @@ const ConsumerMaintenanceRecords = () => {
         `http://localhost:5000/api/maintenance/${maintenanceId}/confirm`,
         {
           method: "PUT",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          credentials: "include", // Include credentials in the request
         }
       );
 
@@ -89,9 +86,7 @@ const ConsumerMaintenanceRecords = () => {
       const updatedRecords = await fetch(
         `http://localhost:5000/api/maintenance/project/${projectId}`,
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          credentials: "include", // Include credentials in the request
         }
       ).then((res) => res.json());
 
@@ -100,7 +95,7 @@ const ConsumerMaintenanceRecords = () => {
         title: "Success",
         description: "Maintenance confirmed successfully",
       });
-    // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line no-unused-vars
     } catch (err) {
       setError("Failed to confirm maintenance. Please try again.");
       toast({
@@ -118,9 +113,9 @@ const ConsumerMaintenanceRecords = () => {
         {
           method: "PUT",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "application/json",
           },
+          credentials: "include", // Include credentials in the request
           body: JSON.stringify(rescheduleForm),
         }
       );
@@ -133,9 +128,7 @@ const ConsumerMaintenanceRecords = () => {
       const updatedRecords = await fetch(
         `http://localhost:5000/api/maintenance/project/${projectId}`,
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          credentials: "include", // Include credentials in the request
         }
       ).then((res) => res.json());
 
@@ -145,7 +138,7 @@ const ConsumerMaintenanceRecords = () => {
         title: "Success",
         description: "Maintenance rescheduled successfully",
       });
-    // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line no-unused-vars
     } catch (err) {
       setError("Failed to reschedule maintenance. Please try again.");
       toast({

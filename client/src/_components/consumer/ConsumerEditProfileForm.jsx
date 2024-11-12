@@ -31,11 +31,10 @@ const ConsumerEditProfile = () => {
     // Fetch current user and consumer profile details to populate form
     const fetchDetails = async () => {
       try {
-        const token = localStorage.getItem("token");
         const response = await axios.get(
           "http://localhost:5000/api/consumer/profile",
           {
-            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true, // Include credentials in the request
           }
         );
         setUser(response.data.user);
@@ -51,7 +50,7 @@ const ConsumerEditProfile = () => {
       }
     };
     fetchDetails();
-  }, []);
+  }, []);  
 
   useEffect(() => {
     loadGoogleMaps(() => {
@@ -89,37 +88,35 @@ const ConsumerEditProfile = () => {
     setError("");
     setSuccess("");
     setIsSubmitting(true);
-
+  
     try {
-      const token = localStorage.getItem("token");
       const formDataObj = new FormData();
       formDataObj.append("username", formData.username);
       formDataObj.append("email", formData.email);
       formDataObj.append("phoneNumber", formData.phoneNumber);
       formDataObj.append("address", formData.address);
-
+  
       // Add avatar if selected
       if (avatar) {
         formDataObj.append("avatar", avatar);
       }
-
+  
       await axios.put(
         "http://localhost:5000/api/consumer/profile",
         formDataObj,
         {
+          withCredentials: true, // Include credentials in the request
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
         }
       );
-
+  
       setSuccess("Profile updated successfully!");
       navigate("/consumer-dashboard/consumer-profile");
     } catch (error) {
       setError(
-        "Error updating profile: " + error.response?.data?.message ||
-          error.message
+        "Error updating profile: " + (error.response?.data?.message || error.message)
       );
     } finally {
       setIsSubmitting(false);

@@ -56,7 +56,7 @@ const ResetPasswordForm = () => {
     }
 
     try {
-      await axios.post('http://localhost:5000/api/auth/reset-password', { token, password });
+      await axios.post('http://localhost:5000/api/auth/reset-password', { token, password }, { withCredentials: true });
       setMessage('Password has been reset successfully');
     } catch (error) {
       setError(error.response.data.message || 'An error occurred');

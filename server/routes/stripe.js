@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Stripe = require("stripe");
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
-const authenticateToken = require("../middleware/auth");
+const authenticateSession = require("../middleware/auth");
 const { User, CompanyDetail, Project, ProjectStep } = require("../models");
 
 // Webhook handler
@@ -116,7 +116,7 @@ async function handlePaymentIntentSucceeded(paymentIntent) {
   // You might want to update the project step here as well, similar to handleCheckoutSessionCompleted
 }
 
-router.post("/create-stripe-account", authenticateToken, async (req, res) => {
+router.post("/create-stripe-account", authenticateSession, async (req, res) => {
   const { email } = req.body;
 
   try {
@@ -170,7 +170,7 @@ router.post("/create-stripe-account", authenticateToken, async (req, res) => {
   }
 });
 
-router.get("/check-onboarding-status", authenticateToken, async (req, res) => {
+router.get("/check-onboarding-status", authenticateSession, async (req, res) => {
   try {
     const companyDetail = await CompanyDetail.findOne({
       where: { userId: req.user.id },
@@ -205,7 +205,7 @@ router.get("/check-onboarding-status", authenticateToken, async (req, res) => {
   }
 });
 
-router.post("/create-checkout-session", authenticateToken, async (req, res) => {
+router.post("/create-checkout-session", authenticateSession, async (req, res) => {
   const { projectId, stepId } = req.body;
 
   try {

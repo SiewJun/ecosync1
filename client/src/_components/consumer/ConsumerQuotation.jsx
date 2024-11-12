@@ -57,11 +57,10 @@ const ConsumerQuotation = () => {
     const fetchQuotations = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem("token");
         const response = await axios.get(
           "http://localhost:5000/api/quotation/consumer-quotations",
           {
-            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true, // Include credentials in the request
           }
         );
         setQuotations(response.data.quotations);
@@ -75,7 +74,7 @@ const ConsumerQuotation = () => {
         setLoading(false);
       }
     };
-
+  
     fetchQuotations();
   }, []);
 
@@ -95,12 +94,11 @@ const ConsumerQuotation = () => {
 
   const handleRejectQuotation = async () => {
     try {
-      const token = localStorage.getItem("token");
       await axios.post(
         `http://localhost:5000/api/quotation/reject/${selectedQuotation.id}`,
         {},
         {
-          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true, // Include credentials in the request
         }
       );
       setQuotations(

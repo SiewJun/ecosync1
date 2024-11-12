@@ -24,10 +24,11 @@ import {
 import { Link } from "react-router-dom";
 import { DialogTitle, DialogDescription } from "@radix-ui/react-dialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import axios from "axios";
 
 const handleLogout = async () => {
   try {
-    localStorage.removeItem("token");
+    await axios.post("http://localhost:5000/api/auth/logout", {}, { withCredentials: true });
     window.location.href = "/signin";
   } catch (error) {
     console.error("Error during logout:", error);

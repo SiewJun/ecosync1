@@ -61,9 +61,12 @@ const QuotationDrawer = ({
 
   const initializeAutocomplete = () => {
     if (addressInputRef.current) {
-      autocompleteRef.current = new window.google.maps.places.Autocomplete(addressInputRef.current, {
-        types: ["address"],
-      });
+      autocompleteRef.current = new window.google.maps.places.Autocomplete(
+        addressInputRef.current,
+        {
+          types: ["address"],
+        }
+      );
 
       autocompleteRef.current.addListener("place_changed", () => {
         const place = autocompleteRef.current.getPlace();
@@ -114,34 +117,31 @@ const QuotationDrawer = ({
     setQuotationSuccess(false);
 
     try {
-      const token = localStorage.getItem("token");
-      if (token) {
-        await axios.post(
-          `${BASE_URL}api/quotation/submit-quotation`,
-          {
-            ...formData,
-            companyId,
-          },
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        setQuotationSuccess(true);
-        setTimeout(() => {
-          setIsDrawerOpen(false);
-          setFormData({
-            salutation: "",
-            name: "",
-            email: "",
-            phoneNumber: "",
-            electricityBill: "",
-            propertyType: "",
-            address: "",
-            state: "",
-          });
-        }, 2000);
-      }
-      // eslint-disable-next-line no-unused-vars
+      await axios.post(
+        `${BASE_URL}api/quotation/submit-quotation`,
+        {
+          ...formData,
+          companyId,
+        },
+        {
+          withCredentials: true, // Include credentials in the request
+        }
+      );
+      setQuotationSuccess(true);
+      setTimeout(() => {
+        setIsDrawerOpen(false);
+        setFormData({
+          salutation: "",
+          name: "",
+          email: "",
+          phoneNumber: "",
+          electricityBill: "",
+          propertyType: "",
+          address: "",
+          state: "",
+        });
+      }, 2000);
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       setQuotationError(
         "Failed to submit the quotation request. Please try again."
@@ -157,13 +157,13 @@ const QuotationDrawer = ({
   };
 
   return (
-    <Drawer 
-      open={isDrawerOpen} 
+    <Drawer
+      open={isDrawerOpen}
       onOpenChange={(open) => {
         if (!open) {
           // Only allow closing if not interacting with autocomplete
           const activeElement = document.activeElement;
-          if (!activeElement || !activeElement.classList.contains('pac-item')) {
+          if (!activeElement || !activeElement.classList.contains("pac-item")) {
             setIsDrawerOpen(false);
           }
         } else {
@@ -171,13 +171,13 @@ const QuotationDrawer = ({
         }
       }}
     >
-      <DrawerContent 
+      <DrawerContent
         className="w-full h-screen sm:h-auto sm:max-h-[95vh] sm:rounded-t-xl"
         onPointerDownOutside={(e) => {
           const target = e.target;
           if (target instanceof Element) {
             // Prevent closing when clicking on autocomplete items
-            if (target.closest('.pac-container')) {
+            if (target.closest(".pac-container")) {
               e.preventDefault();
             }
           }
@@ -357,8 +357,12 @@ const QuotationDrawer = ({
                   <SelectItem value="Sarawak">Sarawak</SelectItem>
                   <SelectItem value="Selangor">Selangor</SelectItem>
                   <SelectItem value="Terengganu">Terengganu</SelectItem>
-                  <SelectItem value="Wilayah Persekutuan Kuala Lumpur">Kuala Lumpur</SelectItem>
-                  <SelectItem value="Wilayah Persekutuan Labuan">Labuan</SelectItem>
+                  <SelectItem value="Wilayah Persekutuan Kuala Lumpur">
+                    Kuala Lumpur
+                  </SelectItem>
+                  <SelectItem value="Wilayah Persekutuan Labuan">
+                    Labuan
+                  </SelectItem>
                   <SelectItem value="Putrajaya">Putrajaya</SelectItem>
                 </SelectContent>
               </Select>
@@ -378,7 +382,10 @@ const QuotationDrawer = ({
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <Alert variant="default" className="mt-6 bg-green-100 border-green-300 text-green-800">
+              <Alert
+                variant="default"
+                className="mt-6 bg-green-100 border-green-300 text-green-800"
+              >
                 <AlertDescription className="flex font-medium mr-2">
                   <Check className="h-5 w-5 flex justify-center items-center mr-2" />
                   Quotation request submitted successfully!

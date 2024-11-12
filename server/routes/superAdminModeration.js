@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { User } = require("../models");
-const authenticateToken = require("../middleware/auth");
+const authenticateSession = require("../middleware/auth");
 const bcrypt = require("bcrypt");
 const { body, validationResult } = require("express-validator");
 const cuid = require('cuid');
@@ -13,7 +13,7 @@ const validateCreateAdmin = [
   body("username").notEmpty().withMessage("Name is required"),
 ];
 
-router.post("/create-admin", authenticateToken, validateCreateAdmin, async (req, res) => {
+router.post("/create-admin", authenticateSession, validateCreateAdmin, async (req, res) => {
   if (req.user.role !== "SUPERADMIN") {
     return res.status(403).json({ message: "Forbidden" });
   }
@@ -53,7 +53,7 @@ router.post("/create-admin", authenticateToken, validateCreateAdmin, async (req,
 });
 
 // View all user accounts
-router.get("/users", authenticateToken, async (req, res) => {
+router.get("/users", authenticateSession, async (req, res) => {
   if (req.user.role !== "SUPERADMIN") {
     return res.status(403).json({ message: "Forbidden" });
   }
@@ -68,7 +68,7 @@ router.get("/users", authenticateToken, async (req, res) => {
 });
 
 // Demote admin to regular user
-router.put("/demote-admin/:id", authenticateToken, async (req, res) => {
+router.put("/demote-admin/:id", authenticateSession, async (req, res) => {
   if (req.user.role !== "SUPERADMIN") {
     return res.status(403).json({ message: "Forbidden" });
   }
@@ -96,7 +96,7 @@ router.put("/demote-admin/:id", authenticateToken, async (req, res) => {
 });
 
 // Delete user account
-router.delete("/delete-user/:id", authenticateToken, async (req, res) => {
+router.delete("/delete-user/:id", authenticateSession, async (req, res) => {
   if (req.user.role !== "SUPERADMIN") {
     return res.status(403).json({ message: "Forbidden" });
   }

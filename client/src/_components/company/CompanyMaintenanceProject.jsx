@@ -30,7 +30,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
-import { useNavigate } from "react-router-dom"; // Add this import
+import { useNavigate } from "react-router-dom";
 
 const CompanyMaintenanceProject = () => {
   const [activeTab, setActiveTab] = useState("completed");
@@ -85,11 +85,12 @@ const CompanyMaintenanceProject = () => {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
+          credentials: "include", // Include credentials in the request
         }
       );
       const data = await response.json();
       setCompletedProjects(data.projects);
-      // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast({
         title: "Error",
@@ -107,11 +108,12 @@ const CompanyMaintenanceProject = () => {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
+          credentials: "include", // Include credentials in the request
         }
       );
       const data = await response.json();
       setMaintenanceSchedules(data.schedules);
-      // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast({
         title: "Error",
@@ -133,9 +135,10 @@ const CompanyMaintenanceProject = () => {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify(schedulingForm),
+          credentials: "include", // Include credentials in the request
         }
       );
-
+  
       if (response.ok) {
         toast({
           title: "Success",
@@ -144,7 +147,7 @@ const CompanyMaintenanceProject = () => {
         setIsSchedulingOpen(false);
         fetchMaintenanceSchedules();
       }
-      // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast({
         title: "Error",
@@ -164,9 +167,10 @@ const CompanyMaintenanceProject = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
+          credentials: "include", // Include credentials in the request
         }
       );
-
+  
       if (response.ok) {
         toast({
           title: "Success",
@@ -174,7 +178,7 @@ const CompanyMaintenanceProject = () => {
         });
         fetchMaintenanceSchedules();
       }
-      // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast({
         title: "Error",
@@ -195,9 +199,10 @@ const CompanyMaintenanceProject = () => {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify({ reason: rejectionReason }),
+          credentials: "include", // Include credentials in the request
         }
       );
-
+  
       if (response.ok) {
         toast({
           title: "Success",
@@ -206,7 +211,7 @@ const CompanyMaintenanceProject = () => {
         setIsRejectDialogOpen(false);
         fetchMaintenanceSchedules();
       }
-      // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast({
         title: "Error",
@@ -226,9 +231,10 @@ const CompanyMaintenanceProject = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
+          credentials: "include", // Include credentials in the request
         }
       );
-
+  
       if (response.ok) {
         toast({
           title: "Success",
@@ -236,7 +242,7 @@ const CompanyMaintenanceProject = () => {
         });
         fetchMaintenanceSchedules();
       }
-      // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast({
         title: "Error",

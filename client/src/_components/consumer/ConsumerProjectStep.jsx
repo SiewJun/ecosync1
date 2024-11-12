@@ -46,7 +46,6 @@ export default function ConsumerProjectSteps() {
   const [documentFiles, setDocumentFiles] = useState([]);
   const { toast } = useToast();
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
     fetchProjectSteps();
@@ -57,7 +56,7 @@ export default function ConsumerProjectSteps() {
       const response = await axios.get(
         `http://localhost:5000/api/project-step/consumer/${projectId}/steps`,
         {
-          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true, // Include credentials in the request
         }
       );
       setProject(response.data.project);
@@ -67,7 +66,7 @@ export default function ConsumerProjectSteps() {
       );
       setCurrentStep(pendingSteps.length > 0 ? pendingSteps[0] : null);
       setLoading(false);
-      // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast({
         title: "Error",
@@ -84,7 +83,7 @@ export default function ConsumerProjectSteps() {
       !["DEPOSIT", "FINAL_PAYMENT"].includes(currentStep.stepType)
     )
       return;
-
+  
     try {
       const response = await axios.post(
         `http://localhost:5000/api/stripe/create-checkout-session`,
@@ -93,11 +92,11 @@ export default function ConsumerProjectSteps() {
           stepId: currentStep.id,
         },
         {
-          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true, // Include credentials in the request
         }
       );
       window.location.href = response.data.url;
-      // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast({
         title: "Error",
@@ -109,7 +108,7 @@ export default function ConsumerProjectSteps() {
 
   const handleStepCompletion = async () => {
     if (!currentStep) return;
-
+  
     if (
       currentStep.stepType === "DOCUMENT_UPLOAD" &&
       documentFiles.length === 0
@@ -122,35 +121,35 @@ export default function ConsumerProjectSteps() {
       });
       return;
     }
-
+  
     try {
       if (currentStep.stepType === "DOCUMENT_UPLOAD") {
         const formData = new FormData();
         documentFiles.forEach((file) => {
           formData.append("documents", file);
         });
-
+  
         await axios.post(
           `http://localhost:5000/api/project-step/consumer/${projectId}/steps/${currentStep.id}/upload`,
           formData,
           {
             headers: {
-              Authorization: `Bearer ${token}`,
               "Content-Type": "multipart/form-data",
             },
+            withCredentials: true, // Include credentials in the request
           }
         );
       }
-
+  
       toast({
         title: "Success",
         description: `${currentStep.stepName} completed successfully.`,
       });
-
+  
       fetchProjectSteps();
       setDialogOpen(false);
       setDocumentFiles([]);
-      // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast({
         title: "Error",

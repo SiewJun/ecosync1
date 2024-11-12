@@ -48,7 +48,11 @@ const CompanyDashboard = () => {
 
   const handleLogout = async () => {
     try {
-      localStorage.removeItem("token");
+      await axios.post(
+        "http://localhost:5000/api/auth/logout",
+        {},
+        { withCredentials: true }
+      );
       window.location.href = "/signin";
     } catch (error) {
       console.error("Error during logout:", error);
@@ -58,19 +62,13 @@ const CompanyDashboard = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (token) {
-          const response = await axios.get(
-            "http://localhost:5000/api/auth/me",
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
-          setUser(response.data.user);
-        }
+        const response = await axios.get("http://localhost:5000/api/auth/me", {
+          withCredentials: true, // Include credentials in the request
+        });
+        setUser(response.data.user);
       } catch (error) {
         if (error.response && error.response.status === 403) {
-          localStorage.removeItem("token");
+          console.error("Access forbidden:", error);
         } else {
           console.error("Error fetching user:", error);
         }
@@ -335,10 +333,12 @@ const CompanyDashboard = () => {
               <Route path="/stripe-onboarding" element={<StripeOnboarding />} />
               <Route
                 path="/company-maintenance"
-                element={<CompanyMaintenanceProject />}  />
-                <Route
+                element={<CompanyMaintenanceProject />}
+              />
+              <Route
                 path="/company-maintenance/:projectId"
-                element={<CompanyMaintenanceRecords />}  />
+                element={<CompanyMaintenanceRecords />}
+              />
               <Route path="*" element={<NotFoundPage />} />
               {/* Add other routes here */}
             </Routes>

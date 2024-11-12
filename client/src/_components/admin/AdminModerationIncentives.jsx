@@ -70,9 +70,7 @@ const IncentivesManagement = () => {
       const response = await fetch(
         "http://localhost:5000/api/admin-moderation/incentives",
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          credentials: "include", // Include credentials in the request
         }
       );
       const data = await response.json();
@@ -109,9 +107,9 @@ const IncentivesManagement = () => {
         method,
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify(formData),
+        credentials: "include", // Include credentials in the request
       });
 
       if (response.ok) {
@@ -136,18 +134,16 @@ const IncentivesManagement = () => {
 
   const handleDeleteConfirm = async () => {
     if (!incentiveToDelete?.id) return;
-
+  
     try {
       const response = await fetch(
         `http://localhost:5000/api/admin-moderation/incentives/${incentiveToDelete.id}`,
         {
           method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          credentials: "include", // Include credentials in the request
         }
       );
-
+  
       if (response.ok) {
         await fetchIncentives();
         setIsDeleteDialogOpen(false);

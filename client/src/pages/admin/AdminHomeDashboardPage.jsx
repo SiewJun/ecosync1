@@ -10,23 +10,23 @@ const AdminHomeDashboardPage = () => {
     const fetchUser = async () => {
       try {
         const response = await axios.get("http://localhost:5000/api/auth/me", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          withCredentials: true, // Include credentials in the request
         });
         setUser(response.data.user);
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
     };
-
+  
     fetchUser();
   }, []);
 
   if (!user) {
-    <div className="flex justify-center items-center h-64">
-      <Loader2 className="h-8 w-8 animate-spin text-primary" />
-    </div>;
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
   }
 
   return (

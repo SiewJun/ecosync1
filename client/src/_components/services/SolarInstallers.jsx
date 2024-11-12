@@ -36,47 +36,36 @@ const SolarInstallers = ({ companies }) => {
 
   useEffect(() => {
     const fetchUserRole = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setUserRole(null);
-        return;
-      }
-
       try {
         const response = await axios.get(`${BASE_URL}api/auth/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          withCredentials: true, // Include credentials in the request
         });
         setUserRole(response.data.user.role);
-        // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line no-unused-vars
       } catch (error) {
         setUserRole(null);
       }
     };
-
+  
     fetchUserRole();
   }, []);
-
+  
   const handleChatClick = async (companyId) => {
     try {
-      const token = localStorage.getItem("token");
       await axios.post(
         `${BASE_URL}api/communication/chats/initiate`,
         { companyId },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          withCredentials: true, // Include credentials in the request
         }
       );
-
+  
       navigate(`/consumer-dashboard/chat/${companyId}`);
     } catch (error) {
       console.error("Failed to initiate chat", error);
     }
   };
-
+  
   return (
     <ScrollArea className="h-[calc(100vh-240px)] sm:h-[calc(100vh-280px)]">
       <div className="space-y-6 p-4 sm:p-6 md:p-8">

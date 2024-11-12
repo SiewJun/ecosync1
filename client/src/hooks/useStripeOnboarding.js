@@ -9,7 +9,7 @@ const useStripeOnboarding = () => {
     const checkOnboardingStatus = async () => {
       try {
         const response = await axios.get('http://localhost:5000/api/stripe/check-onboarding-status', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+          withCredentials: true, // Include credentials in the request
         });
         setIsOnboarded(response.data.isOnboardingComplete);
       // eslint-disable-next-line no-unused-vars

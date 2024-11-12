@@ -60,18 +60,16 @@ const SolarEstimation = () => {
     try {
       const userResponse = await fetch("http://localhost:5000/api/auth/me", {
         method: "GET",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+        credentials: "include", // Include credentials in the request
       });
-
+  
       if (!userResponse.ok) {
         setIsAuthDialogOpen(true);
         return;
       }
-
+  
       const userData = await userResponse.json();
-
+  
       if (userData.user.role !== "CONSUMER") {
         toast({
           title: "Permission Denied",
@@ -81,7 +79,7 @@ const SolarEstimation = () => {
         });
         return;
       }
-
+  
       await submitQuotation(companyId);
       setSubmittedQuotations([...submittedQuotations, companyId]); // Mark quotation as submitted
     } catch (error) {
@@ -108,19 +106,19 @@ const SolarEstimation = () => {
         address: formData.address,
         state: formData.state,
       };
-
+  
       const response = await fetch(
         "http://localhost:5000/api/quotation/submit-quotation",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
+          credentials: "include", // Include credentials in the request
           body: JSON.stringify(quotationData),
         }
       );
-
+  
       if (response.ok) {
         toast({
           title: "Success",
@@ -142,12 +140,11 @@ const SolarEstimation = () => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include", // Include credentials in the request
         body: JSON.stringify({ email, password }),
       });
-
+  
       if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem("token", data.token);
         toast({
           title: "Logged In",
           description: "You have successfully logged in.",
@@ -170,9 +167,10 @@ const SolarEstimation = () => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include", // Include credentials in the request
         body: JSON.stringify({ username, email, password, role: "CONSUMER" }),
       });
-
+  
       if (response.ok) {
         toast({
           title: "Registration Successful",
@@ -208,7 +206,10 @@ const SolarEstimation = () => {
       const response = await fetch(
         `http://localhost:5000/api/get-estimate/nearby-companies?address=${encodeURIComponent(
           formData.address
-        )}`
+        )}`,
+        {
+          credentials: "include", // Include credentials in the request
+        }
       );
       if (!response.ok) throw new Error("Failed to fetch nearby companies");
       const data = await response.json();
