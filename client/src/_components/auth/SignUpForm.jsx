@@ -108,8 +108,8 @@ const SignUpForm = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen">
-      <Card className="w-full max-w-sm">
+    <div className="flex items-center justify-center">
+      <Card className="w-full max-w-sm mt-16 mb-16">
         <CardHeader>
           <CardTitle className="text-2xl">Register</CardTitle>
           <CardDescription>

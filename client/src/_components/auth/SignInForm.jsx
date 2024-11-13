@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AlertCircle, Eye, EyeOff } from "lucide-react";
+import { AlertCircle, Eye, EyeOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 
@@ -11,10 +11,12 @@ const SignInForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       await axios.post(
         "http://localhost:5000/api/auth/login",
@@ -24,6 +26,8 @@ const SignInForm = () => {
       navigate("/");
     } catch (error) {
       setError(error.response?.data?.message || "An error occurred");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -87,8 +91,12 @@ const SignInForm = () => {
               </div>
             )}
             <div className="flex flex-col space-y-4">
-              <Button type="submit" className="w-full">
-                Login
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? (
+                  <Loader2 className="animate-spin h-5 w-5 mx-auto" />
+                ) : (
+                  "Login"
+                )}
               </Button>
             </div>
           </form>
