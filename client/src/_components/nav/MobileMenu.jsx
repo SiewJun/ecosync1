@@ -292,7 +292,11 @@ MenuItem.propTypes = {
 
 MenuSection.propTypes = {
   title: PropTypes.string.isRequired,
-  children: PropTypes.node.isRequired,
+  children: PropTypes.node,
+};
+
+MenuSection.defaultProps = {
+  children: null,
 };
 
 export default MobileMenu;
