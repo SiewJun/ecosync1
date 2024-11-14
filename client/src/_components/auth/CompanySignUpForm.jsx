@@ -55,7 +55,7 @@ const CompanySignUpForm = () => {
     if (businessLicense) {
       formData.append("businessLicense", businessLicense);
     }
-  
+
     try {
       await axios.post(
         "http://localhost:5000/api/auth/register-company",
@@ -81,65 +81,65 @@ const CompanySignUpForm = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen">
-    <div className="max-w-2xl mx-auto p-12 shadow-lg rounded-lg border">
-      <h2 className="text-3xl font-bold mb-16 text-center">Company Application</h2>
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="col-span-1">
-          <Label htmlFor="companyName">Company Name</Label>
-          <Input id="companyName" value={companyName} onChange={(e) => setCompanyName(e.target.value)} required className="mt-1" />
-        </div>
-
-        <div className="col-span-1">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="mt-1" />
-        </div>
-
-        <div className="col-span-1">
-          <Label htmlFor="phoneNumber">Phone Number</Label>
-          <Input id="phoneNumber" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} required className="mt-1" />
-        </div>
-
-        <div className="col-span-1">
-          <Label htmlFor="address">Address</Label>
-          <Input id="address" value={address} onChange={(e) => setAddress(e.target.value)} ref={addressInputRef} required className="mt-1" />
-        </div>
-
-        <div className="col-span-1">
-          <Label htmlFor="website">Website</Label>
-          <Input id="website" value={website} onChange={(e) => setWebsite(e.target.value)} required className="mt-1" />
-        </div>
-
-        <div className="col-span-1">
-          <Label htmlFor="registrationNumber">Registration Number</Label>
-          <Input id="registrationNumber" value={registrationNumber} onChange={(e) => setRegistrationNumber(e.target.value)} required className="mt-1" />
-        </div>
-
-        <div className="col-span-1">
-          <Label htmlFor="businessLicense">Business License</Label>
-          <Input id="businessLicense" type="file" onChange={(e) => setBusinessLicense(e.target.files[0])} required className="mt-1" />
-        </div>
-
-        <div className="col-span-1 md:col-span-2">
-          <Button type="submit" className="w-full mt-4" disabled={isSubmitted || !isGoogleMapsLoaded}>
-            {isGoogleMapsLoaded ? "Submit Application" : "Loading..."}
-          </Button>
-        </div>
-
-        {error && (
-          <div className="col-span-1 md:col-span-2 flex items-center space-x-2 border border-red-500 bg-red-100 text-red-700 p-2 rounded-md">
-            <AlertCircle className="h-5 w-5" />
-            <p className="text-sm">{error}</p>
+    <div className="flex items-center justify-center min-h-screen p-4">
+      <div className="max-w-2xl mx-auto p-10 shadow-lg rounded-lg border">
+        <h2 className="text-3xl font-bold mb-10 text-center">Company Application</h2>
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="col-span-1">
+            <Label htmlFor="companyName">Company Name</Label>
+            <Input id="companyName" value={companyName} onChange={(e) => setCompanyName(e.target.value)} required className="mt-2" />
           </div>
-        )}
-        {success && (
-          <div className="col-span-1 md:col-span-2 flex items-center space-x-2 border border-green-500 bg-green-100 text-green-700 p-2 rounded-md">
-            <AlertCircle className="h-5 w-5" />
-            <p className="text-sm">{success}</p>
+
+          <div className="col-span-1">
+            <Label htmlFor="email">Email</Label>
+            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="mt-2" />
           </div>
-        )}
-      </form>
-    </div>
+
+          <div className="col-span-1">
+            <Label htmlFor="phoneNumber">Phone Number</Label>
+            <Input id="phoneNumber" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} required className="mt-2" />
+          </div>
+
+          <div className="col-span-1">
+            <Label htmlFor="address">Address</Label>
+            <Input id="address" value={address} onChange={(e) => setAddress(e.target.value)} ref={addressInputRef} required className="mt-2" />
+          </div>
+
+          <div className="col-span-1">
+            <Label htmlFor="website">Website</Label>
+            <Input id="website" value={website} onChange={(e) => setWebsite(e.target.value)} required className="mt-2" />
+          </div>
+
+          <div className="col-span-1">
+            <Label htmlFor="registrationNumber">Registration Number</Label>
+            <Input id="registrationNumber" value={registrationNumber} onChange={(e) => setRegistrationNumber(e.target.value)} required className="mt-2" />
+          </div>
+
+          <div className="col-span-1">
+            <Label htmlFor="businessLicense">Business License</Label>
+            <Input id="businessLicense" type="file" onChange={(e) => setBusinessLicense(e.target.files[0])} required className="mt-2" />
+          </div>
+
+          <div className="col-span-1 md:col-span-2">
+            <Button type="submit" className="w-full mt-6" disabled={isSubmitted || !isGoogleMapsLoaded}>
+              {isGoogleMapsLoaded ? "Submit Application" : "Loading..."}
+            </Button>
+          </div>
+
+          {error && (
+            <div className="col-span-1 md:col-span-2 flex items-center space-x-2 border p-4 rounded-md mt-4">
+              <AlertCircle className="h-5 w-5" />
+              <p className="text-sm">{error}</p>
+            </div>
+          )}
+          {success && (
+            <div className="col-span-1 md:col-span-2 flex items-center space-x-2 border p-4 rounded-md mt-4">
+              <AlertCircle className="h-5 w-5" />
+              <p className="text-sm">{success}</p>
+            </div>
+          )}
+        </form>
+      </div>
     </div>
   );
 };

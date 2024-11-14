@@ -18,7 +18,6 @@ const authenticateSession = async (req, res, next) => {
       return res.status(500).json({ message: 'Internal server error' });
     }
   } else {
-    console.warn(`Unauthorized access attempt on ${req.originalUrl} from IP: ${req.ip}`);
     return res.status(401).json({ message: 'Unauthorized: Please log in to access this resource.' });
   }
 };

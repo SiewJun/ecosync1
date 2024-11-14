@@ -57,13 +57,13 @@ const SignUpForm = () => {
     setError("");
     setSuccess("");
     setIsSubmitting(true);
-  
+
     if (!formData.username) {
       setError("Username is required");
       setIsSubmitting(false);
       return;
     }
-  
+
     if (
       !passwordConditions.length ||
       !passwordConditions.upperCase ||
@@ -77,13 +77,13 @@ const SignUpForm = () => {
       setIsSubmitting(false);
       return;
     }
-  
+
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
       setIsSubmitting(false);
       return;
     }
-  
+
     try {
       const response = await fetch("http://localhost:5000/api/auth/register", {
         method: "POST",
@@ -92,7 +92,7 @@ const SignUpForm = () => {
         },
         body: JSON.stringify(formData),
       });
-  
+
       if (!response.ok) {
         const data = await response.json();
         setError(data.message);
@@ -108,16 +108,16 @@ const SignUpForm = () => {
   };
 
   return (
-    <div className="flex items-center justify-center">
-      <Card className="w-full max-w-sm mt-16 mb-16">
+    <div className="flex items-center justify-center min-h-screen">
+      <Card className="w-full max-w-md p-6 mt-16 mb-16 shadow-lg">
         <CardHeader>
-          <CardTitle className="text-2xl">Register</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-3xl font-bold">Register</CardTitle>
+          <CardDescription className="mt-2">
             Enter your details below to create your account.
           </CardDescription>
         </CardHeader>
-        <CardContent className="grid gap-4">
-          <CardDescription>
+        <CardContent className="grid gap-4 mt-4">
+          <CardDescription className="text-center text-gray-600">
             If you are registering for a company, please{" "}
             <Link to="/company-signup" className="underline text-blue-600">
               click here
