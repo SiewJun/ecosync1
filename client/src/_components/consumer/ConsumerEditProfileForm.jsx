@@ -81,7 +81,28 @@ const ConsumerEditProfile = () => {
   };
 
   const handleFileChange = (e) => {
-    setAvatar(e.target.files[0]);
+    const fileInput = e.target;
+    const file = fileInput.files[0];
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+    const validImageTypes = ["image/jpeg", "image/png", "image/gif", "image/bmp", "image/webp"];
+  
+    if (file) {
+      if (!validImageTypes.includes(file.type)) {
+        alert("Only image files are allowed.");
+        setAvatar(null);
+        fileInput.value = ""; // Clear the input
+        return;
+      }
+  
+      if (file.size > MAX_FILE_SIZE) {
+        alert("File size exceeds the 5MB limit. Please choose a smaller file.");
+        setAvatar(null);
+        fileInput.value = ""; // Clear the input
+        return;
+      }
+  
+      setAvatar(file);
+    }
   };
 
   const handleSubmit = async () => {
