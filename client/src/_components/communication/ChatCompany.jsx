@@ -5,14 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Send,
-  Loader2,
-  ArrowLeft,
-  User,
-  Paperclip,
-  X,
-} from "lucide-react";
+import { Send, Loader2, ArrowLeft, User, Paperclip, X } from "lucide-react";
 import { format } from "date-fns";
 import {
   Tooltip,
@@ -39,12 +32,13 @@ const ChatCompany = () => {
   const [attachment, setAttachment] = useState(null);
   const fileInputRef = useRef(null);
   const messageIds = useRef(new Set());
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
   useEffect(() => {
     const fetchCompanyAndMessages = async () => {
       try {
         setLoading(true);
-  
+
         const [consumerResponse, messagesResponse] = await Promise.all([
           axios.get(`${BASE_URL}api/communication/consumers/${consumerId}`, {
             withCredentials: true, // Include credentials in the request
@@ -56,13 +50,13 @@ const ChatCompany = () => {
             }
           ),
         ]);
-  
+
         setConsumer(consumerResponse.data.consumer);
         const sortedMessages = messagesResponse.data.messages.sort(
           (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
         );
         setMessages(sortedMessages);
-        sortedMessages.forEach(msg => messageIds.current.add(msg.id));
+        sortedMessages.forEach((msg) => messageIds.current.add(msg.id));
       } catch (error) {
         if (error.response && error.response.status === 404) {
           setError("The chat or consumer you're looking for does not exist.");
@@ -74,7 +68,7 @@ const ChatCompany = () => {
         setLoading(false);
       }
     };
-  
+
     fetchCompanyAndMessages();
   }, [consumerId]);
 
@@ -100,12 +94,12 @@ const ChatCompany = () => {
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if ((!message.trim() && !attachment) || sending) return;
-  
+
     try {
       const formData = new FormData();
       formData.append("content", message);
       if (attachment) formData.append("attachment", attachment);
-  
+
       setSending(true);
       const response = await axios.post(
         `${BASE_URL}api/communication/company-chats/${consumerId}/messages`,
@@ -117,7 +111,7 @@ const ChatCompany = () => {
           },
         }
       );
-  
+
       const newMessage = response.data.message;
       socket.emit("sendMessage", newMessage);
       if (!messageIds.current.has(newMessage.id)) {
@@ -137,6 +131,11 @@ const ChatCompany = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      if (file.size > MAX_FILE_SIZE) {
+        alert("File size exceeds the 5MB limit. Please choose a smaller file.");
+        fileInputRef.current.value = ""; // Clear the file input
+        return;
+      }
       setAttachment(file);
     }
   };
@@ -292,10 +291,7 @@ const ChatCompany = () => {
         </div>
       </ScrollArea>
 
-      <form
-        onSubmit={handleSendMessage}
-        className="p-4 border-t"
-      >
+      <form onSubmit={handleSendMessage} className="p-4 border-t">
         <div className="flex items-end space-x-2 max-w-3xl mx-auto">
           <div className="flex-1 relative">
             <Input

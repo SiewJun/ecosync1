@@ -46,6 +46,7 @@ const ChatPage = () => {
   const [attachment, setAttachment] = useState(null);
   const fileInputRef = useRef(null);
   const messageIds = useRef(new Set());
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
   useEffect(() => {
     const fetchCompanyAndMessages = async () => {
@@ -140,6 +141,11 @@ const ChatPage = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      if (file.size > MAX_FILE_SIZE) {
+        alert("File size exceeds the 5MB limit. Please choose a smaller file.");
+        fileInputRef.current.value = ""; // Clear the file input
+        return;
+      }
       setAttachment(file);
     }
   };
