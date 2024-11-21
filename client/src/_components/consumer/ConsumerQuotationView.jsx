@@ -149,8 +149,6 @@ const ConsumerQuotationView = () => {
     (status === "DRAFT" || status === "FINALIZED") &&
     !project; // Added check for project
 
-  const isAccepted = quotationStatus === "ACCEPTED";
-
   return (
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
       <Link
@@ -196,18 +194,6 @@ const ConsumerQuotationView = () => {
                 <AlertDescription className="text-black">
                   A project has been created. the installation process will
                   begin soon.
-                </AlertDescription>
-              </Alert>
-            )}
-            {/* Accepted Alert */}
-            {isAccepted && (
-              <Alert className="bg-gradient-to-r from-green-50 to-emerald-50 dark:border-0">
-                <AlertTitle className="font-semibold text-black">
-                  Quotation Accepted
-                </AlertTitle>
-                <AlertDescription className="text-black">
-                  You have accepted this quotation. Once quotation is finalized,
-                  the installation process will begin soon.
                 </AlertDescription>
               </Alert>
             )}

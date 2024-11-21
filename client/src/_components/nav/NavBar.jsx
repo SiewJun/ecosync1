@@ -22,8 +22,8 @@ import {
   SearchCheckIcon,
 } from "lucide-react";
 import axios from "axios";
-import ThemeSwitcher from "@/_components/theme/ThemeSwitcher";
 import PropTypes from "prop-types";
+import NotificationDropdown from "@/_components/notification/NotificationDropdown";
 
 const services = [
   {
@@ -180,7 +180,7 @@ function NavBar() {
               </div>
 
               <div className="hidden md:flex items-center space-x-4">
-                <ThemeSwitcher />
+                <NotificationDropdown />
                 {user ? (
                   <ProfileDropdown user={user} />
                 ) : (

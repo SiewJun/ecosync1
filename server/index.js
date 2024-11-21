@@ -36,6 +36,7 @@ const stripe = require('./routes/stripe');
 const adminModeration = require('./routes/adminModeration');
 const superAdminModeration = require('./routes/superAdminModeration');
 const maintenance = require('./routes/maintenance');
+const notification = require('./routes/notification')(io); // Pass io to the router
 
 dotenv.config();
 
@@ -92,6 +93,7 @@ app.use('/api/stripe', stripe);
 app.use('/api/admin-moderation', adminModeration);
 app.use('/api/superadmin-moderation', superAdminModeration);
 app.use('/api/maintenance', maintenance); 
+app.use('/api/notification', notification);
 
 // Socket.IO connection
 io.on('connection', (socket) => {

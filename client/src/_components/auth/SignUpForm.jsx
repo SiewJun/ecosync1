@@ -52,6 +52,11 @@ const SignUpForm = () => {
     }
   };
 
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -60,6 +65,12 @@ const SignUpForm = () => {
 
     if (!formData.username) {
       setError("Username is required");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!validateEmail(formData.email)) {
+      setError("Invalid email format");
       setIsSubmitting(false);
       return;
     }

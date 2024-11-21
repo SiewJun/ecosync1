@@ -171,9 +171,9 @@ const CompanyQuotation = () => {
           <div className="absolute top-0 left-0 w-full h-1 group-hover:scale-x-100 transition-transform duration-300"></div>
           <div className="flex items-center justify-between mb-4">
             <Avatar className="w-16 h-16 ring-2 ring-offset-2 ring-primary">
-              {quotation.consumer?.ConsumerProfile?.avatarUrl ? (
+              {quotation.consumer?.avatarUrl ? (
                 <AvatarImage
-                  src={`http://localhost:5000/${quotation.consumer.ConsumerProfile.avatarUrl}`}
+                  src={`http://localhost:5000/${quotation.consumer.avatarUrl}`}
                   alt={quotation.consumer.username}
                 />
               ) : (
@@ -217,10 +217,10 @@ const CompanyQuotation = () => {
     quotation: PropTypes.shape({
       consumer: PropTypes.shape({
         ConsumerProfile: PropTypes.shape({
-          avatarUrl: PropTypes.string,
           phoneNumber: PropTypes.string,
         }),
         username: PropTypes.string,
+        avatarUrl: PropTypes.string,
       }),
       quotationStatus: PropTypes.string,
       createdAt: PropTypes.string,

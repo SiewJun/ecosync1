@@ -227,7 +227,7 @@ const SolarSolutionComparison = () => {
 
   SolutionCard.propTypes = {
     solution: PropTypes.shape({
-      id: PropTypes.number.isRequired,
+      id: PropTypes.string.isRequired,
       solutionName: PropTypes.string.isRequired,
       solutionPic: PropTypes.string.isRequired,
       solarPanelType: PropTypes.string.isRequired,

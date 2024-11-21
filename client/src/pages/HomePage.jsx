@@ -32,20 +32,14 @@ const HeroSection = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center py-24">
       {/* Background Image with Parallax Effect */}
-      <motion.div
-        className="absolute inset-0 z-0"
-        initial={{ scale: 0.99 }}
-        animate={{ scale: 1 }}
-        transition={{ duration: 1 }}
-      >
+      <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-background" />
         <img
           src="/hero.jpg"
           alt="Solar Energy Background"
           className="w-full h-full object-cover object-center"
         />
-      </motion.div>
-
+      </div>
       {/* Animated Grid Overlay */}
       <div className="absolute inset-0 z-10">
         <div

@@ -9,7 +9,7 @@ const {
 } = require("../models");
 const authenticateSession = require("../middleware/auth");
 
-router.get('/company/:companyId', authenticateSession, async (req, res) => {
+router.get('/company/:companyId', async (req, res) => {
   const { companyId } = req.params;
   
   try {

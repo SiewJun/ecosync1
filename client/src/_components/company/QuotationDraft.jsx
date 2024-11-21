@@ -348,7 +348,7 @@ const QuotationDraft = () => {
           productWarranties,
           status,
         } = response.data;
-  
+
         setQuotationData({
           systemSize,
           panelSpecifications,
@@ -382,7 +382,7 @@ const QuotationDraft = () => {
     } finally {
       setLoading(false);
     }
-  };  
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -488,7 +488,7 @@ const QuotationDraft = () => {
       setError("Please fill in all required fields.");
       return;
     }
-  
+
     setLoading(true);
     setError("");
     try {
@@ -508,7 +508,7 @@ const QuotationDraft = () => {
         }
       );
       navigate("/company-dashboard/company-quotation");
-    // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line no-unused-vars
     } catch (err) {
       setError(
         `Failed to ${
@@ -555,6 +555,7 @@ const QuotationDraft = () => {
         </CardHeader>
 
         <CardContent>
+          {error && <div className="text-red-500 mb-4">{error}</div>}
           <ScrollArea className="h-[calc(95vh-200px)]">
             <div className="space-y-6 p-6">
               {!stripeOnboardingComplete && <StripeOnboardingAlert />}

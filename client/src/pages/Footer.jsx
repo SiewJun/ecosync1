@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Mail, ArrowUpRight } from "lucide-react";
 import EcoSyncLogo from "@/_components/nav/EcoSyncLogo";
+import ThemeSwitcher from "@/_components/theme/ThemeSwitcher";
 
 const Footer = () => {
   return (
@@ -77,6 +78,7 @@ const Footer = () => {
           <div className="space-y-8">
             <h4 className="text-xl font-semibold">Contact</h4>
             <div className="space-y-6">
+              <ThemeSwitcher />
               <Button
                 className="w-full group"
                 variant="outline"

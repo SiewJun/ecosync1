@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -24,6 +25,8 @@ import {
 import axios from "axios";
 
 const ProfileDropdown = ({ user }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   const handleLogout = async () => {
     try {
       await axios.post("http://localhost:5000/api/auth/logout", {}, { withCredentials: true });
@@ -32,6 +35,14 @@ const ProfileDropdown = ({ user }) => {
       console.error("Error during logout:", error);
     }
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('overflow-hidden');
+    } else {
+      document.body.classList.remove('overflow-hidden');
+    }
+  }, [isOpen]);
 
   if (!user) {
     return null;
@@ -221,7 +232,7 @@ const ProfileDropdown = ({ user }) => {
   }
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
         <div className="flex items-center gap-2 cursor-pointer">
           <Avatar>

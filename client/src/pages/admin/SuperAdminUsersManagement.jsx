@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -41,6 +41,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 const SuperAdminUsersManagement = () => {
   const [users, setUsers] = useState([]);
@@ -81,7 +89,7 @@ const SuperAdminUsersManagement = () => {
         console.error("Error fetching users:", error);
       }
     };
-  
+
     fetchUsers();
   }, []);
 
@@ -112,12 +120,12 @@ const SuperAdminUsersManagement = () => {
   const handleCreateAdmin = async (e) => {
     e.preventDefault();
     setCreateAdminError("");
-  
+
     if (createAdminForm.password !== createAdminForm.confirmPassword) {
       setCreateAdminError("Passwords do not match");
       return;
     }
-  
+
     try {
       const response = await fetch(
         "http://localhost:5000/api/superadmin-moderation/create-admin",
@@ -134,9 +142,9 @@ const SuperAdminUsersManagement = () => {
           credentials: "include", // Include credentials in the request
         }
       );
-  
+
       const data = await response.json();
-  
+
       if (response.ok) {
         setUsers((prev) => [...prev, { ...data.admin, role: "ADMIN" }]);
         setCreateAdminForm({
@@ -211,7 +219,7 @@ const SuperAdminUsersManagement = () => {
           credentials: "include", // Include credentials in the request
         }
       );
-  
+
       if (response.ok) {
         const updatedUsers = users.map((user) =>
           user.id === userId ? { ...user, role: "CONSUMER" } : user
@@ -232,7 +240,7 @@ const SuperAdminUsersManagement = () => {
           credentials: "include", // Include credentials in the request
         }
       );
-  
+
       if (response.ok) {
         const updatedUsers = users.filter((user) => user.id !== userId);
         setUsers(updatedUsers);
@@ -243,10 +251,28 @@ const SuperAdminUsersManagement = () => {
   };
 
   return (
-    <Card>
-      <CardHeader>
+    <>
+      <div className="container p-6 space-y-8">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Users Management</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <div>
+          <h1 className="text-3xl font-bold font-inter">
+            Users Management{" "}
+          </h1>
+          <p className="mt-2 text-gray-500">
+            Manage and track your organization&apos;s users.
+          </p>
+        </div>
         <div className="flex justify-between items-center">
-          <CardTitle>User Management</CardTitle>
           <Dialog open={isCreateAdminOpen} onOpenChange={setIsCreateAdminOpen}>
             <DialogTrigger asChild>
               <Button variant="default">
@@ -389,142 +415,148 @@ const SuperAdminUsersManagement = () => {
             </SelectContent>
           </Select>
         </div>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Username</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {currentUsers.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell>{user.username}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{renderRoleBadge(user.role)}</TableCell>
-                <TableCell>
-                  {user.role !== "SUPERADMIN" && (
-                    <DropdownMenu
-                      open={dropdownOpen && selectedUser?.id === user.id}
-                      onOpenChange={(open) => {
-                        setDropdownOpen(open);
-                        if (open) setSelectedUser(user);
-                      }}
-                    >
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        {user.role === "ADMIN" && (
-                          <DropdownMenuItem
-                            onSelect={(e) => {
-                              e.preventDefault();
-                              handleActionConfirmation(user, "demote");
-                            }}
-                          >
-                            <UserMinus className="mr-2 h-4 w-4" />
-                            Demote Admin
-                          </DropdownMenuItem>
-                        )}
-                        <DropdownMenuItem
-                          onSelect={(e) => {
-                            e.preventDefault();
-                            handleActionConfirmation(user, "delete");
+        <Card>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Username</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {currentUsers.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell>{user.username}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>{renderRoleBadge(user.role)}</TableCell>
+                    <TableCell>
+                      {user.role !== "SUPERADMIN" && (
+                        <DropdownMenu
+                          open={dropdownOpen && selectedUser?.id === user.id}
+                          onOpenChange={(open) => {
+                            setDropdownOpen(open);
+                            if (open) setSelectedUser(user);
                           }}
-                          className="text-red-600 focus:text-red-600"
                         >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Delete User
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent>
+                            {user.role === "ADMIN" && (
+                              <DropdownMenuItem
+                                onSelect={(e) => {
+                                  e.preventDefault();
+                                  handleActionConfirmation(user, "demote");
+                                }}
+                              >
+                                <UserMinus className="mr-2 h-4 w-4" />
+                                Demote Admin
+                              </DropdownMenuItem>
+                            )}
+                            <DropdownMenuItem
+                              onSelect={(e) => {
+                                e.preventDefault();
+                                handleActionConfirmation(user, "delete");
+                              }}
+                              className="text-red-600 focus:text-red-600"
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Delete User
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
 
-        <Dialog
-          open={isConfirmDialogOpen}
-          onOpenChange={(open) => {
-            if (!open) {
-              resetConfirmationDialog();
-            }
-          }}
-        >
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>
-                Confirm{" "}
-                {actionType === "demote" ? "Admin Demotion" : "User Deletion"}
-              </DialogTitle>
-              <DialogDescription>
-                This action cannot be undone. To confirm, please type{" "}
-                <span className="font-bold">
-                  {selectedUser?.username} {selectedUser?.email}
-                </span>
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4">
-              <Input
-                value={confirmationInput}
-                onChange={(e) => setConfirmationInput(e.target.value)}
-                placeholder="Type to confirm"
-              />
-              <div className="flex justify-end space-x-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={resetConfirmationDialog}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="button"
-                  variant={actionType === "delete" ? "destructive" : "default"}
-                  onClick={handleConfirmAction}
-                  disabled={
-                    confirmationInput !==
-                    `${selectedUser?.username} ${selectedUser?.email}`
-                  }
-                >
-                  {actionType === "demote" ? "Demote Admin" : "Delete User"}
-                </Button>
-              </div>
+            <Dialog
+              open={isConfirmDialogOpen}
+              onOpenChange={(open) => {
+                if (!open) {
+                  resetConfirmationDialog();
+                }
+              }}
+            >
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>
+                    Confirm{" "}
+                    {actionType === "demote"
+                      ? "Admin Demotion"
+                      : "User Deletion"}
+                  </DialogTitle>
+                  <DialogDescription>
+                    This action cannot be undone. To confirm, please type{" "}
+                    <span className="font-bold">
+                      {selectedUser?.username} {selectedUser?.email}
+                    </span>
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <Input
+                    value={confirmationInput}
+                    onChange={(e) => setConfirmationInput(e.target.value)}
+                    placeholder="Type to confirm"
+                  />
+                  <div className="flex justify-end space-x-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={resetConfirmationDialog}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={
+                        actionType === "delete" ? "destructive" : "default"
+                      }
+                      onClick={handleConfirmAction}
+                      disabled={
+                        confirmationInput !==
+                        `${selectedUser?.username} ${selectedUser?.email}`
+                      }
+                    >
+                      {actionType === "demote" ? "Demote Admin" : "Delete User"}
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+
+            <div className="flex justify-between items-center mt-4">
+              <Button
+                variant="outline"
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </Button>
+              <span>
+                Page {currentPage} of {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </Button>
             </div>
-          </DialogContent>
-        </Dialog>
-
-        <div className="flex justify-between items-center mt-4">
-          <Button
-            variant="outline"
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </Button>
-          <span>
-            Page {currentPage} of {totalPages}
-          </span>
-          <Button
-            variant="outline"
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-            }
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+          </CardContent>
+        </Card>
+      </div>
+    </>
   );
 };
 
