@@ -1,31 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import {
-  useReactTable,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-  flexRender,
-} from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -41,6 +24,9 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
+import ApplicationTable from "./ApplicationTable"; // Adjust the import path as needed
 
 const AdminPendingCompanyAppDashboard = () => {
   const [applications, setApplications] = useState([]);
@@ -48,12 +34,36 @@ const AdminPendingCompanyAppDashboard = () => {
   const [columnFilters, setColumnFilters] = useState([]);
   const [selectedDocument, setSelectedDocument] = useState(null);
   const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleResendEmail = async (id) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:5000/api/auth/resend-approval-email/${id}`,
+        {},
+        {
+          withCredentials: true, // Include credentials in the request
+        }
+      );
+      toast({
+        title: "Success",
+        description: response.data.message,
+        variant: "success",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.message || "Failed to resend approval email",
+        variant: "destructive",
+      });
+    }
+  };
 
   useEffect(() => {
     const fetchApplications = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/auth/pending-applications",
+          "http://localhost:5000/api/auth/all-applications",
           {
             withCredentials: true, // Include credentials in the request
           }
@@ -68,7 +78,7 @@ const AdminPendingCompanyAppDashboard = () => {
         }
       }
     };
-  
+
     fetchApplications();
   }, [navigate]);
 
@@ -82,7 +92,6 @@ const AdminPendingCompanyAppDashboard = () => {
           className="p-0"
         >
           Company Name
-          <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
       cell: ({ row }) => row.getValue("companyName"),
@@ -187,17 +196,25 @@ const AdminPendingCompanyAppDashboard = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={() => handleReview(app.id, "Approved")}
-              >
-                Approve
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => handleReview(app.id, "Rejected")}
-                className="text-red-500"
-              >
-                Reject
-              </DropdownMenuItem>
+              {app.status === "Pending" ? (
+                <>
+                  <DropdownMenuItem
+                    onClick={() => handleReview(app.id, "Approved")}
+                  >
+                    Approve
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => handleReview(app.id, "Rejected")}
+                    className="text-red-500"
+                  >
+                    Reject
+                  </DropdownMenuItem>
+                </>
+              ) : (
+                <DropdownMenuItem onClick={() => handleResendEmail(app.id)}>
+                  Resend Approval Email
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -221,22 +238,14 @@ const AdminPendingCompanyAppDashboard = () => {
     }
   };
 
-  const table = useReactTable({
-    data: applications,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    state: {
-      columnFilters,
-    },
-  });
+  const pendingApplications = applications.filter(app => app.status === "Pending");
+  const approvedApplications = applications.filter(app => app.status === "Approved");
+  const rejectedApplications = applications.filter(app => app.status === "Rejected");
 
   return (
     <>
       <div className="container p-6 space-y-8">
+        <Toaster />
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
@@ -244,13 +253,13 @@ const AdminPendingCompanyAppDashboard = () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Pending Company Applications</BreadcrumbPage>
+              <BreadcrumbPage>Company Applications</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
         <div>
           <h1 className="text-3xl font-bold font-inter">
-            Pending Applications
+            Company Applications
           </h1>
           <p className="mt-2 text-gray-500">
             Manage and track your organization&apos;s company applications
@@ -258,80 +267,28 @@ const AdminPendingCompanyAppDashboard = () => {
         </div>
 
         {error && <p className="text-red-500 mb-4">{error}</p>}
-        <Input
-          placeholder="Filter by company name..."
-          value={table.getColumn("companyName")?.getFilterValue() ?? ""}
-          onChange={(event) =>
-            table.getColumn("companyName")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm mb-4"
+
+        <ApplicationTable
+          data={pendingApplications}
+          columns={columns}
+          title="Pending Applications"
+          columnFilters={columnFilters}
+          setColumnFilters={setColumnFilters}
         />
-        <div className="rounded-md border overflow-x-auto">
-          <Table className="min-w-full">
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id} className="p-2">
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="p-2">
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    No applications found.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-        <div className="flex items-center justify-end space-x-2 py-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
+        <ApplicationTable
+          data={approvedApplications}
+          columns={columns}
+          title="Approved Applications"
+          columnFilters={columnFilters}
+          setColumnFilters={setColumnFilters}
+        />
+        <ApplicationTable
+          data={rejectedApplications}
+          columns={columns}
+          title="Rejected Applications"
+          columnFilters={columnFilters}
+          setColumnFilters={setColumnFilters}
+        />
       </div>
     </>
   );

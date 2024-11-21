@@ -107,14 +107,13 @@ router.post(
   }
 );
 
-router.get("/pending-applications", authenticateSession, async (req, res) => {
+router.get("/all-applications", authenticateSession, async (req, res) => {
   if (req.user.role !== "ADMIN" && req.user.role !== "SUPERADMIN") {
     return res.status(403).json({ message: "Forbidden" });
   }
 
   try {
     const applications = await CompanyApplication.findAll({
-      where: { status: "Pending" },
       attributes: [
         "id",
         "companyName",
@@ -123,7 +122,7 @@ router.get("/pending-applications", authenticateSession, async (req, res) => {
         "address",
         "website",
         "registrationNumber",
-        "businessLicense", // Ensure this field contains the filename of the document
+        "businessLicense",
         "status",
       ],
     });
@@ -131,14 +130,12 @@ router.get("/pending-applications", authenticateSession, async (req, res) => {
     // Add the full URL to the businessLicense field
     const applicationsWithUrls = applications.map((app) => ({
       ...app.dataValues,
-      businessLicense: `${req.protocol}://${req.get("host")}/${
-        app.businessLicense
-      }`,
+      businessLicense: `${req.protocol}://${req.get("host")}/${app.businessLicense}`,
     }));
 
     res.json({ applications: applicationsWithUrls });
   } catch (error) {
-    console.error("Error fetching pending applications:", error);
+    console.error("Error fetching all applications:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -182,6 +179,41 @@ router.post("/review-application/:id", authenticateSession, async (req, res) => 
     });
   } catch (error) {
     console.error("Error reviewing application:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.post("/resend-approval-email/:id", authenticateSession, async (req, res) => {
+  if (req.user.role !== "ADMIN" && req.user.role !== "SUPERADMIN") {
+    return res.status(403).json({ message: "Forbidden" });
+  }
+
+  const { id } = req.params;
+
+  try {
+    const application = await CompanyApplication.findByPk(id);
+
+    if (!application || application.status !== "Approved") {
+      return res.status(404).json({ message: "Application not found or not approved" });
+    }
+
+    const companyDetail = await CompanyDetail.findOne({ where: { registrationNumber: application.registrationNumber } });
+
+    if (companyDetail) {
+      return res.status(400).json({ message: "Company already exist. Cannot resend email." });
+    }
+
+    const token = jwt.sign(
+      { id: application.id, role: "COMPANY" },
+      JWT_SECRET,
+      { expiresIn: "336h" }
+    ); // expiration time 336 hours (2 weeks)
+
+    // Send an email to the company with a link to complete registration
+    sendApprovalEmail(application.email, token);
+
+    res.json({ message: "Approval email resent successfully" });
+  } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
 });
