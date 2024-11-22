@@ -8,6 +8,8 @@ import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Link } from "react-router-dom";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useToast } from "@/hooks/use-toast"; // Import useToast
+import { Toaster } from "@/components/ui/toaster"; // Import Toaster
 
 const AddSolutionForm = () => {
   const [solutionName, setSolutionName] = useState("");
@@ -19,6 +21,7 @@ const AddSolutionForm = () => {
   const [solutionPic, setSolutionPic] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const { toast } = useToast(); // Use the toast hook
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,6 +49,10 @@ const AddSolutionForm = () => {
         }
       );
       setSuccess("Solar solution added successfully!");
+      toast({
+        title: "Success",
+        description: "Solar solution added successfully.",
+      });
       setSolutionName("");
       setSolarPanelType("");
       setPowerOutput("");
@@ -63,6 +70,7 @@ const AddSolutionForm = () => {
     <>
       <ScrollArea className="h-screen">
         <div className="p-6">
+          <Toaster /> {/* Add Toaster component */}
           <Link
             to="/company-dashboard/company-profile"
             className="inline-flex items-center text-primary hover:text-black dark:hover:text-white mb-8"

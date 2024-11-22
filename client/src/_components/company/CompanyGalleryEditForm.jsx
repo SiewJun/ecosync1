@@ -4,15 +4,16 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { AlertCircle, ArrowLeftCircle, Asterisk, Trash } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast"; // Import useToast
+import { Toaster } from "@/components/ui/toaster"; // Import Toaster
 
 const CompanyGalleryEditForm = () => {
   const [images, setImages] = useState([]); // State for selected images
   const [existingImages, setExistingImages] = useState([]); // State for existing images
   const [error, setError] = useState(null); // Error state
   const [success, setSuccess] = useState(null); // Success state
-  const navigate = useNavigate();
+  const { toast } = useToast(); // Use the toast hook
 
   useEffect(() => {
     const fetchGalleryImages = async () => {
@@ -86,7 +87,10 @@ const CompanyGalleryEditForm = () => {
         }
       );
       setSuccess("Gallery updated successfully!");
-      navigate("/company-dashboard/company-profile");
+      toast({
+        title: "Success",
+        description: "Gallery updated successfully.",
+      });
     } catch (error) {
       console.error("Error updating gallery", error);
       setError("Failed to update gallery. Please try again.");
@@ -104,6 +108,10 @@ const CompanyGalleryEditForm = () => {
       );
       setExistingImages(existingImages.filter((image) => image.id !== id));
       setSuccess("Image deleted successfully!");
+      toast({
+        title: "Success",
+        description: "Image deleted successfully.",
+      });
     } catch (error) {
       console.error("Error deleting image", error);
       setError("Failed to delete image. Please try again.");
@@ -113,6 +121,7 @@ const CompanyGalleryEditForm = () => {
   return (
     <>
       <div className="p-6">
+        <Toaster /> {/* Add Toaster component */}
         <Link
           to="/company-dashboard/company-profile"
           className="inline-flex items-center text-primary hover:text-black dark:hover:text-white mb-8"

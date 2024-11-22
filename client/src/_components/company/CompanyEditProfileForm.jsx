@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { AlertCircle, ArrowLeftCircle, Asterisk } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast"; 
+import { Toaster } from "@/components/ui/toaster";
 
 const CompanyProfileEditForm = () => {
   const [profileData, setProfileData] = useState({
@@ -17,7 +18,7 @@ const CompanyProfileEditForm = () => {
   const [certificate, setCertificate] = useState(null); // State for the certificate file
   const [error, setError] = useState(null); // Error state
   const [success, setSuccess] = useState(null); // Success state
-  const navigate = useNavigate();
+  const { toast } = useToast(); // Use the toast hook
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -73,7 +74,10 @@ const CompanyProfileEditForm = () => {
         }
       );
       setSuccess("Profile updated successfully!");
-      navigate("/company-dashboard/company-profile");
+      toast({
+        title: "Success",
+        description: "Profile updated successfully.",
+      });
     } catch (error) {
       console.error("Error updating profile", error);
       setError("Failed to update profile. Please try again.");
@@ -83,6 +87,7 @@ const CompanyProfileEditForm = () => {
   return (
     <>
       <div className="p-6">
+        <Toaster /> {/* Add Toaster component */}
         <Link
           to="/company-dashboard/company-profile"
           className="inline-flex items-center text-primary hover:text-black dark:hover:text-white mb-8"

@@ -33,6 +33,8 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useToast } from "@/hooks/use-toast"; // Import useToast
+import { Toaster } from "@/components/ui/toaster"; // Import Toaster
 
 const SolarSolutionCard = ({ solution, BASE_URL, onDelete, onEdit }) => {
   return (
@@ -160,6 +162,23 @@ const SolarSolutionCard = ({ solution, BASE_URL, onDelete, onEdit }) => {
 
 const SolarSolutionsSection = ({ profile, BASE_URL, onDelete, navigate }) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const { toast } = useToast(); // Use the toast hook
+
+  const handleDelete = async (id) => {
+    try {
+      await onDelete(id);
+      toast({
+        title: "Success",
+        description: "Solar solution deleted successfully.",
+      });
+    } catch (error) {
+      console.error("Error deleting solution", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete solar solution. Please try again.",
+      });
+    }
+  };
 
   const filteredSolutions = profile.SolarSolutions?.filter((solution) =>
     solution.solutionName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -167,6 +186,7 @@ const SolarSolutionsSection = ({ profile, BASE_URL, onDelete, navigate }) => {
 
   return (
     <Card className="shadow-lg">
+      <Toaster /> {/* Add Toaster component */}
       <CardHeader className="pb-3">
         <CardTitle>
           <span className="flex items-center gap-2 text-2xl font-bold">
@@ -195,7 +215,7 @@ const SolarSolutionsSection = ({ profile, BASE_URL, onDelete, navigate }) => {
                       key={solution.id}
                       solution={solution}
                       BASE_URL={BASE_URL}
-                      onDelete={onDelete}
+                      onDelete={handleDelete}
                       onEdit={(id) =>
                         navigate(
                           `/company-dashboard/company-profile/company-edit-solution/${id}`

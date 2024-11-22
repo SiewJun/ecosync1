@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { AlertCircle, ArrowLeftCircle } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { loadGoogleMaps } from "../../utils/googleMaps";
 import { Link } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 
 const ConsumerEditProfile = () => {
   const [user, setUser] = useState(null);
@@ -23,9 +24,9 @@ const ConsumerEditProfile = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const navigate = useNavigate();
   const BASE_URL = "http://localhost:5000/";
   const addressInputRef = useRef(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     // Fetch current user and consumer profile details to populate form
@@ -50,7 +51,7 @@ const ConsumerEditProfile = () => {
       }
     };
     fetchDetails();
-  }, []);  
+  }, []);
 
   useEffect(() => {
     loadGoogleMaps(() => {
@@ -85,7 +86,7 @@ const ConsumerEditProfile = () => {
     const file = fileInput.files[0];
     const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
     const validImageTypes = ["image/jpeg", "image/png", "image/gif", "image/bmp", "image/webp"];
-  
+
     if (file) {
       if (!validImageTypes.includes(file.type)) {
         alert("Only image files are allowed.");
@@ -93,35 +94,36 @@ const ConsumerEditProfile = () => {
         fileInput.value = ""; // Clear the input
         return;
       }
-  
+
       if (file.size > MAX_FILE_SIZE) {
         alert("File size exceeds the 5MB limit. Please choose a smaller file.");
         setAvatar(null);
         fileInput.value = ""; // Clear the input
         return;
       }
-  
+
       setAvatar(file);
     }
   };
 
-  const handleSubmit = async () => {
-    setError("");
-    setSuccess("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setSuccess(null);
     setIsSubmitting(true);
-  
+
     try {
       const formDataObj = new FormData();
       formDataObj.append("username", formData.username);
       formDataObj.append("email", formData.email);
       formDataObj.append("phoneNumber", formData.phoneNumber);
       formDataObj.append("address", formData.address);
-  
+
       // Add avatar if selected
       if (avatar) {
         formDataObj.append("avatar", avatar);
       }
-  
+
       await axios.put(
         "http://localhost:5000/api/consumer/profile",
         formDataObj,
@@ -132,9 +134,12 @@ const ConsumerEditProfile = () => {
           },
         }
       );
-  
+
       setSuccess("Profile updated successfully!");
-      navigate("/consumer-dashboard/consumer-profile");
+      toast({
+        title: "Success",
+        description: "Profile updated successfully.",
+      });
     } catch (error) {
       setError(
         "Error updating profile: " + (error.response?.data?.message || error.message)
@@ -147,6 +152,7 @@ const ConsumerEditProfile = () => {
   return (
     <>
       <div className="p-6">
+        <Toaster />
         <Link
           to="/consumer-dashboard/consumer-profile"
           className="inline-flex items-center text-primary hover:text-black dark:hover:text-white mb-8"

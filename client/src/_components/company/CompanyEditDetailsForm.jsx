@@ -6,11 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { AlertCircle, ArrowLeftCircle } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { loadGoogleMaps } from "../../utils/googleMaps";
 import { Link } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 
-const EditForm = () => {
+const CompanyEditDetailsForm = () => {
   const [user, setUser] = useState(null);
   const [company, setCompany] = useState(null);
   const [formData, setFormData] = useState({
@@ -24,9 +25,9 @@ const EditForm = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const navigate = useNavigate();
   const BASE_URL = "http://localhost:5000/";
   const addressInputRef = useRef(null);
+  const { toast } = useToast(); // Use the toast hook
 
   useEffect(() => {
     // Fetch current user and company details to populate form
@@ -89,42 +90,35 @@ const EditForm = () => {
     const validImageTypes = ["image/jpeg", "image/png", "image/gif", "image/bmp", "image/webp"];
   
     if (file) {
-      if (!validImageTypes.includes(file.type)) {
-        alert("Only image files are allowed.");
-        setAvatar(null);
-        fileInput.value = ""; // Clear the input
-        return;
-      }
-  
       if (file.size > MAX_FILE_SIZE) {
-        alert("File size exceeds the 5MB limit. Please choose a smaller file.");
-        setAvatar(null);
-        fileInput.value = ""; // Clear the input
+        setError("File size exceeds the 5MB limit.");
         return;
       }
-  
+      if (!validImageTypes.includes(file.type)) {
+        setError("Invalid file type. Please upload an image.");
+        return;
+      }
       setAvatar(file);
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
     setError("");
     setSuccess("");
-    setIsSubmitting(true);
-  
+
+    const formDataObj = new FormData();
+    formDataObj.append("username", formData.username);
+    formDataObj.append("email", formData.email);
+    formDataObj.append("phoneNumber", formData.phoneNumber);
+    formDataObj.append("address", formData.address);
+    formDataObj.append("website", formData.website);
+    if (avatar) {
+      formDataObj.append("avatar", avatar);
+    }
+
     try {
-      const formDataObj = new FormData();
-      formDataObj.append("username", formData.username);
-      formDataObj.append("email", formData.email);
-      formDataObj.append("phoneNumber", formData.phoneNumber);
-      formDataObj.append("address", formData.address);
-      formDataObj.append("website", formData.website);
-  
-      // Add avatar if selected
-      if (avatar) {
-        formDataObj.append("avatar", avatar);
-      }
-  
       await axios.put(
         "http://localhost:5000/api/company/update-details",
         formDataObj,
@@ -137,7 +131,10 @@ const EditForm = () => {
       );
   
       setSuccess("Details updated successfully!");
-      navigate(-1);
+      toast({
+        title: "Success",
+        description: "Details updated successfully.",
+      });
     } catch (error) {
       setError("Error updating details: " + error.response.data.message);
     } finally {
@@ -148,6 +145,7 @@ const EditForm = () => {
   return (
     <>
       <div className="p-6">
+        <Toaster /> {/* Add Toaster component */}
         <Link
           to="/company-dashboard/company-details"
           className="inline-flex items-center text-primary hover:text-black dark:hover:text-white mb-8"
@@ -269,4 +267,4 @@ const EditForm = () => {
   );
 };
 
-export default EditForm;
+export default CompanyEditDetailsForm;
