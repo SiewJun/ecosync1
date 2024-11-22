@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { AlertCircle, Eye, EyeOff, X } from "lucide-react";
+import { AlertCircle, Eye, EyeOff, X, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const ConsumerProfile = () => {
@@ -380,7 +380,9 @@ const ConsumerProfile = () => {
           )}
         </div>
       ) : (
-        <p>Loading...</p>
+        <div className="flex justify-center items-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
       )}
     </div>
   );

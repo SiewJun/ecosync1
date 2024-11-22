@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -34,7 +34,15 @@ const SignUpForm = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const navigate = useNavigate();
+  const [emailSent, setEmailSent] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  useEffect(() => {
+    if (resendCooldown > 0) {
+      const timer = setTimeout(() => setResendCooldown(resendCooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resendCooldown]);
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -96,7 +104,7 @@ const SignUpForm = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/register", {
+      const response = await fetch("http://localhost:5000/api/auth/register-request", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -108,8 +116,39 @@ const SignUpForm = () => {
         const data = await response.json();
         setError(data.message);
       } else {
-        setSuccess("Registration successful! Redirecting to login page...");
-        navigate("/signin"); // Redirect immediately after success
+        setSuccess("Registration successful! Please check your email to complete the registration.");
+        setEmailSent(true);
+        setResendCooldown(60); // Set cooldown period to 60 seconds
+      }
+    } catch {
+      setError("An error occurred. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleResendEmail = async () => {
+    if (resendCooldown > 0) return;
+
+    setError("");
+    setSuccess("");
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/resend-registration-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: formData.email }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        setError(data.message);
+      } else {
+        setSuccess("Registration email resent successfully. Please check your email.");
+        setResendCooldown(60); // Reset cooldown period to 60 seconds
       }
     } catch {
       setError("An error occurred. Please try again.");
@@ -269,6 +308,21 @@ const SignUpForm = () => {
             <div className="flex items-center space-x-2 border border-green-500 bg-green-100 text-green-700 p-2 rounded-md">
               <AlertCircle className="h-5 w-5" />
               <p className="text-sm">{success}</p>
+            </div>
+          )}
+          {emailSent && (
+            <div className="text-center text-sm mt-4">
+              <p>
+                Didn&apos;t receive the email?{" "}
+                <Button
+                  variant="link"
+                  className="p-0"
+                  onClick={handleResendEmail}
+                  disabled={resendCooldown > 0}
+                >
+                  Resend Email {resendCooldown > 0 && `(${resendCooldown}s)`}
+                </Button>
+              </p>
             </div>
           )}
           <div className="text-center text-sm mt-4">

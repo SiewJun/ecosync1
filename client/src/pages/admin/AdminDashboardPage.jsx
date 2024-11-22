@@ -1,7 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import Sidebar from "@/_components/admin/Sidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import AdminHomeDashboardPage from "./AdminHomeDashboardPage";
 import AdminPendingCompanyAppDashboardPage from "./AdminPendingCompanyAppDashboardPage";
 import AdminModerationIncentives from "@/_components/admin/AdminModerationIncentives";
 import NotFoundPage from "@/pages/NotFoundPage";
@@ -15,12 +14,6 @@ const AdminDashboardPage = () => {
       <main className="flex-1 overflow-hidden">
         <ScrollArea className="h-full">
           <Routes>
-            <Route
-              index
-              element={
-                <ProtectedRoute element={<AdminHomeDashboardPage />} roles={["ADMIN", "SUPERADMIN"]} />
-              }
-            />
             <Route
               path="pendingapp"
               element={

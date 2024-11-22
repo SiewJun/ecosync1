@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Home, LogOut, SearchCheckIcon, ClipboardList, User } from "lucide-react";
+import { LogOut, SearchCheckIcon, ClipboardList, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -39,13 +39,6 @@ const Sidebar = () => {
       </Link>
       <nav className="flex-1 w-full">
         <ul className="flex flex-col items-center w-full">
-          <li className="mb-4 w-full">
-            <Link to="/dashboard" className="block">
-              <Button variant="ghost" className="w-full">
-                <Home className="w-6 h-6" />
-              </Button>
-            </Link>
-          </li>
           <li className="mb-4 w-full">
             <Link to="/dashboard/pendingapp" className="block">
               <Button variant="ghost" className="w-full">

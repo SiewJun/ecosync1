@@ -6,6 +6,7 @@ const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const { User } = require("../models");
 const authenticateSession = require("../middleware/auth");
+const jwt = require("jsonwebtoken");
 
 require("dotenv").config();
 
@@ -17,14 +18,52 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Registration endpoint
-router.post("/register", async (req, res) => {
+router.post("/register-request", async (req, res) => {
   const { username, email, password, role } = req.body;
 
   try {
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
-      return res.status(400).json({ message: "Email already in use" });
+      return res.status(400).json({ message: "Invalid Registration" });
+    }
+
+    const token = jwt.sign({ username, email, password, role }, process.env.JWT_SECRET, {
+      expiresIn: "1h", // Token expires in 1 hour
+    });
+
+    const verificationUrl = `http://localhost:5173/complete-registration/${token}`;
+    const message = `
+      <div style="padding: 20px; border: 1px solid #ddd; border-radius: 5px; max-width: 600px; margin: auto; font-family: Arial, sans-serif; text-align: center;">
+        <h1 style="color: #333;">Complete Your Registration</h1>
+        <p style="margin: 20px 0; color: #555;">To complete your registration, click the link below:</p>
+        <a href="${verificationUrl}" style="display: inline-block; padding: 10px 20px; background-color: #007BFF; color: #fff; text-decoration: none; border-radius: 5px;">Complete Registration</a>
+      </div>
+    `;
+    await transporter.sendMail({
+      to: email,
+      from: process.env.EMAIL,
+      subject: "Complete Your Registration",
+      html: message,
+    });
+
+    res.status(200).json({ message: "Registration email sent. Please check your email to complete the registration." });
+  } catch (error) {
+    console.error("Error during registration request:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Complete Registration endpoint
+router.post("/complete-registration", async (req, res) => {
+  const { token } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { username, email, password, role } = decoded;
+
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({ message: "Invalid Registration" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -36,11 +75,44 @@ router.post("/register", async (req, res) => {
       role: role || "CONSUMER",
     });
 
-    res
-      .status(201)
-      .json({ message: "User registered successfully", user: newUser });
+    res.status(201).json({ message: "Registration completed successfully", user: newUser });
   } catch (error) {
-    console.error("Error during user registration:", error);
+    console.error("Error completing registration:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.post("/resend-registration-email", async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({ message: "Invalid Registration" });
+    }
+
+    const token = jwt.sign({ email }, process.env.JWT_SECRET, {
+      expiresIn: "1h", // Token expires in 1 hour
+    });
+
+    const verificationUrl = `http://localhost:5173/complete-registration/${token}`;
+    const message = `
+      <div style="padding: 20px; border: 1px solid #ddd; border-radius: 5px; max-width: 600px; margin: auto; font-family: Arial, sans-serif; text-align: center;">
+        <h1 style="color: #333;">Complete Your Registration</h1>
+        <p style="margin: 20px 0; color: #555;">To complete your registration, click the link below:</p>
+        <a href="${verificationUrl}" style="display: inline-block; padding: 10px 20px; background-color: #007BFF; color: #fff; text-decoration: none; border-radius: 5px;">Complete Registration</a>
+      </div>
+    `;
+    await transporter.sendMail({
+      to: email,
+      from: process.env.EMAIL,
+      subject: "Complete Your Registration",
+      html: message,
+    });
+
+    res.status(200).json({ message: "Registration email resent successfully" });
+  } catch (error) {
+    console.error("Error resending registration email:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });

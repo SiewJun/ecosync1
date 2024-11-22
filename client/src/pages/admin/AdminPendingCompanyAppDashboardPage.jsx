@@ -31,7 +31,9 @@ import ApplicationTable from "./ApplicationTable"; // Adjust the import path as 
 const AdminPendingCompanyAppDashboard = () => {
   const [applications, setApplications] = useState([]);
   const [error, setError] = useState("");
-  const [columnFilters, setColumnFilters] = useState([]);
+  const [pendingColumnFilters, setPendingColumnFilters] = useState([]);
+  const [approvedColumnFilters, setApprovedColumnFilters] = useState([]);
+  const [rejectedColumnFilters, setRejectedColumnFilters] = useState([]);
   const [selectedDocument, setSelectedDocument] = useState(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -272,22 +274,22 @@ const AdminPendingCompanyAppDashboard = () => {
           data={pendingApplications}
           columns={columns}
           title="Pending Applications"
-          columnFilters={columnFilters}
-          setColumnFilters={setColumnFilters}
+          columnFilters={pendingColumnFilters}
+          setColumnFilters={setPendingColumnFilters}
         />
         <ApplicationTable
           data={approvedApplications}
           columns={columns}
           title="Approved Applications"
-          columnFilters={columnFilters}
-          setColumnFilters={setColumnFilters}
+          columnFilters={approvedColumnFilters}
+          setColumnFilters={setApprovedColumnFilters}
         />
         <ApplicationTable
           data={rejectedApplications}
           columns={columns}
           title="Rejected Applications"
-          columnFilters={columnFilters}
-          setColumnFilters={setColumnFilters}
+          columnFilters={rejectedColumnFilters}
+          setColumnFilters={setRejectedColumnFilters}
         />
       </div>
     </>
