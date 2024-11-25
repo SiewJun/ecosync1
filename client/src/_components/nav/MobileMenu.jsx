@@ -161,14 +161,14 @@ const MobileMenu = ({ user }) => {
       ],
       ADMIN: [
         {
-          to: "/dashboard",
+          to: "/dashboard/pendingapp",
           label: "Dashboard",
           icon: LayoutDashboard,
         },
       ],
       SUPERADMIN: [
         {
-          to: "/dashboard",
+          to: "/dashboard/pendingapp",
           label: "Dashboard",
           icon: LayoutDashboard,
         },

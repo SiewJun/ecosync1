@@ -24,7 +24,7 @@ const AdminSignInForm = () => {
         { email, password },
         { withCredentials: true }
       );
-      navigate("/dashboard/");
+      navigate("/dashboard/pendingapp");
     } catch (error) {
       setError(error.response?.data?.message || "An error occurred");
     } finally {

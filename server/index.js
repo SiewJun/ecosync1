@@ -28,7 +28,7 @@ const consumerProfile = require('./routes/consumerProfile');
 const companyServices = require('./routes/companyServices');
 const communicationRoutes = require('./routes/communication')(io); // Pass io to the router
 const companyPublicProfile = require('./routes/companyPublicProfile');
-const quotation = require('./routes/quotation');
+const quotationRoutes = require('./routes/quotation')(io); // Pass io to the router
 const getEstimate = require('./routes/getEstimate');
 const project = require('./routes/project');
 const projectStep = require('./routes/projectStep');
@@ -36,7 +36,7 @@ const stripe = require('./routes/stripe');
 const adminModeration = require('./routes/adminModeration');
 const superAdminModeration = require('./routes/superAdminModeration');
 const maintenance = require('./routes/maintenance');
-const notification = require('./routes/notification')(io); // Pass io to the router
+const notificationRoutes = require('./routes/notification')(io); // Pass io to the router
 
 dotenv.config();
 
@@ -85,7 +85,7 @@ app.use('/api/consumer', consumerProfile);
 app.use('/api/company-services', companyServices);
 app.use('/api/communication', communicationRoutes); // Use the communication routes
 app.use('/api/companypublic', companyPublicProfile);
-app.use('/api/quotation', quotation);
+app.use('/api/quotation', quotationRoutes); // Use the quotation routes
 app.use('/api/get-estimate', getEstimate);
 app.use('/api/project', project);
 app.use('/api/project-step', projectStep);
@@ -93,11 +93,16 @@ app.use('/api/stripe', stripe);
 app.use('/api/admin-moderation', adminModeration);
 app.use('/api/superadmin-moderation', superAdminModeration);
 app.use('/api/maintenance', maintenance); 
-app.use('/api/notification', notification);
+app.use('/api/notification', notificationRoutes);
 
 // Socket.IO connection
 io.on('connection', (socket) => {
   console.log('a user connected');
+
+  // Join a room with the user's ID
+  socket.on('joinRoom', (userId) => {
+    socket.join(userId);
+  });
 
   socket.on('disconnect', () => {
     console.log('user disconnected');
@@ -105,6 +110,10 @@ io.on('connection', (socket) => {
 
   socket.on('sendMessage', (message) => {
     io.emit('receiveMessage', message); // Broadcast the message to all connected clients
+  });
+
+  socket.on('newNotification', (notification) => {
+    io.emit('newNotification', notification); // Broadcast the notification to all connected clients
   });
 });
 

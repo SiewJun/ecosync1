@@ -183,7 +183,7 @@ const ProfileDropdown = ({ user }) => {
           <>
             <DropdownMenuItem asChild>
               <Link
-                to="/dashboard"
+                to="/dashboard/pendingapp"
                 className="flex items-center gap-2 p-2 rounded-md cursor-pointer"
               >
                 <LayoutDashboard className="h-4 w-4" />
@@ -205,7 +205,7 @@ const ProfileDropdown = ({ user }) => {
           <>
             <DropdownMenuItem asChild>
               <Link
-                to="/dashboard"
+                to="/dashboard/pendingapp"
                 className="flex items-center gap-2 p-2 rounded-md cursor-pointer"
               >
                 <LayoutDashboard className="h-4 w-4" />

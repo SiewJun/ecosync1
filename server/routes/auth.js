@@ -285,7 +285,7 @@ router.post("/change-password", authenticateSession, async (req, res) => {
 router.get("/me", authenticateSession, async (req, res) => {
   try {
     const user = await User.findByPk(req.session.userId, {
-      attributes: ["username", "email", "role", "avatarUrl"], // Add more fields as needed
+      attributes: ["id", "username", "email", "role", "avatarUrl"], // Add more fields as needed
     });
 
     if (!user) {

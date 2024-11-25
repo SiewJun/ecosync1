@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
-import { Bell } from 'lucide-react';
+import { Bell, Check, CheckCheck } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +15,7 @@ const NotificationDropdown = () => {
   const [notifications, setNotifications] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -24,8 +25,19 @@ const NotificationDropdown = () => {
     }
   }, [isOpen]);
 
-  // Fetch notifications
   useEffect(() => {
+    const fetchUserId = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/auth/me', {
+          credentials: 'include'
+        });
+        const data = await response.json();
+        setUserId(data.user.id);
+      } catch (error) {
+        console.error('Failed to fetch user ID:', error);
+      }
+    };
+
     const fetchNotifications = async () => {
       try {
         const response = await fetch('http://localhost:5000/api/notification/noti', {
@@ -39,20 +51,26 @@ const NotificationDropdown = () => {
       }
     };
 
+    fetchUserId();
     fetchNotifications();
     
-    // Listen for new notifications
-    const socket = io();
+    const socket = io('http://localhost:5000');
+    
+    // Join the room with the user's ID
+    if (userId) {
+      socket.emit('joinRoom', userId);
+    }
+  
     socket.on('newNotification', (notification) => {
       setNotifications(prev => [notification, ...prev]);
       setUnreadCount(prev => prev + 1);
     });
-
+  
     return () => socket.disconnect();
-  }, []);
+  }, [userId]);
 
-  // Mark notification as read
-  const markAsRead = async (id) => {
+  const markAsRead = async (id, e) => {
+    e.stopPropagation();
     try {
       await fetch(`http://localhost:5000/api/notification/${id}/read`, {
         method: 'PUT',
@@ -67,11 +85,27 @@ const NotificationDropdown = () => {
     }
   };
 
-  // Format date
+  const markAllAsRead = async () => {
+    try {
+      await Promise.all(
+        notifications
+          .filter(n => !n.isRead)
+          .map(n => fetch(`http://localhost:5000/api/notification/${n.id}/read`, {
+            method: 'PUT',
+            credentials: 'include'
+          }))
+      );
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+      setUnreadCount(0);
+    } catch (error) {
+      console.error('Failed to mark all notifications as read:', error);
+    }
+  };
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
-    const diff = (now - date) / 1000; // difference in seconds
+    const diff = (now - date) / 1000;
 
     if (diff < 60) return 'Just now';
     if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
@@ -82,12 +116,21 @@ const NotificationDropdown = () => {
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative p-2">
-          <Bell size={20} className="text-muted-foreground" />
+        <Button 
+          variant="ghost" 
+          className="relative w-10 h-10 rounded-full hover:bg-gray-100 transition-colors"
+        >
+          <Bell 
+            size={20} 
+            className={cn(
+              "transition-colors duration-200",
+              unreadCount > 0 ? "text-blue-600" : "text-muted-foreground"
+            )} 
+          />
           {unreadCount > 0 && (
             <Badge 
               variant="destructive" 
-              className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
+              className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs animate-in fade-in duration-200"
             >
               {unreadCount}
             </Badge>
@@ -95,51 +138,69 @@ const NotificationDropdown = () => {
         </Button>
       </DropdownMenuTrigger>
       
-      <DropdownMenuContent align="end" className="w-80">
-        <div className="flex items-center justify-between px-4 py-2 border-b">
-          <h3 className="font-semibold">Notifications</h3>
+      <DropdownMenuContent 
+        align="end" 
+        className="w-96 rounded-xl shadow-lg border-gray-200"
+      >
+        <div className="flex items-center justify-between px-4 py-3 border-b">
+          <h3 className="text-lg font-semibold">Notifications</h3>
           {unreadCount > 0 && (
-            <span className="text-xs text-muted-foreground">
-              {unreadCount} unread
-            </span>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={markAllAsRead}
+              className="text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50 transition-colors"
+            >
+              <CheckCheck size={14} className="mr-1" />
+              Mark all as read
+            </Button>
           )}
         </div>
         
-        <ScrollArea className="h-[calc(100vh-200px)] min-h-[300px]">
+        <ScrollArea className="h-[calc(100vh-200px)] min-h-[400px]">
           {notifications.length > 0 ? (
             <div className="py-2">
               {notifications.map((notification) => (
                 <div
                   key={notification.id}
                   className={cn(
-                    "flex flex-col gap-1 px-4 py-3 hover:bg-muted/50 transition-colors cursor-pointer",
-                    !notification.isRead && "bg-muted/30"
+                    "group relative flex flex-col gap-2 px-4 py-4 hover:bg-gray-50 transition-all duration-200",
+                    !notification.isRead && "bg-blue-50/40"
                   )}
-                  onClick={() => !notification.isRead && markAsRead(notification.id)}
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <h4 className="text-sm font-medium leading-none">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-grow">
+                      <h4 className="text-sm font-semibold leading-tight mb-1">
                         {notification.title}
                       </h4>
-                      <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                      <p className="text-sm text-gray-600 leading-relaxed">
                         {notification.message}
                       </p>
+                      <span className="text-xs text-gray-500 mt-2 block">
+                        {formatDate(notification.createdAt)}
+                      </span>
                     </div>
+                    
                     {!notification.isRead && (
-                      <div className="h-2 w-2 rounded-full bg-blue-600 mt-2" />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => markAsRead(notification.id, e)}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 h-8 hover:bg-blue-100 text-blue-600"
+                      >
+                        <Check size={16} className="mr-1" />
+                        Mark read
+                      </Button>
                     )}
                   </div>
-                  <span className="text-xs text-muted-foreground">
-                    {formatDate(notification.createdAt)}
-                  </span>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center h-[300px] text-muted-foreground">
-              <Bell size={40} className="mb-2 opacity-20" />
-              <p className="text-sm">No notifications yet</p>
+            <div className="flex flex-col items-center justify-center h-[400px] text-gray-400">
+              <Bell size={40} className="mb-3 opacity-30" />
+              <p className="text-sm font-medium">No notifications yet</p>
+              <p className="text-xs mt-1">We&apos;ll notify you when something arrives</p>
             </div>
           )}
         </ScrollArea>
