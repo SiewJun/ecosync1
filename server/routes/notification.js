@@ -8,7 +8,7 @@ module.exports = (io) => {
   // Create a new notification
   router.post("/create-noti", authenticateSession, async (req, res) => {
     const { userId, role, title, message } = req.body;
-
+  
     try {
       const notification = await Notification.create({
         userId,
@@ -16,10 +16,10 @@ module.exports = (io) => {
         title,
         message,
       });
-
-      // Emit the notification event
-      io.emit("newNotification", notification);
-
+  
+      // Emit the notification event to the specific user room
+      io.to(userId).emit("newNotification", notification);
+  
       res.status(201).json(notification);
     } catch (error) {
       console.error("Error creating notification:", error);
