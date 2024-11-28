@@ -28,6 +28,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import ConsumerMaintenance from "./ConsumerMaintenance";
 import ConsumerMaintenanceRecords from "./ConsumerMaintenanceRecords";
 import NotFoundPage from "@/pages/NotFoundPage";
+import SubmittedQuotationVersions from "./SubmittedQuotationVersions";
 
 const ConsumerDashboard = () => {
   const [user, setUser] = useState(null);
@@ -246,6 +247,7 @@ const ConsumerDashboard = () => {
                 path="/consumer-quotation"
                 element={<ConsumerQuotation />}
               />
+                    <Route path="/consumer-quotation/:quotationId/submitted-versions" element={<SubmittedQuotationVersions />} />
               <Route
                 path="/consumer-quotation/:versionId"
                 element={<ConsumerQuotationView />}

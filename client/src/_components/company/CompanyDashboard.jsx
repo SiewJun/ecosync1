@@ -29,7 +29,6 @@ import CompanyEditSolutionForm from "./CompanyEditSolutionForm";
 import ChatListCompany from "../communication/ChatListCompany";
 import ChatCompany from "../communication/ChatCompany";
 import CompanyQuotation from "./CompanyQuotation";
-import QuotationDraft from "./QuotationDraft";
 import CompanyProject from "./CompanyProject";
 import CompanyProjectStep from "./CompanyProjectStep";
 import StripeOnboarding from "./StripeOnboarding";
@@ -38,6 +37,9 @@ import OnboardingReminder from "./OnboardingReminder";
 import NotFoundPage from "@/pages/NotFoundPage";
 import CompanyMaintenanceProject from "./CompanyMaintenanceProject";
 import CompanyMaintenanceRecords from "./CompanyMaintenanceRecords";
+import QuotationVersions from "./QuotationVersions";
+import QuotationDrafting from "./QuotationDrafting";
+import QuotationVersionUpdate from "./QuotationVersionUpdate";
 
 const CompanyDashboard = () => {
   const [user, setUser] = useState(null);
@@ -79,7 +81,7 @@ const CompanyDashboard = () => {
   }, []);
 
   const getLinkClasses = (path) => {
-    const regex = new RegExp(`^${path.replace(/:\w+/g, "[0-9a-fA-F-]{36}")}$`);
+    const regex = new RegExp(`^${path.replace(/:\w+/g, "[0-9a-fA-F-]{8}-[0-9a-fA-F-]{4}-[0-9a-fA-F-]{4}-[0-9a-fA-F-]{4}-[0-9a-fA-F-]{12}")}$`);
     return regex.test(location.pathname)
       ? "bg-primary text-primary-foreground"
       : "text-muted-foreground hover:text-foreground hover:bg-accent";
@@ -142,7 +144,13 @@ const CompanyDashboard = () => {
             to="/company-dashboard/company-quotation"
             className={`flex items-center gap-3 rounded-lg px-4 py-3 my-1 transition-all ${getLinkClasses(
               "/company-dashboard/company-quotation"
-            )} ${getLinkClasses("/company-dashboard/company-quotation/:id")}`}
+            )} ${getLinkClasses(
+              "/company-dashboard/company-quotation/:id"
+            )} ${getLinkClasses(
+              "/company-dashboard/company-quotation/:quotationId/update-version/:versionId"
+            )} ${getLinkClasses(
+              "/company-dashboard/company-quotation/:quotationId/draft"
+            )}`}
           >
             <FileCheck className="h-4 w-4" />
             Quotation
@@ -240,6 +248,10 @@ const CompanyDashboard = () => {
                     "/company-dashboard/company-quotation"
                   )} ${getLinkClasses(
                     "/company-dashboard/company-quotation/:id"
+                  )}  ${getLinkClasses(
+                    "/company-dashboard/company-quotation/:quotationId/update-version/:versionId"
+                  )} ${getLinkClasses(
+                    "/company-dashboard/company-quotation/:quotationId/draft"
                   )}`}
                 >
                   <FileCheck className="h-4 w-4" />
@@ -323,7 +335,15 @@ const CompanyDashboard = () => {
               <Route path="/company-quotation" element={<CompanyQuotation />} />
               <Route
                 path="company-quotation/:quotationId"
-                element={<QuotationDraft />}
+                element={<QuotationVersions />}
+              />
+              <Route
+                path="company-quotation/:quotationId/update-version/:versionId"
+                element={<QuotationVersionUpdate />}
+              />
+              <Route
+                path="company-quotation/:quotationId/draft"
+                element={<QuotationDrafting />}
               />
               <Route path="/company-project" element={<CompanyProject />} />
               <Route

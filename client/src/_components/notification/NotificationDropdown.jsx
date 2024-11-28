@@ -53,19 +53,20 @@ const NotificationDropdown = () => {
 
     fetchUserId();
     fetchNotifications();
-    
+  }, []);
+
+  useEffect(() => {
     const socket = io('http://localhost:5000');
-    
-    // Join the room with the user's ID
+
     if (userId) {
       socket.emit('joinRoom', userId);
     }
-  
+
     socket.on('newNotification', (notification) => {
       setNotifications(prev => [notification, ...prev]);
       setUnreadCount(prev => prev + 1);
     });
-  
+
     return () => socket.disconnect();
   }, [userId]);
 
@@ -124,7 +125,7 @@ const NotificationDropdown = () => {
             size={20} 
             className={cn(
               "transition-colors duration-200",
-              unreadCount > 0 ? "text-blue-600" : "text-muted-foreground"
+              unreadCount > 0 ? "text-primary" : "text-muted-foreground"
             )} 
           />
           {unreadCount > 0 && (
@@ -149,7 +150,7 @@ const NotificationDropdown = () => {
               variant="ghost" 
               size="sm" 
               onClick={markAllAsRead}
-              className="text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50 transition-colors"
+              className="text-xs text-primar hover:text-primary hover:bg-secondary transition-colors"
             >
               <CheckCheck size={14} className="mr-1" />
               Mark all as read
@@ -164,8 +165,8 @@ const NotificationDropdown = () => {
                 <div
                   key={notification.id}
                   className={cn(
-                    "group relative flex flex-col gap-2 px-4 py-4 hover:bg-gray-50 transition-all duration-200",
-                    !notification.isRead && "bg-blue-50/40"
+                    "group relative flex flex-col gap-2 px-4 py-4 hover:bg-primary/50 transition-all duration-200",
+                    !notification.isRead && "bg-secondary"
                   )}
                 >
                   <div className="flex items-start justify-between gap-3">
@@ -173,10 +174,10 @@ const NotificationDropdown = () => {
                       <h4 className="text-sm font-semibold leading-tight mb-1">
                         {notification.title}
                       </h4>
-                      <p className="text-sm text-gray-600 leading-relaxed">
+                      <p className="text-sm leading-relaxed">
                         {notification.message}
                       </p>
-                      <span className="text-xs text-gray-500 mt-2 block">
+                      <span className="text-xs mt-2 block">
                         {formatDate(notification.createdAt)}
                       </span>
                     </div>
@@ -186,7 +187,7 @@ const NotificationDropdown = () => {
                         variant="ghost"
                         size="sm"
                         onClick={(e) => markAsRead(notification.id, e)}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 h-8 hover:bg-blue-100 text-blue-600"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 h-8 hover:bg-secondary text-primary"
                       >
                         <Check size={16} className="mr-1" />
                         Mark read

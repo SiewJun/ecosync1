@@ -20,7 +20,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import {
   Loader2,
   Building2,
@@ -34,7 +33,6 @@ import {
   DollarSign,
   Zap,
   TrendingUp,
-  AlertTriangle,
 } from "lucide-react";
 import {
   Select,
@@ -82,7 +80,7 @@ const CompanyProjects = () => {
         setLoading(false);
       }
     };
-  
+
     fetchProjects();
   }, []);
 
@@ -304,19 +302,19 @@ const CompanyProjects = () => {
                             <Zap className="h-4 w-4 mr-2 text-yellow-500" />
                             <span>
                               System Size:{" "}
-                              {project.quotation.latestVersion.systemSize}
+                              {project.quotation.versions[0].systemSize}
                             </span>
                           </div>
                           <div className="flex items-center text-sm">
                             <DollarSign className="h-4 w-4 mr-2 text-green-500" />
                             <span>
-                              Savings: {project.quotation.latestVersion.savings}
+                              Savings: {project.quotation.versions[0].savings}
                             </span>
                           </div>
                           <div className="flex items-center text-sm">
                             <TrendingUp className="h-4 w-4 mr-2 text-blue-500" />
                             <span>
-                              ROI: {project.quotation.latestVersion.roi}
+                              ROI: {project.quotation.versions[0].roi}
                             </span>
                           </div>
                         </div>
@@ -349,20 +347,6 @@ const CompanyProjects = () => {
             {selectedProject && (
               <ScrollArea className="mt-4 max-h-[60vh]">
                 <div className="space-y-8">
-                  {selectedProject.quotation.latestVersion.status !==
-                    "FINALIZED" && (
-                    <Alert variant="warning">
-                      <AlertTriangle className="h-4 w-4" />
-                      <AlertTitle>Quotation Not Finalized</AlertTitle>
-                      <AlertDescription>
-                        Your project quotation is not yet finalized. We
-                        recommend working closely with{" "}
-                        {selectedProject.consumer.username} to refine the
-                        project details and come to an agreement. This ensures
-                        the best outcome for your solar installation.
-                      </AlertDescription>
-                    </Alert>
-                  )}
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
                     <div>
                       <h3 className="text-xl font-semibold">
@@ -413,26 +397,26 @@ const CompanyProjects = () => {
                         <InfoItem
                           label="System Size"
                           value={
-                            selectedProject.quotation.latestVersion.systemSize
+                            selectedProject.quotation.versions[0].systemSize
                           }
                         />
                         <InfoItem
                           label="Panel Specifications"
                           value={
-                            selectedProject.quotation.latestVersion
+                            selectedProject.quotation.versions[0]
                               .panelSpecifications
                           }
                         />
                         <InfoItem
                           label="Estimated Energy Production"
                           value={
-                            selectedProject.quotation.latestVersion
+                            selectedProject.quotation.versions[0]
                               .estimatedEnergyProduction
                           }
                         />
                         <InfoItem
                           label="Average Monthly Electricity Bill"
-                          value={`RM ${selectedProject.quotation.averageMonthlyElectricityBill}`}
+                          value={`RM ${selectedProject.quotation.versions[0].averageMonthlyElectricityBill}`}
                         />
                       </CardContent>
                     </Card>
@@ -443,25 +427,22 @@ const CompanyProjects = () => {
                       <CardContent className="space-y-2">
                         <InfoItem
                           label="Savings"
-                          value={
-                            selectedProject.quotation.latestVersion.savings
-                          }
+                          value={selectedProject.quotation.versions[0].savings}
                         />
                         <InfoItem
                           label="Payback Period"
                           value={
-                            selectedProject.quotation.latestVersion
-                              .paybackPeriod
+                            selectedProject.quotation.versions[0].paybackPeriod
                           }
                         />
                         <InfoItem
                           label="ROI"
-                          value={selectedProject.quotation.latestVersion.roi}
+                          value={selectedProject.quotation.versions[0].roi}
                         />
                         <InfoItem
                           label="Incentives"
                           value={
-                            selectedProject.quotation.latestVersion.incentives
+                            selectedProject.quotation.versions[0].incentives
                           }
                         />
                       </CardContent>
@@ -482,7 +463,7 @@ const CompanyProjects = () => {
                               </tr>
                             </thead>
                             <tbody>
-                              {selectedProject.quotation.latestVersion.costBreakdown.map(
+                              {selectedProject.quotation.versions[0].costBreakdown.map(
                                 (item, index) => (
                                   <tr
                                     key={index}
@@ -601,10 +582,6 @@ const CompanyProjects = () => {
                   navigate(
                     `/company-dashboard/company-project/${selectedProject.id}`
                   )
-                }
-                disabled={
-                  selectedProject?.quotation.latestVersion.status !==
-                  "FINALIZED"
                 }
               >
                 {selectedProject?.status === "IN_PROGRESS"

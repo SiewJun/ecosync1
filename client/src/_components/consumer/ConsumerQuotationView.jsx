@@ -23,38 +23,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { Toaster } from "@/components/ui/toaster";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from "@/components/ui/alert-dialog";
 import PropTypes from "prop-types";
 
 const ConsumerQuotationView = () => {
   const { versionId } = useParams();
   const [quotationDetails, setQuotationDetails] = useState(null);
   const [error, setError] = useState(null);
-  const { toast } = useToast();
-  const [isAcceptDialogOpen, setIsAcceptDialogOpen] = useState(false);
 
   useEffect(() => {
     const fetchQuotationDetails = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/quotation/consumer-quotations/${versionId}`,
+          `http://localhost:5000/api/quotation/version-details/${versionId}`,
           {
             withCredentials: true, // Include credentials in the request
           }
         );
-        console.log(response.data);
         setQuotationDetails(response.data);
       } catch (err) {
         setError(
@@ -64,37 +48,9 @@ const ConsumerQuotationView = () => {
         );
       }
     };
-  
+
     fetchQuotationDetails();
   }, [versionId]);
-
-  const handleAcceptQuotation = async () => {
-    try {
-      await axios.post(
-        `http://localhost:5000/api/quotation/accept/${quotationDetails.id}`,
-        {},
-        {
-          withCredentials: true, // Include credentials in the request
-        }
-      );
-      const response = await axios.get(
-        `http://localhost:5000/api/quotation/consumer-quotations/${versionId}`,
-        {
-          withCredentials: true, // Include credentials in the request
-        }
-      );
-      setQuotationDetails(response.data);
-      toast({
-        title: "Quotation Accepted",
-        description: "Your quotation has been successfully accepted.",
-        duration: 5000,
-      });
-    } catch (err) {
-      setError(
-        err.response ? err.response.data.message : "Error accepting quotation"
-      );
-    }
-  };
 
   if (error) {
     return (
@@ -128,6 +84,7 @@ const ConsumerQuotationView = () => {
     status,
     createdAt,
     quotation,
+    updatedAt,
   } = quotationDetails;
 
   const {
@@ -144,21 +101,15 @@ const ConsumerQuotationView = () => {
     project,
   } = quotation;
 
-  const canAccept =
-    (quotationStatus === "RECEIVED" || quotationStatus === "FINALIZED") &&
-    (status === "DRAFT" || status === "FINALIZED") &&
-    !project; // Added check for project
-
   return (
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
       <Link
-        to="/consumer-dashboard/consumer-quotation"
+        to={-1}
         className="inline-flex items-center text-primary hover:text-black dark:hover:text-white mb-8"
       >
         <ArrowLeftCircle className="mr-2" size={16} />
         Back to Quotations
       </Link>
-      <Toaster />
       <div className="max-w-5xl mx-auto">
         <div className="bg-white shadow-lg rounded-lg overflow-hidden">
           {/* Header */}
@@ -169,7 +120,8 @@ const ConsumerQuotationView = () => {
                   Solar System Quotation
                 </h1>
                 <p className="text-sm text-gray-500 mt-1">
-                  Version {versionNumber} - {status}
+                  Version {versionNumber} -
+                  {new Date(updatedAt).toLocaleDateString()}
                 </p>
               </div>
               <Avatar className="h-16 w-16">
@@ -197,37 +149,6 @@ const ConsumerQuotationView = () => {
                 </AlertDescription>
               </Alert>
             )}
-            {/* Accept Button */}
-            {canAccept && (
-              <div className="flex justify-end">
-                <Button onClick={() => setIsAcceptDialogOpen(true)}>
-                  Accept Quotation
-                </Button>
-              </div>
-            )}
-            {/* Accept Confirmation Dialog */}
-            <AlertDialog
-              open={isAcceptDialogOpen}
-              onOpenChange={setIsAcceptDialogOpen}
-            >
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>
-                    Are you sure you want to accept this quotation?
-                  </AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. Accepting the quotation will
-                    finalize the process with this company.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleAcceptQuotation}>
-                    Accept Quotation
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
             {/* Client and Company Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-gray-50 p-6 rounded-lg">
               <DetailSection title="Client Details">
@@ -354,9 +275,7 @@ const ConsumerQuotationView = () => {
                         <TableHead className="font-semibold">
                           Start Date
                         </TableHead>
-                        <TableHead className="font-semibold">
-                          End Date
-                        </TableHead>
+                        <TableHead className="font-semibold">End Date</TableHead>
                         <TableHead className="font-semibold">
                           Description
                         </TableHead>
@@ -387,7 +306,7 @@ const ConsumerQuotationView = () => {
               </p>
               <div className="flex items-center">
                 <CheckCircle className="mr-2" size={16} />
-                <span>{status}</span>
+                <span>{status}/{quotationStatus}</span>
               </div>
             </div>
           </div>

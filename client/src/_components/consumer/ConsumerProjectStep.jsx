@@ -322,7 +322,7 @@ export default function ConsumerProjectSteps() {
   StepDialog.propTypes = {
     step: PropTypes.shape({
       stepType: PropTypes.string.isRequired,
-      paymentAmount: PropTypes.number,
+      paymentAmount: PropTypes.string,
       stepName: PropTypes.string.isRequired,
     }).isRequired,
     open: PropTypes.bool.isRequired,

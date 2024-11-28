@@ -49,7 +49,7 @@ const ConsumerQuotation = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(9);
   const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
-
+  const [isAcceptDialogOpen, setIsAcceptDialogOpen] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -74,7 +74,7 @@ const ConsumerQuotation = () => {
         setLoading(false);
       }
     };
-  
+
     fetchQuotations();
   }, []);
 
@@ -241,6 +241,41 @@ const ConsumerQuotation = () => {
       </div>
     );
   }
+
+  const handleAcceptQuotation = async () => {
+    try {
+      await axios.post(
+        `http://localhost:5000/api/quotation/accept/${selectedQuotation.id}`,
+        {},
+        {
+          withCredentials: true, // Include credentials in the request
+        }
+      );
+      setQuotations(
+        quotations.map((q) =>
+          q.id === selectedQuotation.id
+            ? { ...q, quotationStatus: "ACCEPTED" }
+            : q
+        )
+      );
+      setSelectedQuotation({
+        ...selectedQuotation,
+        quotationStatus: "ACCEPTED",
+      });
+      toast({
+        title: "Quotation Accepted",
+        description: "The quotation has been successfully accepted.",
+        variant: "default",
+      });
+    } catch (error) {
+      console.error("Error accepting quotation:", error);
+      toast({
+        title: "Error",
+        description: "Failed to accept the quotation. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen container p-6">
@@ -549,14 +584,8 @@ const ConsumerQuotation = () => {
                   selectedQuotation?.versions &&
                   selectedQuotation.versions.length > 0
                 ) {
-                  const latestVersion = selectedQuotation.versions.reduce(
-                    (prev, current) =>
-                      prev.versionNumber > current.versionNumber
-                        ? prev
-                        : current
-                  );
                   navigate(
-                    `/consumer-dashboard/consumer-quotation/${latestVersion.id}`
+                    `/consumer-dashboard/consumer-quotation/${selectedQuotation.id}/submitted-versions`
                   );
                 }
               }}
@@ -577,6 +606,14 @@ const ConsumerQuotation = () => {
                   Reject Quotation
                 </Button>
               )}
+            {selectedQuotation?.quotationStatus === "FINALIZED" && (
+              <Button
+                variant="outline"
+                onClick={() => setIsAcceptDialogOpen(true)}
+              >
+                Accept Quotation
+              </Button>
+            )}
           </div>
         </DialogContent>
       </Dialog>
@@ -603,6 +640,32 @@ const ConsumerQuotation = () => {
               className="bg-red-600 text-white hover:bg-red-700 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2"
             >
               Reject Quotation
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={isAcceptDialogOpen}
+        onOpenChange={setIsAcceptDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Are you sure you want to accept this quotation?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Accepting the quotation will proceed with the process with this
+              company.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleAcceptQuotation}
+              className="bg-primary text-primary-foreground font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2"
+            >
+              Accept Quotation
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

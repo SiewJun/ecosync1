@@ -11,7 +11,6 @@ const {
 } = require("../models");
 const authenticateSession = require("../middleware/auth");
 const upload = require("../middleware/multer"); 
-const stripe = require('stripe')('your_stripe_secret_key'); // Add your Stripe secret key here
 
 router.get("/consumer-projects", authenticateSession, async (req, res) => {
   const consumerId = req.user.id;
@@ -47,10 +46,14 @@ router.get("/consumer-projects", authenticateSession, async (req, res) => {
           include: [
             {
               model: QuotationVersion,
-              as: "latestVersion",
+              as: "versions",
+              where: { status: "FINALIZED" },
               attributes: [
                 "id", "systemSize", "panelSpecifications", "costBreakdown", "estimatedEnergyProduction", "savings", "paybackPeriod", "roi", "incentives", "productWarranties", "timeline", "versionNumber", "status"
               ],
+              required: false,
+              order: [["versionNumber", "DESC"]],
+              limit: 1,
             },
           ],
         },
@@ -61,7 +64,7 @@ router.get("/consumer-projects", authenticateSession, async (req, res) => {
         },
       ],
     });
-    
+
     res.status(200).json({ projects });
   } catch (error) {
     console.error("Error fetching consumer projects:", error);
@@ -73,18 +76,18 @@ router.get("/company-projects", authenticateSession, async (req, res) => {
   const companyId = req.user.id;
   const userRole = req.user.role;
 
-  // Only consumers can view their projects
+  // Only companies can view their projects
   if (userRole !== "COMPANY") {
     return res.status(403).json({ message: "Only companies can view their projects." });
   }
 
   try {
-    // Fetch all projects that belong to the consumer
+    // Fetch all projects that belong to the company
     const projects = await Project.findAll({
       where: { companyId },
       include: [
         {
-          model: User, // Include company details
+          model: User, // Include consumer details
           as: "consumer",
           attributes: ["id", "avatarUrl", "email", "username"],
           include: [
@@ -103,10 +106,14 @@ router.get("/company-projects", authenticateSession, async (req, res) => {
           include: [
             {
               model: QuotationVersion,
-              as: "latestVersion",
+              as: "versions",
+              where: { status: "FINALIZED" },
               attributes: [
                 "id", "systemSize", "panelSpecifications", "costBreakdown", "estimatedEnergyProduction", "savings", "paybackPeriod", "roi", "incentives", "productWarranties", "timeline", "versionNumber", "status"
               ],
+              required: false,
+              order: [["versionNumber", "DESC"]],
+              limit: 1,
             },
           ],
         },
