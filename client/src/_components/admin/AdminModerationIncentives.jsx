@@ -22,14 +22,6 @@ import {
 import { Label } from "@/components/ui/label";
 import { Plus, Pencil, Trash2, Filter, Eye } from "lucide-react";
 import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -239,17 +231,6 @@ const IncentivesManagement = () => {
 
   return (
     <div className="container p-6 space-y-8">
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>Solar Incentives Management</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
       <div>
         <h1 className="text-3xl font-bold font-inter">
           Solar Incentives Management{" "}

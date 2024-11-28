@@ -24,14 +24,6 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import { 
-  Breadcrumb, 
-  BreadcrumbItem, 
-  BreadcrumbLink, 
-  BreadcrumbList, 
-  BreadcrumbPage, 
-  BreadcrumbSeparator 
-} from "@/components/ui/breadcrumb";
-import { 
   Table, 
   TableBody, 
   TableCell, 
@@ -208,19 +200,6 @@ const AdminNotification = () => {
 
   return (
     <div className="container p-6 space-y-8">
-      {/* Breadcrumb */}
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>Notification Management</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
       {/* Page Header */}
       <div>
         <h1 className="text-3xl font-bold font-inter flex items-center">
