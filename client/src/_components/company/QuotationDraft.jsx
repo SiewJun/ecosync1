@@ -287,7 +287,6 @@ const QuotationDraft = () => {
   const [quotationVersionId, setQuotationVersionid] = useState("");
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  // eslint-disable-next-line no-unused-vars
   const [error, setError] = useState("");
   const [isNewQuotation, setIsNewQuotation] = useState(false);
   const [isFinalized, setIsFinalized] = useState(false);
