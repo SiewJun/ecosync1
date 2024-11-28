@@ -35,38 +35,15 @@ module.exports = (io) => {
 
     try {
       const notifications = await Notification.findAll({
-        where: { userId: req.user.id },
+        where: {
+          [Op.or]: [{ role: "CONSUMER" }, { role: "COMPANY" }],
+        },
         order: [["createdAt", "DESC"]],
       });
       res.status(200).json(notifications);
     } catch (error) {
       console.error("Error fetching notifications:", error);
       res.status(500).json({ message: "Failed to fetch notifications." });
-    }
-  });
-
-  // Update a notification
-  router.put("/:id", authenticateSession, async (req, res) => {
-    if (req.user.role !== "ADMIN" && req.user.role !== "SUPERADMIN") {
-      return res.status(403).json({ message: "Forbidden" });
-    }
-
-    const { id } = req.params;
-    const { title, message } = req.body;
-
-    try {
-      const notification = await Notification.findByPk(id);
-      if (!notification) {
-        return res.status(404).json({ message: "Notification not found." });
-      }
-
-      notification.title = title;
-      notification.message = message;
-      await notification.save();
-      res.status(200).json(notification);
-    } catch (error) {
-      console.error("Error updating notification:", error);
-      res.status(500).json({ message: "Failed to update notification." });
     }
   });
 

@@ -6,6 +6,7 @@ import AdminModerationIncentives from "@/_components/admin/AdminModerationIncent
 import NotFoundPage from "@/pages/NotFoundPage";
 import ProtectedRoute from "@/ProtectedRoute";
 import SuperAdminUsersManagement from "@/pages/admin/SuperAdminUsersManagement";
+import AdminNotification from "@/_components/admin/AdminNotification";
 
 const AdminDashboardPage = () => {
   return (
@@ -24,6 +25,12 @@ const AdminDashboardPage = () => {
               path="incentives"
               element={
                 <ProtectedRoute element={<AdminModerationIncentives />} roles={["ADMIN", "SUPERADMIN"]} />
+              }
+            />
+            <Route
+              path="notification"
+              element={
+                <ProtectedRoute element={<AdminNotification />} roles={["ADMIN", "SUPERADMIN"]} />
               }
             />
             <Route

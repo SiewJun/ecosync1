@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { LogOut, SearchCheckIcon, ClipboardList, User } from "lucide-react";
+import { LogOut, SearchCheckIcon, ClipboardList, User, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -50,6 +50,13 @@ const Sidebar = () => {
             <Link to="/dashboard/incentives" className="block">
               <Button variant="ghost" className="w-full">
                 <SearchCheckIcon className="w-6 h-6" />
+              </Button>
+            </Link>
+          </li>
+          <li className="mb-4 w-full">
+            <Link to="/dashboard/notification" className="block">
+              <Button variant="ghost" className="w-full">
+                <Bell className="w-6 h-6" />
               </Button>
             </Link>
           </li>

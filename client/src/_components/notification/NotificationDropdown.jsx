@@ -141,7 +141,7 @@ const NotificationDropdown = () => {
       
       <DropdownMenuContent 
         align="end" 
-        className="w-96 rounded-xl shadow-lg border-gray-200"
+        className="w-96 rounded-xl shadow-lg"
       >
         <div className="flex items-center justify-between px-4 py-3 border-b">
           <h3 className="text-lg font-semibold">Notifications</h3>
