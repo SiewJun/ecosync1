@@ -61,16 +61,16 @@ const StripeOnboarding = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
-      <Card className="w-full max-w-md p-8 space-y-8 shadow-xl bg-gray-900 backdrop-blur-sm border-gray-800">
+      <Card className="w-full max-w-md p-8 space-y-8 shadow-xl bg-foreground backdrop-blur-sm border-foreground">
         <div className="space-y-4">
           <div className="flex items-center space-x-2">
-            <h1 className="text-2xl font-medium text-white">
+            <h1 className="text-2xl font-medium text-background">
               Connect with Stripe
             </h1>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
-                  <Info className="w-4 h-4 text-gray-400" />
+                  <Info className="w-4 h-4 text-background" />
                 </TooltipTrigger>
                 <TooltipContent>
                   <p className="w-64">
@@ -81,7 +81,7 @@ const StripeOnboarding = () => {
               </Tooltip>
             </TooltipProvider>
           </div>
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-background/80">
             Set up secure payments in minutes
           </p>
         </div>
@@ -101,7 +101,7 @@ const StripeOnboarding = () => {
               onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
               required
-              className="h-12 bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-500"
+              className="h-12 text-foreground"
             />
             {email && !email.includes("@") && (
               <p className="text-yellow-500 text-xs mt-1">
@@ -132,7 +132,7 @@ const StripeOnboarding = () => {
             )}
           </Button>
 
-          <p className="text-xs text-center text-gray-500">
+          <p className="text-xs text-center text-background/90">
             By continuing, you agree to Stripe&apos;s{" "}
             <a
               href="#"
@@ -149,8 +149,8 @@ const StripeOnboarding = () => {
               <Tooltip key={index}>
                 <TooltipTrigger>
                   <div className="text-center space-y-2 p-2 rounded-lg hover:bg-gray-800/30 transition-colors">
-                    <Icon className="w-5 h-5 mx-auto text-gray-400" />
-                    <div className="text-sm text-gray-300">{text}</div>
+                    <Icon className="w-5 h-5 mx-auto text-background/90" />
+                    <div className="text-sm text-background/90">{text}</div>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent>

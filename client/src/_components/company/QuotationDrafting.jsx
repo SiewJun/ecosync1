@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Plus, Trash2, ArrowLeftCircle } from "lucide-react";
+import { Plus, Trash2, ArrowLeftCircle, Loader2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -18,6 +18,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast"; 
 import { Toaster } from "@/components/ui/toaster";
+import StripeOnboardingPrompt from "./StripeOnboardingPrompt";
 
 const QuotationDrafting = () => {
   const { quotationId } = useParams();
@@ -40,6 +41,23 @@ const QuotationDrafting = () => {
   ]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isOnboarded, setIsOnboarded] = useState(null);
+
+  useEffect(() => {
+    const checkOnboardingStatus = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/stripe/check-onboarding-status', {
+          withCredentials: true, // Include credentials in the request
+        });
+        setIsOnboarded(response.data.isOnboardingComplete);
+      // eslint-disable-next-line no-unused-vars
+      } catch (error) {
+        setIsOnboarded(false);
+      }
+    };
+
+    checkOnboardingStatus();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -188,6 +206,16 @@ const QuotationDrafting = () => {
       setLoading(false);
     }
   };
+
+  if (isOnboarded === null) {
+    return <div className="flex justify-center items-center h-64">
+    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+  </div>
+  }
+
+  if (!isOnboarded) {
+    return <StripeOnboardingPrompt />;
+  }
 
   return (
     <div className="min-h-screen container p-6">
