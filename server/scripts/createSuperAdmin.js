@@ -5,7 +5,7 @@ const { User } = require('../models'); // Adjust the path to your models
 const createSuperAdmin = async () => {
   try {
     const username = 'superadmin';
-    const email = 'siewkhaijun57@gmail.com';
+    const email = 'superadmin@gmail.com';
     const password = process.env.SUPERADMIN_PASSWORD;
     const role = 'SUPERADMIN';
 

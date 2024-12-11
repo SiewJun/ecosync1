@@ -218,7 +218,7 @@ router.post("/resend-approval-email/:id", authenticateSession, async (req, res) 
   }
 });
 
-router.post("/complete-registration", async (req, res) => {
+router.post("/complete-registration-company", async (req, res) => {
   const { token, password } = req.body;
 
   if (!token) {

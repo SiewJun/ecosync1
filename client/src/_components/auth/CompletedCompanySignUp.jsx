@@ -73,7 +73,7 @@ const CompletedCompanySignUp = () => {
   
     try {
       await axios.post(
-        "http://localhost:5000/api/auth/complete-registration",
+        "http://localhost:5000/api/auth/complete-registration-company",
         { password, token },
         { withCredentials: true } // Include credentials in the request
       );
