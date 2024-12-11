@@ -230,7 +230,7 @@ const QuotationDrafting = () => {
       <div className="max-w-5xl mx-auto">
         <h1 className="text-3xl font-bold mb-8 text-center">Draft Quotation</h1>
         <Card className="shadow-lg">
-          <CardHeader className="bg-gray-100">
+          <CardHeader className="bg-gray-500">
             <CardTitle className="text-xl font-semibold">
               Draft Quotation
             </CardTitle>
@@ -430,7 +430,7 @@ const QuotationDrafting = () => {
                                       e.target.value
                                     )
                                   }
-                                  className="w-full border-gray-300 focus:border-primary focus:ring-primary"
+                                  className="w-full border-gray-300 bg-secondary focus:border-primary focus:ring-primary"
                                 />
                               </TableCell>
                             )
