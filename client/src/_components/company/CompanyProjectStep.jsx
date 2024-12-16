@@ -440,7 +440,7 @@ const CompanyProjectStep = () => {
 
           <div className="flex justify-between items-center mb-6 md:mb-8">
             <div className="flex space-x-2">
-              {isEditable && steps.length < 5 && (
+              {isEditable && steps.length < 6 && (
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                   <DialogTrigger asChild>
                     <Button
