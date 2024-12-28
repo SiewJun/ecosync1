@@ -83,9 +83,9 @@ app.use('/api/auth', companyAuthRoutes);
 app.use('/api/company', companyDetailsProfile);
 app.use('/api/consumer', consumerProfile);
 app.use('/api/company-services', companyServices);
-app.use('/api/communication', communicationRoutes); // Use the communication routes
+app.use('/api/communication', communicationRoutes);
 app.use('/api/companypublic', companyPublicProfile);
-app.use('/api/quotation', quotationRoutes); // Use the quotation routes
+app.use('/api/quotation', quotationRoutes);
 app.use('/api/get-estimate', getEstimate);
 app.use('/api/project', project);
 app.use('/api/project-step', projectStep);
