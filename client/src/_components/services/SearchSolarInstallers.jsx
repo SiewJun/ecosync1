@@ -20,6 +20,7 @@ const SearchSolarInstallers = () => {
   const [filteredCompanies, setFilteredCompanies] = useState([]);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [addressFilter, setAddressFilter] = useState(""); // New state for address filter
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const itemsPerPage = 5;
@@ -46,22 +47,48 @@ const SearchSolarInstallers = () => {
   }, []);
 
   useEffect(() => {
-    const results = companies.filter(
-      (company) =>
+    const results = companies.filter((company) => {
+      // Normalize strings for case-insensitive comparison and remove extra spaces
+      const normalizedAddress = company.CompanyDetail.address
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, ' ');
+      const normalizedAddressFilter = addressFilter
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, ' ');
+      const normalizedSearch = searchTerm
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, ' ');
+
+      // Check if company name or overview matches search term
+      const matchesSearch = 
         company.CompanyDetail.companyName
           .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
+          .includes(normalizedSearch) ||
         company.CompanyProfile.overview
           .toLowerCase()
-          .includes(searchTerm.toLowerCase())
-    );
+          .includes(normalizedSearch);
+
+      // Advanced address matching
+      const matchesAddress = addressFilter === "" || (
+        // Full address contains filter text
+        normalizedAddress.includes(normalizedAddressFilter) ||
+        // Match individual parts of the address
+        normalizedAddress.split(/[,\s]+/).some(part =>
+          normalizedAddressFilter.split(/[,\s]+/).some(filterPart =>
+            part.includes(filterPart)
+          )
+        )
+      );
+
+      return matchesSearch && matchesAddress;
+    });
+
     setFilteredCompanies(results);
     setCurrentPage(1);
-  }, [searchTerm, companies]);
-
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
-  };
+  }, [searchTerm, addressFilter, companies]);
 
   const pageCount = Math.ceil(filteredCompanies.length / itemsPerPage);
   const paginatedCompanies = filteredCompanies.slice(
@@ -120,7 +147,14 @@ const SearchSolarInstallers = () => {
               type="text"
               placeholder="Search companies..."
               value={searchTerm}
-              onChange={handleSearch}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full sm:w-auto text-sm py-1"
+            />
+            <Input
+              type="text"
+              placeholder="Filter by address..."
+              value={addressFilter}
+              onChange={(e) => setAddressFilter(e.target.value)}
               className="w-full sm:w-auto text-sm py-1"
             />
             <Button
