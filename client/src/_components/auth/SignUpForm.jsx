@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -24,6 +24,7 @@ const SignUpForm = () => {
     password: "",
     confirmPassword: "",
   });
+  const [otp, setOtp] = useState("");
   const [passwordConditions, setPasswordConditions] = useState({
     length: false,
     upperCase: false,
@@ -36,6 +37,9 @@ const SignUpForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
+  const [token, setToken] = useState("");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (resendCooldown > 0) {
@@ -116,8 +120,10 @@ const SignUpForm = () => {
         const data = await response.json();
         setError(data.message);
       } else {
-        setSuccess("Registration successful! Please check your email to complete the registration.");
+        const data = await response.json();
+        setSuccess("OTP sent to your email. Please check your email to complete the registration.");
         setEmailSent(true);
+        setToken(data.token);
         setResendCooldown(60); // Set cooldown period to 60 seconds
       }
     } catch {
@@ -127,7 +133,7 @@ const SignUpForm = () => {
     }
   };
 
-  const handleResendEmail = async () => {
+  const handleResendOtp = async () => {
     if (resendCooldown > 0) return;
 
     setError("");
@@ -135,19 +141,21 @@ const SignUpForm = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/resend-registration-email", {
+      const response = await fetch("http://localhost:5000/api/auth/resend-otp", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email: formData.email }),
+        body: JSON.stringify({ token }),
       });
 
       if (!response.ok) {
         const data = await response.json();
         setError(data.message);
       } else {
-        setSuccess("Registration email resent successfully. Please check your email.");
+        const data = await response.json();
+        setSuccess("OTP resent to your email. Please check your email to complete the registration.");
+        setToken(data.token);
         setResendCooldown(60); // Reset cooldown period to 60 seconds
       }
     } catch {
@@ -157,202 +165,283 @@ const SignUpForm = () => {
     }
   };
 
+  const handleVerifyOtp = async () => {
+    setError("");
+    setSuccess("");
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/verify-otp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token, otp }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        setError(data.message);
+      } else {
+        setSuccess("Registration completed successfully! Redirecting to login page...");
+        setTimeout(() => {
+          navigate("/signin");
+        }, 3000);
+      }
+    } catch {
+      setError("An error occurred. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <Card className="w-full max-w-md p-6 mt-16 mb-16 shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-3xl font-bold">Register</CardTitle>
-          <CardDescription className="mt-2">
-            Enter your details below to create your account.
+    <div className="flex items-center justify-center min-h-screen bg-background/95 p-4">
+      <Card className="w-full max-w-md relative backdrop-blur-sm shadow-xl border-opacity-50">
+        <CardHeader className="space-y-4">
+          <CardTitle className="text-4xl font-bold tracking-tight">
+            Create Account
+          </CardTitle>
+          <CardDescription className="text-base">
+            Join our community and start your solar journey today.
           </CardDescription>
         </CardHeader>
-        <CardContent className="grid gap-4 mt-4">
-          <CardDescription className="text-center text-gray-600">
-            If you are registering for a company, please{" "}
-            <Link to="/company-signup" className="underline text-blue-600">
-              click here
+
+        <CardContent className="space-y-6">
+          {/* Company Registration Link */}
+          <CardDescription className="text-center pb-4 border-b">
+            Registering as a company?{" "}
+            <Link 
+              to="/company-signup" 
+              className="text-primary hover:text-primary/80 font-medium transition-colors"
+            >
+              Create a business account
             </Link>
-            .
           </CardDescription>
-          <div className="grid gap-2">
-            <Label htmlFor="username">Username</Label>
-            <Input
-              id="username"
-              type="text"
-              placeholder="Enter your username"
-              value={formData.username}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="m@example.com"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="grid gap-2 relative">
-            <Label htmlFor="password">Password</Label>
-            <div className="relative">
+
+          {/* Main Form Section */}
+          <div className="space-y-4">
+            {/* Username Field */}
+            <div className="space-y-2">
+              <Label htmlFor="username" className="text-sm font-medium">
+                Username
+              </Label>
               <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                value={formData.password}
+                id="username"
+                type="text"
+                placeholder="johndoe"
+                value={formData.username}
                 onChange={handleChange}
+                className="h-11 transition-all"
                 required
-                className="pr-12"
               />
-              <button
-                type="button"
-                className="absolute inset-y-0 right-0 flex items-center px-3"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? (
-                  <EyeOff className="w-5 h-5 text-gray-600" />
-                ) : (
-                  <Eye className="w-5 h-5 text-gray-600" />
-                )}
-              </button>
             </div>
-            {passwordStarted && (
-              <div className="text-sm text-gray-600 mt-2">
-                <p>Password must be at least 6 characters long.</p>
-                <ul className="list-disc list-inside text-gray-600">
-                  <li
-                    className={
-                      passwordConditions.length
-                        ? "text-green-500"
-                        : "text-red-500"
-                    }
+
+            {/* Email Field */}
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-medium">
+                Email address
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="john@example.com"
+                value={formData.email}
+                onChange={handleChange}
+                className="h-11 transition-all"
+                required
+              />
+            </div>
+
+            {/* Password Field Group */}
+            <div className="space-y-4 pt-2">
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-sm font-medium">
+                  Create password
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="h-11 pr-12 transition-all"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    At least 6 characters long
-                  </li>
-                  <li
-                    className={
-                      passwordConditions.upperCase
-                        ? "text-green-500"
-                        : "text-red-500"
-                    }
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
+                </div>
+                
+                {/* Password Requirements */}
+                {passwordStarted && (
+                  <div className="mt-3 p-3 border rounded-lg bg-muted/50">
+                    <p className="text-sm font-medium mb-2">Password requirements:</p>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <RequirementIndicator
+                        met={passwordConditions.length}
+                        text="6+ characters"
+                      />
+                      <RequirementIndicator
+                        met={passwordConditions.upperCase}
+                        text="Uppercase letter"
+                      />
+                      <RequirementIndicator
+                        met={passwordConditions.lowerCase}
+                        text="Lowercase letter"
+                      />
+                      <RequirementIndicator
+                        met={passwordConditions.number}
+                        text="Number"
+                      />
+                      <RequirementIndicator
+                        met={passwordConditions.specialChar}
+                        text="Special character"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Confirm Password */}
+              {formData.password && (
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword" className="text-sm font-medium">
+                    Confirm password
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="confirmPassword"
+                      type={showConfirmPassword ? "text" : "password"}
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      className="h-11 pr-12 transition-all"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* OTP Section */}
+            {emailSent && (
+              <div className="space-y-4 pt-4 border-t">
+                <div className="space-y-2">
+                  <Label htmlFor="otp" className="text-sm font-medium">
+                    Enter verification code
+                  </Label>
+                  <Input
+                    id="otp"
+                    type="text"
+                    placeholder="000000"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    className="h-11 text-center text-lg tracking-widest"
+                    maxLength={6}
+                    required
+                  />
+                </div>
+                <div className="text-center">
+                  <Button
+                    variant="link"
+                    onClick={handleResendOtp}
+                    disabled={resendCooldown > 0}
+                    className="text-sm h-auto p-0"
                   >
-                    Includes an uppercase letter
-                  </li>
-                  <li
-                    className={
-                      passwordConditions.lowerCase
-                        ? "text-green-500"
-                        : "text-red-500"
-                    }
-                  >
-                    Includes a lowercase letter
-                  </li>
-                  <li
-                    className={
-                      passwordConditions.number
-                        ? "text-green-500"
-                        : "text-red-500"
-                    }
-                  >
-                    Includes a number
-                  </li>
-                  <li
-                    className={
-                      passwordConditions.specialChar
-                        ? "text-green-500"
-                        : "text-red-500"
-                    }
-                  >
-                    Includes a special character
-                  </li>
-                </ul>
+                    {resendCooldown > 0 
+                      ? `Resend code in ${resendCooldown}s` 
+                      : "Resend verification code"}
+                  </Button>
+                </div>
               </div>
             )}
           </div>
-          {formData.password && (
-            <div className="grid gap-2 relative">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <div className="relative">
-                <Input
-                  id="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  required
-                  className="pr-12"
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 flex items-center px-3"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff className="w-5 h-5 text-gray-600" />
-                  ) : (
-                    <Eye className="w-5 h-5 text-gray-600" />
-                  )}
-                </button>
+
+          {/* Feedback Messages */}
+          {(error || success) && (
+            <div className={`rounded-lg p-4 ${
+              error 
+                ? "bg-destructive/10 text-destructive"
+                : "bg-green-500/10 text-green-500"
+            }`}>
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-5 w-5 flex-shrink-0" />
+                <p className="text-sm font-medium">{error || success}</p>
               </div>
             </div>
           )}
-          {error && (
-            <div className="flex items-center space-x-2 border border-red-500 bg-red-100 text-red-700 p-2 rounded-md">
-              <AlertCircle className="h-5 w-5" />
-              <p className="text-sm">{error}</p>
-            </div>
-          )}
-          {success && (
-            <div className="flex items-center space-x-2 border border-green-500 bg-green-100 text-green-700 p-2 rounded-md">
-              <AlertCircle className="h-5 w-5" />
-              <p className="text-sm">{success}</p>
-            </div>
-          )}
-          {emailSent && (
-            <div className="text-center text-sm mt-4">
-              <p>
-                Didn&apos;t receive the email?{" "}
-                <Button
-                  variant="link"
-                  className="p-0"
-                  onClick={handleResendEmail}
-                  disabled={resendCooldown > 0}
-                >
-                  Resend Email {resendCooldown > 0 && `(${resendCooldown}s)`}
-                </Button>
-              </p>
-            </div>
-          )}
-          <div className="text-center text-sm mt-4">
-            Already have an account?{" "}
-            <Link to="/signin" className="underline">
-              <Button variant="link" className="p-0">
-                Sign in
-              </Button>
-            </Link>
-          </div>
         </CardContent>
-        <CardFooter>
+
+        <CardFooter className="flex flex-col space-y-4">
           <Button
-            className="w-full"
-            onClick={handleSubmit}
+            className="w-full h-11 text-base font-medium transition-all"
+            onClick={emailSent ? handleVerifyOtp : handleSubmit}
             disabled={isSubmitting}
           >
             {isSubmitting ? (
-              <div className="flex items-center justify-center space-x-2">
-                <Loader className="w-5 h-5 animate-spin" />
-                <span>Signing Up...</span>
+              <div className="flex items-center gap-2">
+                <Loader className="h-5 w-5 animate-spin" />
+                <span>{emailSent ? "Verifying..." : "Creating account..."}</span>
               </div>
             ) : (
-              "Sign Up"
+              emailSent ? "Complete signup" : "Continue"
             )}
           </Button>
+
+          <p className="text-sm text-center text-muted-foreground">
+            Already have an account?{" "}
+            <Link 
+              to="/signin"
+              className="text-primary hover:text-primary/80 font-medium transition-colors"
+            >
+              Sign in
+            </Link>
+          </p>
         </CardFooter>
       </Card>
     </div>
   );
 };
 
+// Helper component for password requirements
+import PropTypes from 'prop-types';
+
+const RequirementIndicator = ({ met, text }) => (
+  <div className="flex items-center gap-2">
+    <div className={`h-1.5 w-1.5 rounded-full transition-colors ${
+      met ? "bg-green-500" : "bg-muted-foreground/30"
+    }`} />
+    <span className={`text-xs ${
+      met ? "text-green-500" : "text-muted-foreground"
+    }`}>
+      {text}
+    </span>
+  </div>
+);
+
+RequirementIndicator.propTypes = {
+  met: PropTypes.bool.isRequired,
+  text: PropTypes.string.isRequired,
+};
+
 export default SignUpForm;
+

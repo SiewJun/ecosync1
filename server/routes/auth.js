@@ -7,6 +7,7 @@ const nodemailer = require("nodemailer");
 const { User } = require("../models");
 const authenticateSession = require("../middleware/auth");
 const jwt = require("jsonwebtoken");
+const otpGenerator = require('otp-generator');
 
 require("dotenv").config();
 
@@ -27,16 +28,18 @@ router.post("/register-request", async (req, res) => {
       return res.status(400).json({ message: "Invalid Registration" });
     }
 
-    const token = jwt.sign({ username, email, password, role }, process.env.JWT_SECRET, {
+    const otp = otpGenerator.generate(6, { upperCase: false, specialChars: false });
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const token = jwt.sign({ username, email, hashedPassword, role, otp }, process.env.JWT_SECRET, {
       expiresIn: "1h", // Token expires in 1 hour
     });
 
-    const verificationUrl = `http://localhost:5173/complete-registration/${token}`;
     const message = `
       <div style="padding: 20px; border: 1px solid #ddd; border-radius: 5px; max-width: 600px; margin: auto; font-family: Arial, sans-serif; text-align: center;">
-        <h1 style="color: #333;">Complete Your Registration</h1>
-        <p style="margin: 20px 0; color: #555;">To complete your registration, click the link below:</p>
-        <a href="${verificationUrl}" style="display: inline-block; padding: 10px 20px; background-color: #007BFF; color: #fff; text-decoration: none; border-radius: 5px;">Complete Registration</a>
+        <h1 style="color: #333;">Your OTP Code</h1>
+        <p style="margin: 20px 0; color: #555;">Use the following OTP code to complete your registration:</p>
+        <h2 style="color: #007BFF;">${otp}</h2>
       </div>
     `;
     await transporter.sendMail({
@@ -46,27 +49,28 @@ router.post("/register-request", async (req, res) => {
       html: message,
     });
 
-    res.status(200).json({ message: "Registration email sent. Please check your email to complete the registration." });
+    res.status(200).json({ message: "OTP sent to your email. Please check your email to complete the registration.", token });
   } catch (error) {
     console.error("Error during registration request:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
 
-// Complete Registration endpoint
-router.post("/complete-registration", async (req, res) => {
-  const { token } = req.body;
+router.post("/verify-otp", async (req, res) => {
+  const { token, otp } = req.body;
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const { username, email, password, role } = decoded;
+    const { username, email, hashedPassword, role, otp: storedOtp } = decoded;
+
+    if (otp !== storedOtp) {
+      return res.status(400).json({ message: "Invalid OTP" });
+    }
 
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ message: "Invalid Registration" });
     }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await User.create({
       username,
@@ -77,30 +81,29 @@ router.post("/complete-registration", async (req, res) => {
 
     res.status(201).json({ message: "Registration completed successfully", user: newUser });
   } catch (error) {
-    console.error("Error completing registration:", error);
+    console.error("Error verifying OTP:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
 
-router.post("/resend-registration-email", async (req, res) => {
-  const { email } = req.body;
+router.post("/resend-otp", async (req, res) => {
+  const { token } = req.body;
 
   try {
-    const existingUser = await User.findOne({ where: { email } });
-    if (existingUser) {
-      return res.status(400).json({ message: "Invalid Registration" });
-    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { username, email, hashedPassword, role } = decoded;
 
-    const token = jwt.sign({ email }, process.env.JWT_SECRET, {
+    const otp = otpGenerator.generate(6, { upperCase: false, specialChars: false });
+
+    const newToken = jwt.sign({ username, email, hashedPassword, role, otp }, process.env.JWT_SECRET, {
       expiresIn: "1h", // Token expires in 1 hour
     });
 
-    const verificationUrl = `http://localhost:5173/complete-registration/${token}`;
     const message = `
       <div style="padding: 20px; border: 1px solid #ddd; border-radius: 5px; max-width: 600px; margin: auto; font-family: Arial, sans-serif; text-align: center;">
-        <h1 style="color: #333;">Complete Your Registration</h1>
-        <p style="margin: 20px 0; color: #555;">To complete your registration, click the link below:</p>
-        <a href="${verificationUrl}" style="display: inline-block; padding: 10px 20px; background-color: #007BFF; color: #fff; text-decoration: none; border-radius: 5px;">Complete Registration</a>
+        <h1 style="color: #333;">Your OTP Code</h1>
+        <p style="margin: 20px 0; color: #555;">Use the following OTP code to complete your registration:</p>
+        <h2 style="color: #007BFF;">${otp}</h2>
       </div>
     `;
     await transporter.sendMail({
@@ -110,9 +113,9 @@ router.post("/resend-registration-email", async (req, res) => {
       html: message,
     });
 
-    res.status(200).json({ message: "Registration email resent successfully" });
+    res.status(200).json({ message: "OTP resent to your email. Please check your email to complete the registration.", token: newToken });
   } catch (error) {
-    console.error("Error resending registration email:", error);
+    console.error("Error resending OTP:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });

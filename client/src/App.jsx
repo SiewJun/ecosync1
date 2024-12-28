@@ -25,7 +25,6 @@ import NotFoundPage from "./pages/NotFoundPage";
 import AboutPage from "./pages/info/AboutPage";
 import AdminSigninForm from "./_components/auth/AdminSigninForm";
 import ProtectedRoute from "./ProtectedRoute";
-import CompleteRegistration from "./_components/auth/CompleteRegistration";
 
 const App = () => {
   const location = useLocation();
@@ -46,7 +45,6 @@ const App = () => {
         <Route path="/admin-signin" element={<AdminSigninForm />} />
         <Route path="/signin" element={<SignInPage />} />
         <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/complete-registration/:token" element={<CompleteRegistration />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
         <Route path="/company-signup" element={<CompanyRegistrationPage />} />

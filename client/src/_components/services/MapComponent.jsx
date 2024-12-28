@@ -9,6 +9,7 @@ function MapComponent({ center, onPolygonComplete }) {
   const mapRef = useRef(null);
   const [drawingManager, setDrawingManager] = useState(null);
   const [polygons, setPolygons] = useState([]);
+  const [showGuide, setShowGuide] = useState(true);
 
   useEffect(() => {
     loadGoogleMaps(() => {
@@ -49,6 +50,7 @@ function MapComponent({ center, onPolygonComplete }) {
             setPolygons((prevPolygons) => [...prevPolygons, polygon]);
             const area = window.google.maps.geometry.spherical.computeArea(polygon.getPath());
             onPolygonComplete(area);
+            setShowGuide(false);
           }
         });
       }
@@ -61,6 +63,7 @@ function MapComponent({ center, onPolygonComplete }) {
     if (drawingManager) {
       drawingManager.setDrawingMode(window.google.maps.drawing.OverlayType.POLYGON);
     }
+    setShowGuide(true);
   };
 
   return (
@@ -72,7 +75,19 @@ function MapComponent({ center, onPolygonComplete }) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div ref={mapRef} className="w-full h-[500px] rounded-md overflow-hidden" />
+        <div className="relative">
+          <div ref={mapRef} className="w-full h-[500px] rounded-md overflow-hidden" />
+          {showGuide && (
+            <div className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-80 text-white text-center p-4 z-50">
+              <h3 className="text-lg font-semibold mb-2">How to Draw Your Roof Area</h3>
+              <p className="mb-4">Use the Google Maps tools to pinpoint around the area of your house&apos;s roof. Click to start drawing a polygon and click again to add each point. Complete the polygon by clicking on the starting point.</p>
+              <img src="/DemoSolarEstimation.gif" alt="Drawing Polygon Demo" className="mb-4 w-full max-w-screen-md rounded-md shadow-lg" />
+              <Button variant="default" onClick={() => setShowGuide(false)}>
+                Got it!
+              </Button>
+            </div>
+          )}
+        </div>
         <div className="mt-4">
           <Button variant="outline" onClick={resetMap}>
             Clear Map Annotations
