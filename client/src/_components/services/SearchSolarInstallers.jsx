@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import SolarInstallers from "./SolarInstallers";
-import { AlertCircle, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { AlertCircle, Search, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -72,9 +71,8 @@ const SearchSolarInstallers = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Skeleton className="h-12 w-64" />
-        <Skeleton className="h-64 w-full mt-4" />
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }

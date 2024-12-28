@@ -80,7 +80,7 @@ const SolarInstallers = ({ companies }) => {
               <AccordionItem value={`item-${index}`} className="border-none">
                 <AccordionTrigger className="px-4 sm:px-6 py-6 hover:no-underline group">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6 w-full">
-                    <Avatar className="w-20 h-20 rounded-xl">
+                    <Avatar className="w-20 h-20 rounded-xl border-2">
                       {company.avatarUrl ? (
                         <AvatarImage
                           src={`${BASE_URL}${company.avatarUrl}`}
@@ -104,7 +104,7 @@ const SolarInstallers = ({ companies }) => {
                         {company.CompanyDetail.businessLicense && (
                           <Badge
                             variant="secondary"
-                            className="flex items-center space-x-1 px-2 py-1 text-xs bg-blue-100 text-blue-800"
+                            className="flex items-center space-x-1 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full"
                           >
                             <ShieldCheck className="w-3 h-3 mr-1" />
                             <span>Pre-screened</span>
@@ -113,7 +113,7 @@ const SolarInstallers = ({ companies }) => {
                         {company.CompanyProfile.certificate && (
                           <Badge
                             variant="outline"
-                            className="flex items-center space-x-1 px-2 py-1 text-xs border-green-300 text-green-600"
+                            className="flex items-center space-x-1 px-2 py-1 text-xs border-green-300 text-green-600 rounded-full"
                           >
                             <CheckCircle className="w-3 h-3 mr-1" />
                             <span>Certified</span>
