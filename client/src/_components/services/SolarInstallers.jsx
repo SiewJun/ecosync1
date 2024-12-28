@@ -67,8 +67,7 @@ const SolarInstallers = ({ companies }) => {
   };
   
   return (
-    <ScrollArea className="h-[calc(100vh-240px)] sm:h-[calc(100vh-280px)]">
-      <div className="space-y-6 p-4 sm:p-6 md:p-8">
+<ScrollArea className="h-[calc(100vh-120px)] sm:h-[calc(100vh-160px)]">      <div className="space-y-6 p-4 sm:p-6 md:p-8">
         {companies.length ? (
           companies.map((company, index) => (
             <Accordion
