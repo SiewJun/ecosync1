@@ -41,15 +41,15 @@ const SolarInstallers = ({ companies }) => {
           withCredentials: true, // Include credentials in the request
         });
         setUserRole(response.data.user.role);
-      // eslint-disable-next-line no-unused-vars
+        // eslint-disable-next-line no-unused-vars
       } catch (error) {
         setUserRole(null);
       }
     };
-  
+
     fetchUserRole();
   }, []);
-  
+
   const handleChatClick = async (companyId) => {
     try {
       await axios.post(
@@ -59,15 +59,17 @@ const SolarInstallers = ({ companies }) => {
           withCredentials: true, // Include credentials in the request
         }
       );
-  
+
       navigate(`/consumer-dashboard/chat/${companyId}`);
     } catch (error) {
       console.error("Failed to initiate chat", error);
     }
   };
-  
+
   return (
-<ScrollArea className="h-[calc(100vh-120px)] sm:h-[calc(100vh-160px)]">      <div className="space-y-6 p-4 sm:p-6 md:p-8">
+    <ScrollArea className="h-[calc(100vh-120px)] sm:h-[calc(100vh-160px)]">
+      {" "}
+      <div className="space-y-6 p-4 sm:p-6 md:p-8">
         {companies.length ? (
           companies.map((company, index) => (
             <Accordion
