@@ -1,9 +1,5 @@
 import { useState, useEffect } from 'react';
-import { 
-  Plus, 
-  Trash2, 
-  AlertCircle, 
-} from 'lucide-react';
+import { Plus, Trash2, Eye, Edit } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -38,7 +34,11 @@ const AdminNotification = () => {
   const [notifications, setNotifications] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [notificationToDelete, setNotificationToDelete] = useState(null);
+  const [notificationToView, setNotificationToView] = useState(null);
+  const [notificationToEdit, setNotificationToEdit] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
@@ -144,6 +144,53 @@ const AdminNotification = () => {
     }
   };
 
+  const handleEdit = (notification) => {
+    setNotificationToEdit(notification);
+    setFormData({
+      title: notification.title,
+      message: notification.message,
+      role: notification.role,
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    if (!notificationToEdit?.id) return;
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/notification/${notificationToEdit.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setNotifications(notifications.map(n => n.id === notificationToEdit.id ? data.notification : n));
+        resetForm();
+        setIsEditDialogOpen(false);
+        
+        toast({
+          title: "Success",
+          description: "Notification updated successfully",
+          variant: "success"
+        });
+      }
+    } catch (error) {
+      console.error('Failed to update notification:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update notification",
+        variant: "destructive"
+      });
+    }
+  };
+
   const resetForm = () => {
     setFormData({
       title: "",
@@ -152,10 +199,15 @@ const AdminNotification = () => {
     });
   };
 
+  const handleView = (notification) => {
+    setNotificationToView(notification);
+    setIsViewDialogOpen(true);
+  };
+
   const filteredNotifications = notifications.filter(
     (notification) =>
-      (notification.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-       notification.message.toLowerCase().includes(searchTerm.toLowerCase()))
+      (notification.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+       notification.message?.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -285,6 +337,104 @@ const AdminNotification = () => {
         </DialogContent>
       </Dialog>
 
+      {/* Edit Notification Dialog */}
+      <Dialog
+        open={isEditDialogOpen}
+        onOpenChange={(open) => {
+          setIsEditDialogOpen(open);
+          if (!open) resetForm();
+        }}
+      >
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold">
+              Edit Notification
+            </DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleUpdate} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="title">Title</Label>
+                <Input
+                  id="title"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="role">Target Role</Label>
+                <Select
+                  value={formData.role}
+                  onValueChange={(value) => setFormData(prev => ({...prev, role: value}))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="CONSUMER">Consumer</SelectItem>
+                    <SelectItem value="COMPANY">Company</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="col-span-2 space-y-2">
+                <Label htmlFor="message">Message</Label>
+                <Textarea
+                  id="message"
+                  name="message"
+                  value={formData.message}
+                  onChange={handleInputChange}
+                  required
+                  rows={4}
+                />
+              </div>
+            </div>
+            <DialogFooter className="gap-2">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setIsEditDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit">
+                Update Notification
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* View Notification Dialog */}
+      <Dialog
+        open={isViewDialogOpen}
+        onOpenChange={(open) => {
+          setIsViewDialogOpen(open);
+          if (!open) setNotificationToView(null);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>View Notification</DialogTitle>
+            <DialogDescription>
+              {notificationToView && (
+                <div>
+                  <p><strong>Title:</strong> {notificationToView.title}</p>
+                  <p><strong>Message:</strong> {notificationToView.message}</p>
+                  <p><strong>Role:</strong> {notificationToView.role}</p>
+                </div>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setIsViewDialogOpen(false)}>
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Delete Confirmation Dialog */}
       <Dialog
         open={isDeleteDialogOpen}
@@ -320,7 +470,6 @@ const AdminNotification = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
           />
-          <AlertCircle className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
         </div>
       </div>
 
@@ -349,6 +498,22 @@ const AdminNotification = () => {
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handleView(notification)}
+                      className="hover:bg-gray-100 hover:text-blue-600"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handleEdit(notification)}
+                      className="hover:bg-gray-100 hover:text-green-600"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Button>
                     <Button
                       variant="outline"
                       size="icon"

@@ -25,10 +25,15 @@ import { Link } from "react-router-dom";
 import { DialogTitle, DialogDescription } from "@radix-ui/react-dialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import axios from "axios";
+import NotificationDropdown from "../notification/NotificationDropdown";
 
 const handleLogout = async () => {
   try {
-    await axios.post("http://localhost:5000/api/auth/logout", {}, { withCredentials: true });
+    await axios.post(
+      "http://localhost:5000/api/auth/logout",
+      {},
+      { withCredentials: true }
+    );
     window.location.href = "/signin";
   } catch (error) {
     console.error("Error during logout:", error);
@@ -199,21 +204,24 @@ const MobileMenu = ({ user }) => {
           </DialogDescription>
           <div className="h-full flex flex-col overflow-y-auto py-6">
             <div className="px-4 mb-8">
-              <div className="h-12 w-12 bg-primary/10 rounded-xl flex items-center justify-center">
-                {user?.avatarUrl ? (
-                  <Avatar>
-                    <AvatarImage
-                      src={`${BASE_URL}${user.avatarUrl}`}
-                      alt={user.username}
-                    />
-                    <AvatarFallback>{user.username.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                ) : (
-                  <User className="h-6 w-6 text-primary" />
-                )}
+              <div className="flex justify-between items-center h-12 w-full rounded-xl px-4">
+                <div className="flex items-center">
+                  {user?.avatarUrl ? (
+                    <Avatar>
+                      <AvatarImage
+                        src={`${BASE_URL}${user.avatarUrl}`}
+                        alt={user.username}
+                      />
+                      <AvatarFallback>{user.username.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                  ) : (
+                    <User className="h-6 w-6 text-primary" />
+                  )}
+                </div>
+                <NotificationDropdown />
               </div>
               {user ? (
-                <div className="mt-4">
+                <div className="mt-4 px-4">
                   <p className="font-semibold text-lg">{user.username}</p>
                   <p className="text-sm text-muted-foreground">{user.email}</p>
                 </div>

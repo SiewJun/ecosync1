@@ -57,16 +57,29 @@ const NotificationDropdown = () => {
 
   useEffect(() => {
     const socket = io('http://localhost:5000');
-
+  
     if (userId) {
       socket.emit('joinRoom', userId);
     }
-
+  
     socket.on('newNotification', (notification) => {
       setNotifications(prev => [notification, ...prev]);
       setUnreadCount(prev => prev + 1);
     });
-
+  
+    socket.on('notificationCreated', (notification) => {
+      setNotifications(prev => [notification, ...prev]);
+      setUnreadCount(prev => prev + 1);
+    });
+  
+    socket.on('notificationUpdated', (updatedNotification) => {
+      setNotifications(prev => prev.map(n => n.id === updatedNotification.id ? updatedNotification : n));
+    });
+  
+    socket.on('notificationDeleted', (deletedNotificationId) => {
+      setNotifications(prev => prev.filter(n => n.id !== deletedNotificationId));
+    });
+  
     return () => socket.disconnect();
   }, [userId]);
 

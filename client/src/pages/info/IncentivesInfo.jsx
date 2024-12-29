@@ -3,7 +3,7 @@ import {
   Search,
   CalendarDays,
   MapPin,
-  AlertCircle,
+  Loader2,
   ExternalLink,
   Filter,
 } from "lucide-react";
@@ -33,7 +33,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -76,7 +75,10 @@ const IncentivesDashboard = () => {
   }, []);
 
   // Get unique regions for filter
-  const regions = ["all", ...new Set(incentives.map((inc) => inc.region))];
+  const regions = [
+    "all",
+    ...new Set(incentives.map((inc) => inc.region.trim())),
+  ];
 
   // Filter and search logic
   const filteredIncentives = incentives.filter((incentive) => {
@@ -84,7 +86,7 @@ const IncentivesDashboard = () => {
       incentive.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       incentive.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRegion =
-      selectedRegion === "all" || incentive.region === selectedRegion;
+      selectedRegion === "all" || incentive.region.trim() === selectedRegion;
     return matchesSearch && matchesRegion;
   });
 
@@ -138,20 +140,8 @@ const IncentivesDashboard = () => {
   // Loading skeleton
   if (loading) {
     return (
-      <div className="container mx-auto p-6 space-y-6">
-        <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <Card key={i} className="w-full">
-              <CardHeader>
-                <Skeleton className="h-4 w-2/3" />
-                <Skeleton className="h-4 w-1/2" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-20 w-full" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -159,16 +149,11 @@ const IncentivesDashboard = () => {
   // Error state
   if (error) {
     return (
-      <div className="container mx-auto p-6">
-        <Card className="border-red-200 bg-red-50">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <AlertCircle className="text-red-500" />
-              Error Loading Incentives
-            </CardTitle>
-            <CardDescription className="text-red-600">{error}</CardDescription>
-          </CardHeader>
-        </Card>
+      <div className="text-center py-8 text-red-500">
+        <p>{error}</p>
+        <Button className="mt-4" onClick={() => window.location.reload()}>
+          Try Again
+        </Button>
       </div>
     );
   }
@@ -327,7 +312,7 @@ const IncentivesDashboard = () => {
             </Card>
           ))}
         </div>
-        
+
         {/* Empty State */}
         {filteredIncentives.length === 0 && (
           <Card className="p-6 text-center">

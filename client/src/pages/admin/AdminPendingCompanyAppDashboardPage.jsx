@@ -47,7 +47,8 @@ const AdminPendingCompanyAppDashboard = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: error.response?.data?.message || "Failed to resend approval email",
+        description:
+          error.response?.data?.message || "Failed to resend approval email",
         variant: "destructive",
       });
     }
@@ -232,14 +233,20 @@ const AdminPendingCompanyAppDashboard = () => {
     }
   };
 
-  const pendingApplications = applications.filter(app => app.status === "Pending");
-  const approvedApplications = applications.filter(app => app.status === "Approved");
-  const rejectedApplications = applications.filter(app => app.status === "Rejected");
+  const pendingApplications = applications.filter(
+    (app) => app.status === "Pending"
+  );
+  const approvedApplications = applications.filter(
+    (app) => app.status === "Approved"
+  );
+  const rejectedApplications = applications.filter(
+    (app) => app.status === "Rejected"
+  );
 
   return (
     <>
+      <Toaster />
       <div className="container p-6 space-y-8">
-        <Toaster />
         <div>
           <h1 className="text-3xl font-bold font-inter">
             Company Applications
@@ -251,27 +258,29 @@ const AdminPendingCompanyAppDashboard = () => {
 
         {error && <p className="text-red-500 mb-4">{error}</p>}
 
-        <ApplicationTable
-          data={pendingApplications}
-          columns={columns}
-          title="Pending Applications"
-          columnFilters={pendingColumnFilters}
-          setColumnFilters={setPendingColumnFilters}
-        />
-        <ApplicationTable
-          data={approvedApplications}
-          columns={columns}
-          title="Approved Applications"
-          columnFilters={approvedColumnFilters}
-          setColumnFilters={setApprovedColumnFilters}
-        />
-        <ApplicationTable
-          data={rejectedApplications}
-          columns={columns}
-          title="Rejected Applications"
-          columnFilters={rejectedColumnFilters}
-          setColumnFilters={setRejectedColumnFilters}
-        />
+        <div>
+          <ApplicationTable
+            data={pendingApplications}
+            columns={columns}
+            title="Pending Applications"
+            columnFilters={pendingColumnFilters}
+            setColumnFilters={setPendingColumnFilters}
+          />
+          <ApplicationTable
+            data={approvedApplications}
+            columns={columns}
+            title="Approved Applications"
+            columnFilters={approvedColumnFilters}
+            setColumnFilters={setApprovedColumnFilters}
+          />
+          <ApplicationTable
+            data={rejectedApplications}
+            columns={columns}
+            title="Rejected Applications"
+            columnFilters={rejectedColumnFilters}
+            setColumnFilters={setRejectedColumnFilters}
+          />
+        </div>
       </div>
     </>
   );

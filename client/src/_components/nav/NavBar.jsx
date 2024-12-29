@@ -180,7 +180,7 @@ function NavBar() {
               </div>
 
               <div className="hidden md:flex items-center space-x-4">
-                <NotificationDropdown />
+                {user && <NotificationDropdown />}
                 {user ? (
                   <ProfileDropdown user={user} />
                 ) : (
