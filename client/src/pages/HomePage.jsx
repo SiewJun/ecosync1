@@ -12,7 +12,6 @@ import {
   Leaf,
   BarChart,
   ArrowUpRight,
-  Calculator,
   FileText,
   Handshake,
   CheckCircle,
