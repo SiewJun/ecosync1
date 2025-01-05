@@ -196,8 +196,18 @@ const CompanyProjectStep = () => {
     return true;
   };
 
+  const checkStepTypeExists = (stepType, currentStepId = null) => {
+    return steps.some(
+      (step) => step.stepType === stepType && step.id !== currentStepId
+    );
+  };
+
   const handleAddStep = async () => {
     if (!isEditable) return;
+    if (checkStepTypeExists(newStep.stepType)) {
+      setErrorMessage("A step with this type already exists.");
+      return;
+    }
     if (!validateStepOrder(newStep.stepOrder)) {
       setErrorMessage(
         "Invalid step order. Ensure it is between 1 and 5, not already used, and not skipping any order."
@@ -249,6 +259,10 @@ const CompanyProjectStep = () => {
 
   const handleEditStep = async (stepId) => {
     if (!isEditable) return;
+    if (checkStepTypeExists(newStep.stepType, stepId)) {
+      setErrorMessage("A step with this type already exists.");
+      return;
+    }
     if (!validateStepOrder(newStep.stepOrder, stepId)) {
       setErrorMessage(
         "Invalid step order. Ensure it is between 1 and 5, not already used, and not skipping any order."

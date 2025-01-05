@@ -97,7 +97,7 @@ const QuotationVersions = () => {
   const handleFinalizeQuotation = async (versionId) => {
     try {
       await axios.post(
-        `http://localhost:5000/api/quotation/finalize/${quotationId}`,
+        `http://localhost:5000/api/quotation/finalize/${versionId}`,
         {},
         { withCredentials: true }
       );
@@ -113,7 +113,7 @@ const QuotationVersions = () => {
         description: "Quotation finalized successfully.",
         variant: "default",
       });
-      // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
     } catch (err) {
       setError("Failed to finalize quotation. Please try again later.");
       toast({

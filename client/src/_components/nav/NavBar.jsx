@@ -14,7 +14,6 @@ import EcoSyncLogo from "./EcoSyncLogo";
 import MobileMenu from "@/_components/nav/MobileMenu";
 import ProfileDropdown from "./ProfileDropdown";
 import {
-  Laptop,
   Users,
   LineChart,
   Sun,
@@ -54,13 +53,6 @@ const information = [
     description:
       "Learn about our mission to make solar energy accessible to everyone.",
     icon: <Building2 className="h-5 w-5 text-primary" />,
-  },
-  {
-    title: "Technology",
-    href: "/technology",
-    description:
-      "Discover the innovative technology behind our solar solutions.",
-    icon: <Laptop className="h-5 w-5 text-primary" />,
   },
   {
     title: "Incentives",

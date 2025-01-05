@@ -761,9 +761,9 @@ module.exports = (io) => {
       res.status(500).json({ message: "Internal server error" });
     }
   });
-
-  router.post("/finalize/:quotationId", authenticateSession, async (req, res) => {
-    const { quotationId } = req.params;
+  
+  router.post("/finalize/:versionId", authenticateSession, async (req, res) => {
+    const { versionId } = req.params;
     const userRole = req.user.role;
   
     // Check if the role is COMPANY
@@ -772,96 +772,43 @@ module.exports = (io) => {
     }
   
     try {
-      const quotation = await Quotation.findOne({
-        where: { id: quotationId, companyId: req.user.id },
+      const quotationVersion = await QuotationVersion.findByPk(versionId, {
         include: [
           {
-            model: QuotationVersion,
-            as: "versions",
-            order: [["versionNumber", "DESC"]],
+            model: Quotation,
+            as: "quotation",
+            include: [
+              {
+                model: User,
+                as: "consumer",
+                attributes: ["id", "username", "avatarUrl"],
+              },
+              {
+                model: User,
+                as: "company",
+                attributes: ["id", "username", "avatarUrl"],
+              },
+            ],
           },
         ],
       });
   
-      if (!quotation) {
-        return res.status(404).json({ message: "Quotation not found" });
+      if (!quotationVersion) {
+        return res.status(404).json({ message: "Quotation version not found" });
       }
   
-      const lastVersion = quotation.versions[0];
-  
-      if (!lastVersion || lastVersion.status !== "SUBMITTED") {
-        return res.status(400).json({ message: "Only the last submitted version can be finalized." });
-      }
-  
-      lastVersion.status = "FINALIZED";
-      await lastVersion.save();
-  
-      quotation.quotationStatus = "FINALIZED";
-      await quotation.save();
-  
-      // Create notifications
-      const consumerNotification = await Notification.create({
-        userId: quotation.consumerId,
-        title: "Quotation Finalized",
-        message: `The quotation (ID: ${quotation.id}) has been finalized by the company.`,
-      });
-  
-      const companyNotification = await Notification.create({
-        userId: quotation.companyId,
-        title: "Quotation Finalized",
-        message: `You have successfully finalized the quotation (ID: ${quotation.id}).`,
-      });
-  
-      // Emit the notification events to specific rooms
-      io.to(quotation.consumerId).emit("newNotification", consumerNotification);
-      io.to(quotation.companyId).emit("newNotification", companyNotification);
-  
-      res.json({ message: "Quotation finalized successfully", quotation });
-    } catch (error) {
-      console.error("Error finalizing quotation:", error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  });
-  
-  router.post("/finalize/:quotationId", authenticateSession, async (req, res) => {
-    const { quotationId } = req.params;
-    const userRole = req.user.role;
-  
-    // Check if the role is COMPANY
-    if (userRole !== "COMPANY") {
-      return res.status(403).json({ message: "Only companies can finalize quotations." });
-    }
-  
-    try {
+      // Ensure the company owns the quotation
       const quotation = await Quotation.findOne({
-        where: { id: quotationId, companyId: req.user.id },
-        include: [
-          {
-            model: QuotationVersion,
-            as: "versions",
-            order: [["versionNumber", "DESC"]],
-          },
-        ],
+        where: { id: quotationVersion.quotationId, companyId: req.user.id },
       });
   
       if (!quotation) {
-        return res.status(404).json({ message: "Quotation not found" });
+        return res.status(403).json({ message: "Access denied." });
       }
   
-      const lastVersion = quotation.versions[0];
-  
-      if (!lastVersion || lastVersion.status !== "SUBMITTED") {
-        return res.status(400).json({ message: "Only the last submitted version can be finalized." });
-      }
-  
-      // Ensure no other versions are in SUBMITTED status
-      const submittedVersions = quotation.versions.filter(version => version.status === "SUBMITTED");
-      if (submittedVersions.length > 1) {
-        return res.status(400).json({ message: "Only the last submitted version can be finalized." });
-      }
-  
-      lastVersion.status = "FINALIZED";
-      await lastVersion.save();
+      // Finalize the selected quotation version
+      quotationVersion.status = "FINALIZED";
+      await quotationVersion.save();
   
       quotation.quotationStatus = "FINALIZED";
       await quotation.save();

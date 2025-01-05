@@ -59,7 +59,6 @@ const Footer = () => {
               {[
                 { name: "About", link: "/about" },
                 { name: "Incentives", link: "/incentives" },
-                { name: "Sustainability", link: "/sustainability" },
               ].map((item, index) => (
                 <li key={index}>
                   <Link to={item.link}>

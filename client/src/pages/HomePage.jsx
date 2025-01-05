@@ -403,22 +403,13 @@ const HomePage = () => {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 relative">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative justify-center">
             {/* Connected Line Background */}
             <div className="absolute hidden lg:block top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-primary/20 via-primary/30 to-primary/20 transform -translate-y-1/2" />
 
             {[
               {
                 step: "01",
-                stepId: "calculator",
-                icon: <Calculator className="h-14 w-14" />,
-                title: "Estimate Savings",
-                description:
-                  "Get an instant calculation of your potential monthly savings based on roof area and average monthly electricity bill",
-                highlight: "Average savings of RM150/month",
-              },
-              {
-                step: "02",
                 stepId: "quote",
                 icon: <FileText className="h-14 w-14" />,
                 title: "Request Quote",
@@ -427,7 +418,7 @@ const HomePage = () => {
                 highlight: "Free consultation included",
               },
               {
-                step: "03",
+                step: "02",
                 stepId: "planning",
                 icon: <Handshake className="h-14 w-14" />,
                 title: "Project Planning",
@@ -436,7 +427,7 @@ const HomePage = () => {
                 highlight: "Hassle-free experience",
               },
               {
-                step: "04",
+                step: "03",
                 stepId: "installation",
                 icon: <CheckCircle className="h-14 w-14" />,
                 title: "Installation",
@@ -453,7 +444,7 @@ const HomePage = () => {
                 className="relative"
               >
                 {/* Step Number */}
-                <div className="absolute -top-6 -left-6 bg-primary/10 rounded-full w-16 h-16 flex items-center justify-center font-bold text-primary text-xl">
+                <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-primary/10 rounded-full w-16 h-16 flex items-center justify-center font-bold text-primary text-xl z-10">
                   {step.step}
                 </div>
 
