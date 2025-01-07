@@ -274,7 +274,7 @@ const QuotationVersions = () => {
                       </p>
                       <p>
                         <strong>Product Warranties:</strong>{" "}
-                        {version.productWarranties} years
+                        {version.productWarranties}
                       </p>
                     </div>
                   </div>
