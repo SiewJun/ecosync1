@@ -108,6 +108,13 @@ const CompanyEditDetailsForm = () => {
     setError("");
     setSuccess("");
 
+    // Validate form fields
+    if (!formData.username || !formData.email || !formData.phoneNumber || !formData.address || !formData.website) {
+      setError("All fields are required.");
+      setIsSubmitting(false);
+      return;
+    }
+
     const formDataObj = new FormData();
     formDataObj.append("username", formData.username);
     formDataObj.append("email", formData.email);
@@ -192,6 +199,7 @@ const CompanyEditDetailsForm = () => {
                         id="username"
                         value={formData.username}
                         onChange={handleChange}
+                        required
                       />
                     </div>
 
@@ -201,6 +209,7 @@ const CompanyEditDetailsForm = () => {
                         id="email"
                         value={formData.email}
                         onChange={handleChange}
+                        required
                       />
                     </div>
 
@@ -211,6 +220,7 @@ const CompanyEditDetailsForm = () => {
                         id="phoneNumber"
                         value={formData.phoneNumber}
                         onChange={handleChange}
+                        required
                       />
                     </div>
 
@@ -221,6 +231,7 @@ const CompanyEditDetailsForm = () => {
                         value={formData.address}
                         onChange={handleChange}
                         ref={addressInputRef}
+                        required
                       />
                     </div>
 
@@ -230,6 +241,7 @@ const CompanyEditDetailsForm = () => {
                         id="website"
                         value={formData.website}
                         onChange={handleChange}
+                        required
                       />
                     </div>
 
