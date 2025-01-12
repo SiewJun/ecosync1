@@ -112,6 +112,13 @@ const ConsumerEditProfile = () => {
     setSuccess(null);
     setIsSubmitting(true);
 
+    // Check if any field is empty
+    if (!formData.username || !formData.email || !formData.phoneNumber || !formData.address) {
+      setError("All fields are required.");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const formDataObj = new FormData();
       formDataObj.append("username", formData.username);
