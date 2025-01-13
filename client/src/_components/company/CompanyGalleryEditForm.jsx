@@ -44,17 +44,27 @@ const CompanyGalleryEditForm = () => {
       "image/webp",
     ];
     const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-  
-    const invalidFiles = selectedFiles.filter(
-      (file) => !validImageTypes.includes(file.type) || file.size > MAX_FILE_SIZE
+
+    const invalidTypeFiles = selectedFiles.filter(
+      (file) => !validImageTypes.includes(file.type)
     );
-  
-    if (invalidFiles.length > 0) {
-      setError("Only image files under 5MB are allowed.");
+
+    const oversizedFiles = selectedFiles.filter(
+      (file) => file.size > MAX_FILE_SIZE
+    );
+
+    if (invalidTypeFiles.length > 0) {
+      setError("Only image files are allowed.");
       setImages([]);
       return;
     }
-  
+
+    if (oversizedFiles.length > 0) {
+      setError("File size exceeds the 5MB limit. Please choose a smaller file.");
+      setImages([]);
+      return;
+    }
+
     if (selectedFiles.length > 5) {
       setError("You can only upload up to 5 images. Please select again.");
       setImages([]);
@@ -63,7 +73,7 @@ const CompanyGalleryEditForm = () => {
       setImages(selectedFiles);
     }
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (error) return; // Prevent submission if there's an error
@@ -173,6 +183,7 @@ const CompanyGalleryEditForm = () => {
                     name="gallery"
                     onChange={handleFileChange}
                     multiple // Allow multiple files
+                    accept="image/*" // Only accept image files
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-500 focus:ring focus:ring-gray-500 focus:ring-opacity-50"
                   />
                   <div className="flex mt-2 items-center">

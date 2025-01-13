@@ -25,6 +25,7 @@ const UpdateSolutionForm = () => {
   const [success, setSuccess] = useState("");
   const { toast } = useToast(); // Use the toast hook
   const BASE_URL = "http://localhost:5000";
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
   useEffect(() => {
     // Fetch the existing data for the solution
@@ -52,6 +53,18 @@ const UpdateSolutionForm = () => {
 
     fetchSolution();
   }, [id]);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > MAX_FILE_SIZE) {
+        alert("File size exceeds the 5MB limit. Please choose a smaller file.");
+        e.target.value = ""; // Clear the input
+        return;
+      }
+      setSolutionPic(file);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -196,7 +209,7 @@ const UpdateSolutionForm = () => {
                     <Input
                       id="solutionPic"
                       type="file"
-                      onChange={(e) => setSolutionPic(e.target.files[0])}
+                      onChange={handleFileChange}
                       accept="image/*"
                     />
                   </div>
