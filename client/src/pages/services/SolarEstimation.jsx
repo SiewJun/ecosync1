@@ -312,14 +312,14 @@ const SolarEstimation = () => {
 
             {/* Cards Section */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <InfoCard
+                systemSize={savings.recommendedKWp}
+                panelCount={savings.panelsForRecommendedKWp}
+              />
               <SavingsCard
                 oldValue={savings.oldBill}
                 newValue={savings.newBill}
                 unit="RM"
-              />
-              <InfoCard
-                systemSize={savings.recommendedKWp}
-                panelCount={savings.panelsForRecommendedKWp}
               />
             </div>
 
