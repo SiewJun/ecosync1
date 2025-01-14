@@ -246,7 +246,7 @@ const SolarEstimation = () => {
       case 2:
         return isRoofMapped;
       case 3:
-        return true;
+        return savings !== null; // Ensure savings are calculated before proceeding
       default:
         return false;
     }
