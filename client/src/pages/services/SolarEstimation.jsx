@@ -330,7 +330,7 @@ const SolarEstimation = () => {
               </div>
               <div className="relative flex justify-center">
                 <span className="px-6 py-3 text-base font-medium bg-background">
-                  Available Solar Installers
+                  Suggested Nearby Solar Installers
                 </span>
               </div>
             </div>

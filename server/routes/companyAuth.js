@@ -25,12 +25,12 @@ const transporter = nodemailer.createTransport({
 });
 
 // Send email function
-const sendApprovalEmail = (email, token) => {
-  const mailOptions = {
-    from: process.env.EMAIL,
-    to: email,
-    subject: "Complete Your Registration",
-    html: `
+const sendApprovalEmail = (email, token, status) => {
+  let subject, htmlContent;
+
+  if (status === "Approved") {
+    subject = "Complete Your Registration";
+    htmlContent = `
       <p style="padding: 10px 0;">Your application has been approved. Please complete your registration within 2 weeks by clicking the button below:</p>
       <a href="${process.env.FRONTEND_URL}/complete-registration?token=${token}" style="display: inline-block; padding: 12px 24px; font-size: 16px; color: #ffffff; background-color: #007bff; text-decoration: none; border-radius: 5px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: background-color 0.3s ease;">
         Complete Registration
@@ -40,7 +40,19 @@ const sendApprovalEmail = (email, token) => {
           background-color: #0056b3;
         }
       </style>
-    `,
+    `;
+  } else if (status === "Rejected") {
+    subject = "Application Rejected";
+    htmlContent = `
+      <p style="padding: 10px 0;">We regret to inform you that your application has been rejected. If you have any questions, please contact our support team.</p>
+    `;
+  }
+
+  const mailOptions = {
+    from: process.env.EMAIL,
+    to: email,
+    subject: subject,
+    html: htmlContent,
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
@@ -170,7 +182,10 @@ router.post("/review-application/:id", authenticateSession, async (req, res) => 
       ); // expiration time 336 hours (2 weeks)
 
       // Send an email to the company with a link to complete registration
-      sendApprovalEmail(application.email, token);
+      sendApprovalEmail(application.email, token, status);
+    } else if (status === "Rejected") {
+      // Send an email to the company notifying them of the rejection
+      sendApprovalEmail(application.email, null, status);
     }
 
     res.json({
