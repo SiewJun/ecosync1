@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -34,10 +34,14 @@
     "playwright": "^1.48.1",
     "sequelize": "^6.37.3",
     "socket.io": "^4.8.0",
+    "socket.io-client": "^4.8.1",
     "stripe": "^17.2.0"
   },
   "devDependencies": {
+    "jest": "^29.7.0",
+    "nock": "^13.5.6",
     "nodemon": "^3.1.4",
-    "sequelize-cli": "^6.6.2"
+    "sequelize-cli": "^6.6.2",
+    "supertest": "^7.0.0"
   }
 }
