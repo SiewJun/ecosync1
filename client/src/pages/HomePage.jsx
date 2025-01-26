@@ -437,7 +437,7 @@ const HomePage = () => {
       {/* Stats Section */}
       <section
         ref={statsRef}
-        className="py-24 bg-gradient-to-b from-secondary/5 to-background"
+        className="py-32 mb-10 bg-gradient-to-b from-secondary/5 to-background"
       >
         <div className="container mx-auto px-4">
           <motion.div
