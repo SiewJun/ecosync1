@@ -255,7 +255,7 @@ const HomePage = () => {
       <HeroSection />
 
       {/* Product Showcase */}
-      <section className="py-52 overflow-hidden">
+      <section className="py-32 overflow-hidden">
         <div className="container mx-auto px-4">
           <motion.div
             className="text-center mb-24"
@@ -322,65 +322,8 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section
-        ref={statsRef}
-        className="py-40 bg-gradient-to-b from-secondary/5 to-background"
-      >
-        <div className="container mx-auto px-4">
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-3 gap-16"
-            initial={{ opacity: 0, y: 20 }}
-            animate={statsInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5 }}
-          >
-            {[
-              {
-                value: "3,000+",
-                label: "Installations",
-                sublabel: "Across the country",
-                icon: <Sun className="h-10 w-10" />,
-              },
-              {
-                value: "98%",
-                label: "Satisfaction",
-                sublabel: "Customer happiness",
-                icon: <BarChart className="h-10 w-10" />,
-              },
-              {
-                value: "10M+",
-                label: "kWh Generated",
-                sublabel: "Clean energy produced",
-                icon: <Zap className="h-10 w-10" />,
-              },
-            ].map((stat, index) => (
-              <Card key={index} className="relative overflow-hidden group">
-                <CardContent className="p-10">
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent"
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                  />
-                  <div className="relative space-y-6">
-                    <div className="text-primary">{stat.icon}</div>
-                    <h3 className="text-5xl font-bold">{stat.value}</h3>
-                    <div>
-                      <div className="text-2xl font-semibold">{stat.label}</div>
-                      <div className="text-lg text-muted-foreground">
-                        {stat.sublabel}
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
       {/* Solar Journey Steps */}
-      <section ref={featuresRef} className="py-40 relative overflow-hidden">
+      <section ref={featuresRef} className="py-24 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-secondary/5 via-background to-background" />
 
         <div className="container mx-auto px-4 relative">
@@ -487,6 +430,63 @@ const HomePage = () => {
                 <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section
+        ref={statsRef}
+        className="py-24 bg-gradient-to-b from-secondary/5 to-background"
+      >
+        <div className="container mx-auto px-4">
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-3 gap-16"
+            initial={{ opacity: 0, y: 20 }}
+            animate={statsInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5 }}
+          >
+            {[
+              {
+                value: "3,000+",
+                label: "Installations",
+                sublabel: "Across the country",
+                icon: <Sun className="h-10 w-10" />,
+              },
+              {
+                value: "98%",
+                label: "Satisfaction",
+                sublabel: "Customer happiness",
+                icon: <BarChart className="h-10 w-10" />,
+              },
+              {
+                value: "10M+",
+                label: "kWh Generated",
+                sublabel: "Clean energy produced",
+                icon: <Zap className="h-10 w-10" />,
+              },
+            ].map((stat, index) => (
+              <Card key={index} className="relative overflow-hidden group">
+                <CardContent className="p-10">
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                  />
+                  <div className="relative space-y-6">
+                    <div className="text-primary">{stat.icon}</div>
+                    <h3 className="text-5xl font-bold">{stat.value}</h3>
+                    <div>
+                      <div className="text-2xl font-semibold">{stat.label}</div>
+                      <div className="text-lg text-muted-foreground">
+                        {stat.sublabel}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </motion.div>
         </div>
       </section>
