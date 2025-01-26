@@ -55,6 +55,7 @@ const QuotationDrawer = ({
       } else {
         initializeAutocomplete();
       }
+      fetchUserDetails();
     }
     setTimeout(() => (document.body.style.pointerEvents = ""), 0);
   }, [isDrawerOpen]);
@@ -77,6 +78,24 @@ const QuotationDrawer = ({
           }));
         }
       });
+    }
+  };
+
+  const fetchUserDetails = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}api/consumer/profile`, {
+        withCredentials: true,
+      });
+      const { user, consumerProfile } = response.data;
+      setFormData((prevData) => ({
+        ...prevData,
+        name: user.username || "",
+        email: user.email || "",
+        phoneNumber: consumerProfile?.phoneNumber || "",
+        address: consumerProfile?.address || "",
+      }));
+    } catch (error) {
+      console.error("Failed to fetch user details:", error);
     }
   };
 
